@@ -46,7 +46,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                path.equals("/api/password/reset") ||
                path.equals("/auth/refresh") ||
                path.startsWith("/v3/api-docs") ||
-               path.startsWith("/swagger-ui");
+               path.startsWith("/swagger-ui") ||
+               path.startsWith("/api/v1/saas");
     }
 
     @Override

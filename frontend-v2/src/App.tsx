@@ -20,6 +20,7 @@ import PublicAdmissions from './pages/PublicAdmissions';
 import RegisterInstitution from './pages/RegisterInstitution';
 import RegistrationSuccess from './pages/RegistrationSuccess';
 import SubscriptionLockout from './pages/SubscriptionLockout';
+import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import LandingPage from './pages/LandingPage';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
@@ -135,6 +136,19 @@ function App() {
               <Route path="sections" element={<RoleProtectedRoute allowedRoles={['FACULTY']}><FacultySections /></RoleProtectedRoute>} />
               <Route path="guardians" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><GuardiansList /></RoleProtectedRoute>} />
               <Route path="admin/users" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><AdminUsersList /></RoleProtectedRoute>} />
+              <Route path="super-admin" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><SuperAdminDashboard /></RoleProtectedRoute>} />
+            </Route>
+            <Route
+              path="/super-admin"
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+                    <Layout />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<SuperAdminDashboard />} />
             </Route>
             <Route path="/" element={<LandingPage />} />
             <Route path="*" element={<NotFound />} />

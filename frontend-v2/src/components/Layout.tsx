@@ -160,6 +160,9 @@ export default function Layout() {
 
             <NavGroup title="System Setup">
               <NavItem path="/dashboard/admin/users" icon={ShieldAlert} label="Access Control" />
+              {role === 'SUPER_ADMIN' && (
+                <NavItem path="/super-admin" icon={ShieldAlert} label="SaaS Tenant Registry" />
+              )}
             </NavGroup>
           </>
         );

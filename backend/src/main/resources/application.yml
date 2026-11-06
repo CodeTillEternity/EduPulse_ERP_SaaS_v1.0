@@ -8,6 +8,8 @@ spring:
     name: institutional-erp-backend
   profiles:
     active: dev
+  flyway:
+    enabled: false
   servlet:
     multipart:
       enabled: true

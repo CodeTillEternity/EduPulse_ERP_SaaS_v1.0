@@ -29,6 +29,7 @@ dist-ssr/
 *.log
 .DS_Store
 Thumbs.db
+uploads/
 
 # Environment variables
 .env

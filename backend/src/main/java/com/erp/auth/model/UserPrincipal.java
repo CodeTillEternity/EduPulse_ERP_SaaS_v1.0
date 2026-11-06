@@ -17,8 +17,9 @@ public class UserPrincipal implements UserDetails {
     private final Role role;
     private final Set<Permission> permissions;
     private final boolean enabled;
+    private final String tenantId;
 
-    public UserPrincipal(Long id, String username, String password, String email, Role role, Set<Permission> permissions, boolean enabled) {
+    public UserPrincipal(Long id, String username, String password, String email, Role role, Set<Permission> permissions, boolean enabled, String tenantId) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -26,14 +27,27 @@ public class UserPrincipal implements UserDetails {
         this.role = role;
         this.permissions = permissions != null ? permissions : role.getPermissions();
         this.enabled = enabled;
+        this.tenantId = tenantId;
+    }
+
+    public UserPrincipal(Long id, String username, String password, String email, Role role, Set<Permission> permissions, boolean enabled) {
+        this(id, username, password, email, role, permissions, enabled, null);
     }
 
     public UserPrincipal(String username, String password, String email, Role role, Set<Permission> permissions, boolean enabled) {
-        this(null, username, password, email, role, permissions, enabled);
+        this(null, username, password, email, role, permissions, enabled, null);
     }
 
     public static UserPrincipal of(String username, String encodedPassword, String email, Role role) {
-        return new UserPrincipal(null, username, encodedPassword, email, role, role.getPermissions(), true);
+        return new UserPrincipal(null, username, encodedPassword, email, role, role.getPermissions(), true, null);
+    }
+
+    public static UserPrincipal of(String username, String encodedPassword, String email, Role role, String tenantId) {
+        return new UserPrincipal(null, username, encodedPassword, email, role, role.getPermissions(), true, tenantId);
+    }
+
+    public String getTenantId() {
+        return tenantId;
     }
 
     public Long getId() {

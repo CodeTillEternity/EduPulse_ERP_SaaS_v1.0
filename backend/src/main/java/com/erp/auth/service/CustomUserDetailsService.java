@@ -21,7 +21,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         AppUser user = userRepository.findByUsernameIgnoreCase(username)
                 .or(() -> userRepository.findByEmailIgnoreCase(username))
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with identifier: " + username));
         
         return new UserPrincipal(
                 user.getId(),
@@ -30,7 +30,26 @@ public class CustomUserDetailsService implements UserDetailsService {
                 user.getEmail(),
                 user.getRole(),
                 user.getRole().getPermissions(),
-                user.isEnabled()
+                user.isEnabled(),
+                user.getTenantId()
+        );
+    }
+
+    public UserDetails loadUserByUsernameAndTenantId(String username, String tenantId) throws UsernameNotFoundException {
+        AppUser user = userRepository.findByUsernameIgnoreCaseAndTenantId(username, tenantId)
+                .or(() -> userRepository.findByEmailIgnoreCaseAndTenantId(username, tenantId))
+                .orElseThrow(() -> new UsernameNotFoundException(
+                        "User not found with identifier '" + username + "' in tenant '" + tenantId + "'"));
+
+        return new UserPrincipal(
+                user.getId(),
+                user.getUsername(),
+                user.getPassword(),
+                user.getEmail(),
+                user.getRole(),
+                user.getRole().getPermissions(),
+                user.isEnabled(),
+                user.getTenantId()
         );
     }
 }

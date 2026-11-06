@@ -29,6 +29,11 @@ public class JwtService {
     }
 
     public String generateAccessToken(UserDetails userDetails) {
+        String tenantId = (userDetails instanceof com.erp.auth.model.UserPrincipal up) ? up.getTenantId() : null;
+        return generateAccessToken(userDetails, tenantId);
+    }
+
+    public String generateAccessToken(UserDetails userDetails, String tenantId) {
         Map<String, Object> extraClaims = new HashMap<>();
         List<String> authorities = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -36,13 +41,32 @@ public class JwtService {
                 
         extraClaims.put("authorities", authorities);
         extraClaims.put("token_type", "ACCESS");
+        if (tenantId != null && !tenantId.isBlank()) {
+            extraClaims.put("tenant_id", tenantId.trim());
+        }
 
         return buildToken(extraClaims, userDetails.getUsername(), jwtProperties.getAccessTokenExpiration());
+    }
+
+    public String generateAccessToken(com.erp.auth.entity.AppUser user) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        if (user.getRole() != null) {
+            extraClaims.put("authorities", Collections.singletonList(user.getRole().getAuthority()));
+        }
+        extraClaims.put("token_type", "ACCESS");
+        if (user.getTenantId() != null && !user.getTenantId().isBlank()) {
+            extraClaims.put("tenant_id", user.getTenantId().trim());
+        }
+
+        return buildToken(extraClaims, user.getUsername(), jwtProperties.getAccessTokenExpiration());
     }
 
     public String generateRefreshToken(UserDetails userDetails) {
         Map<String, Object> extraClaims = new HashMap<>();
         extraClaims.put("token_type", "REFRESH");
+        if (userDetails instanceof com.erp.auth.model.UserPrincipal up && up.getTenantId() != null) {
+            extraClaims.put("tenant_id", up.getTenantId().trim());
+        }
 
         return buildToken(extraClaims, userDetails.getUsername(), jwtProperties.getRefreshTokenExpiration());
     }
@@ -60,6 +84,10 @@ public class JwtService {
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public String extractTenantId(String token) {
+        return extractClaim(token, claims -> claims.get("tenant_id", String.class));
     }
 
     public String extractTokenId(String token) {

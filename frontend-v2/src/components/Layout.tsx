@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ChangePasswordModal } from './ChangePasswordModal';
+import ReadOnlyBanner from './ReadOnlyBanner';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -248,9 +249,10 @@ export default function Layout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans">
-      
-      {/* Mobile Header Overlay */}
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <ReadOnlyBanner />
+      <div className="flex-1 flex flex-col md:flex-row">
+        {/* Mobile Header Overlay */}
       <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center space-x-2">
           <img src="/logo.jpg" alt="EduPulse Logo" className="w-8 h-8 rounded shadow-sm border border-slate-200" />
@@ -481,6 +483,7 @@ export default function Layout() {
         <main className="flex-1 overflow-y-auto bg-slate-50 relative">
           <Outlet />
         </main>
+      </div>
       </div>
     </div>
   );

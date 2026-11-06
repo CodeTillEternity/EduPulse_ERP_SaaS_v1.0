@@ -9,5 +9,15 @@ public record LoginRequest(
         @NotBlank(message = "Password is required")
         String password,
         
-        String role
-) {}
+        String role,
+
+        String tenantId
+) {
+    public LoginRequest(String username, String password, String role) {
+        this(username, password, role, null);
+    }
+
+    public LoginRequest(String username, String password) {
+        this(username, password, null, null);
+    }
+}

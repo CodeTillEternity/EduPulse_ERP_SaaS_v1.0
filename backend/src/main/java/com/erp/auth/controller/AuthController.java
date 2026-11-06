@@ -30,9 +30,20 @@ public class AuthController {
 
     @PostMapping("/login")
     @Operation(summary = "Authenticate user and issue JWT tokens", description = "Validates credentials and generates access & refresh tokens with RBAC claims")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<AuthResponse> login(
+            @Valid @RequestBody LoginRequest request,
+            @RequestHeader(value = "X-Tenant-ID", required = false) String tenantHeader,
+            HttpServletRequest httpRequest) {
+        String effectiveTenantId = (request.tenantId() != null && !request.tenantId().isBlank())
+                ? request.tenantId().trim()
+                : (tenantHeader != null && !tenantHeader.isBlank() ? tenantHeader.trim() : null);
+
+        LoginRequest scopedRequest = (effectiveTenantId != null && request.tenantId() == null)
+                ? new LoginRequest(request.username(), request.password(), request.role(), effectiveTenantId)
+                : request;
+
         String clientIp = httpRequest.getRemoteAddr();
-        AuthResponse response = authService.login(request, clientIp);
+        AuthResponse response = authService.login(scopedRequest, clientIp);
         return ResponseEntity.ok(response);
     }
 

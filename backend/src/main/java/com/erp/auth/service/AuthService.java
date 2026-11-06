@@ -51,9 +51,21 @@ public class AuthService {
     public AuthResponse login(LoginRequest request, String clientIp) {
         UserPrincipal user;
         try {
-            user = (UserPrincipal) userDetailsService.loadUserByUsername(request.username());
+            String tenantId = (request.tenantId() != null && !request.tenantId().isBlank())
+                    ? request.tenantId().trim()
+                    : null;
+
+            if (tenantId != null) {
+                user = (UserPrincipal) userDetailsService.loadUserByUsernameAndTenantId(request.username(), tenantId);
+            } else {
+                user = (UserPrincipal) userDetailsService.loadUserByUsername(request.username());
+            }
+
+            if (user != null && user.getTenantId() != null) {
+                com.erp.multitenancy.TenantContext.setTenantId(user.getTenantId());
+            }
         } catch (UsernameNotFoundException e) {
-            log.warn("Login failed for username: {}", request.username());
+            log.warn("Login failed for identifier: {} with tenant: {}", request.username(), request.tenantId());
             throw new BadCredentialsException("Invalid username or password");
         }
 

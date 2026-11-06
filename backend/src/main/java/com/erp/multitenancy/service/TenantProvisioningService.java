@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ import java.util.UUID;
 public class TenantProvisioningService {
 
     private static final Logger log = LoggerFactory.getLogger(TenantProvisioningService.class);
+    public static final int DEFAULT_TRIAL_PERIOD_DAYS = 14;
 
     private final TenantRegistryRepository tenantRegistryRepository;
     private final UserRepository userRepository;
@@ -38,7 +40,7 @@ public class TenantProvisioningService {
     }
 
     /**
-     * Provision a new tenant account idempotently.
+     * Provision a new tenant account idempotently with an active 14-day trial window.
      *
      * @param request the registration request
      * @return the registration response
@@ -113,14 +115,25 @@ public class TenantProvisioningService {
         userRepository.save(adminUser);
         log.info("Created Institution Admin user '{}' with role INSTITUTION_ADMIN for tenant [{}]", adminUsername, tenantId);
 
+        // 3. Calculate 14-day trial window and transition to TRIAL_ACTIVE
+        LocalDateTime trialEndDate = calculateTrialEndDate();
+        saved.setStatus(TenantStatus.TRIAL_ACTIVE);
+        saved.setTrialEndDate(trialEndDate);
+        TenantRegistry activated = tenantRegistryRepository.save(saved);
+        log.info("Tenant [{}] transitioned to TRIAL_ACTIVE state with trialEndDate: {}", tenantId, trialEndDate);
+
         return new TenantRegistrationResponse(
-                saved.getTenantId(),
-                saved.getStatus(),
-                saved.getTrialEndDate(),
-                saved.getInstitutionName(),
-                saved.getAdminEmail(),
-                "Tenant provisioning initiated and admin user created"
+                activated.getTenantId(),
+                activated.getStatus(),
+                activated.getTrialEndDate(),
+                activated.getInstitutionName(),
+                activated.getAdminEmail(),
+                "Tenant successfully provisioned with active 14-day trial"
         );
+    }
+
+    public LocalDateTime calculateTrialEndDate() {
+        return LocalDateTime.now().plusDays(DEFAULT_TRIAL_PERIOD_DAYS);
     }
 
     protected String generateTenantId(String institutionName) {

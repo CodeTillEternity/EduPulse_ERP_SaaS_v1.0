@@ -19,7 +19,12 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
-# Storage configuration
+# Stripe SaaS Billing Configuration
+stripe:
+  api-key: ${STRIPE_API_KEY:sk_test_placeholder}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_placeholder}
+  success-url: ${STRIPE_SUCCESS_URL:http://localhost:5173/payment-success}
+  cancel-url: ${STRIPE_CANCEL_URL:http://localhost:5173/payment-cancelled}
 app:
   storage:
     document-dir: ${APP_STORAGE_DOCUMENT_DIR:uploads/documents}

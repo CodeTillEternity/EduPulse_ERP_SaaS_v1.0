@@ -8,8 +8,13 @@ import com.erp.multitenancy.dto.TenantRegistrationResponse;
 import com.erp.multitenancy.entity.TenantRegistry;
 import com.erp.multitenancy.model.TenantStatus;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
+import com.erp.subscription.entity.SubscriptionPlan;
+import com.erp.subscription.entity.TenantSubscription;
+import com.erp.subscription.repository.SubscriptionPlanRepository;
+import com.erp.subscription.repository.TenantSubscriptionRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,13 +35,26 @@ public class TenantProvisioningService {
     private final TenantRegistryRepository tenantRegistryRepository;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final TenantSubscriptionRepository tenantSubscriptionRepository;
 
     public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository,
                                      UserRepository userRepository,
                                      PasswordEncoder passwordEncoder) {
+        this(tenantRegistryRepository, userRepository, passwordEncoder, null, null);
+    }
+
+    @Autowired
+    public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository,
+                                     UserRepository userRepository,
+                                     PasswordEncoder passwordEncoder,
+                                     SubscriptionPlanRepository subscriptionPlanRepository,
+                                     TenantSubscriptionRepository tenantSubscriptionRepository) {
         this.tenantRegistryRepository = tenantRegistryRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.subscriptionPlanRepository = subscriptionPlanRepository;
+        this.tenantSubscriptionRepository = tenantSubscriptionRepository;
     }
 
     /**
@@ -121,6 +139,27 @@ public class TenantProvisioningService {
         saved.setTrialEndDate(trialEndDate);
         TenantRegistry activated = tenantRegistryRepository.save(saved);
         log.info("Tenant [{}] transitioned to TRIAL_ACTIVE state with trialEndDate: {}", tenantId, trialEndDate);
+
+        // 4. Create baseline TenantSubscription linking to 'Trial' or 'Starter' plan
+        if (subscriptionPlanRepository != null && tenantSubscriptionRepository != null) {
+            SubscriptionPlan trialPlan = subscriptionPlanRepository.findByNameIgnoreCase("Trial")
+                    .or(() -> subscriptionPlanRepository.findByNameIgnoreCase("Starter"))
+                    .orElseGet(() -> {
+                        SubscriptionPlan fallback = new SubscriptionPlan("Trial", 100, 1024, false);
+                        return subscriptionPlanRepository.save(fallback);
+                    });
+
+            TenantSubscription defaultSubscription = new TenantSubscription(
+                    tenantId,
+                    trialPlan,
+                    "TRIAL",
+                    trialEndDate,
+                    true
+            );
+            tenantSubscriptionRepository.save(defaultSubscription);
+            log.info("Provisioned baseline subscription on plan '{}' for tenant [{}]",
+                    trialPlan.getName(), tenantId);
+        }
 
         return new TenantRegistrationResponse(
                 activated.getTenantId(),

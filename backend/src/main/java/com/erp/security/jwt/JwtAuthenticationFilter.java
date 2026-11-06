@@ -93,7 +93,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                    log.debug("Authenticated user {} with authorities: {}", username, userDetails.getAuthorities());
+                    String tenantId = jwtService.extractTenantId(jwt);
+                    if (tenantId != null && !tenantId.isBlank()) {
+                        com.erp.multitenancy.TenantContext.setTenantId(tenantId.trim());
+                    }
+
+                    log.debug("Authenticated user {} with authorities: {} for tenant: {}", username, userDetails.getAuthorities(), tenantId);
                 }
             }
         } catch (ExpiredJwtException ex) {

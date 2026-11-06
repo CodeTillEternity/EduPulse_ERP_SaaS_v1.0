@@ -8,6 +8,10 @@ import com.erp.multitenancy.dto.TenantRegistrationResponse;
 import com.erp.multitenancy.entity.TenantRegistry;
 import com.erp.multitenancy.model.TenantStatus;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
+import com.erp.subscription.entity.SubscriptionPlan;
+import com.erp.subscription.entity.TenantSubscription;
+import com.erp.subscription.repository.SubscriptionPlanRepository;
+import com.erp.subscription.repository.TenantSubscriptionRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -38,6 +42,12 @@ class TenantProvisioningServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private SubscriptionPlanRepository subscriptionPlanRepository;
+
+    @Mock
+    private TenantSubscriptionRepository tenantSubscriptionRepository;
+
     @InjectMocks
     private TenantProvisioningService provisioningService;
 
@@ -58,6 +68,9 @@ class TenantProvisioningServiceTest {
         when(tenantRegistryRepository.findByInstitutionNameIgnoreCase(anyString())).thenReturn(Optional.empty());
         when(tenantRegistryRepository.findByAdminEmailIgnoreCase(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(anyString())).thenReturn("hashed_password");
+
+        SubscriptionPlan trialPlan = new SubscriptionPlan("Trial", 100, 1024, false);
+        when(subscriptionPlanRepository.findByNameIgnoreCase("Trial")).thenReturn(Optional.of(trialPlan));
 
         when(tenantRegistryRepository.save(any(TenantRegistry.class))).thenAnswer(invocation -> {
             TenantRegistry input = invocation.getArgument(0);
@@ -90,6 +103,14 @@ class TenantProvisioningServiceTest {
         assertEquals("hashed_password", savedUser.getPassword());
         assertEquals(response.getTenantId(), savedUser.getTenantId());
         assertTrue(savedUser.isEnabled());
+
+        // Verify baseline subscription was provisioned
+        ArgumentCaptor<TenantSubscription> subCaptor = ArgumentCaptor.forClass(TenantSubscription.class);
+        verify(tenantSubscriptionRepository, times(1)).save(subCaptor.capture());
+        TenantSubscription savedSub = subCaptor.getValue();
+        assertEquals(response.getTenantId(), savedSub.getTenantId());
+        assertEquals("Trial", savedSub.getPlan().getName());
+        assertTrue(savedSub.getIsActive());
     }
 
     @Test

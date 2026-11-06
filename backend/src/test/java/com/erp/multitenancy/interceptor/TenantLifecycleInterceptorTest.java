@@ -80,14 +80,56 @@ class TenantLifecycleInterceptorTest {
         String tenantId = "tenant-grace-103";
         TenantContext.setTenantId(tenantId);
 
+        TenantRegistry tenant = new TenantRegistry(tenantId, "Grace College", TenantStatus.READ_ONLY_GRACE, "SHARED");
+        when(tenantRegistryRepository.findById(tenantId)).thenReturn(Optional.of(tenant));
+
         MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/v1/students");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
         boolean allowed = interceptor.preHandle(request, response, new Object());
 
-        assertTrue(allowed, "Read-only GET requests must always be permitted");
+        assertTrue(allowed, "Read-only GET requests must be permitted during READ_ONLY_GRACE");
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        verify(tenantRegistryRepository, never()).findById(any());
+        verify(tenantRegistryRepository, times(1)).findById(tenantId);
+    }
+
+    @Test
+    void shouldBlockAllRequestsIncludingGetWhenTenantIsSuspended() throws Exception {
+        String tenantId = "tenant-suspended-300";
+        TenantContext.setTenantId(tenantId);
+
+        TenantRegistry tenant = new TenantRegistry(tenantId, "Suspended Academy", TenantStatus.SUSPENDED, "SHARED");
+        when(tenantRegistryRepository.findById(tenantId)).thenReturn(Optional.of(tenant));
+
+        MockHttpServletRequest getRequest = new MockHttpServletRequest("GET", "/api/v1/students");
+        MockHttpServletResponse getResponse = new MockHttpServletResponse();
+
+        boolean getAllowed = interceptor.preHandle(getRequest, getResponse, new Object());
+        assertFalse(getAllowed, "GET requests must be blocked when tenant is SUSPENDED");
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, getResponse.getStatus());
+
+        MockHttpServletRequest postRequest = new MockHttpServletRequest("POST", "/api/v1/students");
+        MockHttpServletResponse postResponse = new MockHttpServletResponse();
+
+        boolean postAllowed = interceptor.preHandle(postRequest, postResponse, new Object());
+        assertFalse(postAllowed, "POST requests must be blocked when tenant is SUSPENDED");
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, postResponse.getStatus());
+    }
+
+    @Test
+    void shouldBlockAllRequestsIncludingGetWhenTenantIsPendingDeletion() throws Exception {
+        String tenantId = "tenant-pending-del-400";
+        TenantContext.setTenantId(tenantId);
+
+        TenantRegistry tenant = new TenantRegistry(tenantId, "Pending Del Academy", TenantStatus.PENDING_DELETION, "SHARED");
+        when(tenantRegistryRepository.findById(tenantId)).thenReturn(Optional.of(tenant));
+
+        MockHttpServletRequest getRequest = new MockHttpServletRequest("GET", "/api/v1/courses");
+        MockHttpServletResponse getResponse = new MockHttpServletResponse();
+
+        boolean getAllowed = interceptor.preHandle(getRequest, getResponse, new Object());
+        assertFalse(getAllowed, "GET requests must be blocked when tenant is PENDING_DELETION");
+        assertEquals(HttpServletResponse.SC_FORBIDDEN, getResponse.getStatus());
     }
 
     @Test

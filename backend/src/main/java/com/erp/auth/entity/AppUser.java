@@ -1,12 +1,13 @@
 package com.erp.auth.entity;
 
 import com.erp.auth.model.Role;
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-public class AppUser {
+public class AppUser extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

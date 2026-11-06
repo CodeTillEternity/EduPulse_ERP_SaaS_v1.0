@@ -1,10 +1,12 @@
 package com.erp.finance.scholarship.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 @Entity
 @Table(name = "finance_scholarship")
-public class Scholarship {
+public class Scholarship extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(nullable = false) private String name;
     @Column(nullable = false) private String type; // FIXED, PERCENTAGE

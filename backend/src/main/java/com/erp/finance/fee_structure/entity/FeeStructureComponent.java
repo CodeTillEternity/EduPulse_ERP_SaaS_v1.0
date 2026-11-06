@@ -1,10 +1,12 @@
 package com.erp.finance.fee_structure.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
 @Table(name = "fee_structure_component", uniqueConstraints = {@UniqueConstraint(columnNames = {"fee_structure_id", "fee_head_id"})})
-public class FeeStructureComponent {
+public class FeeStructureComponent extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "fee_structure_id", nullable = false) private FeeStructure feeStructure;

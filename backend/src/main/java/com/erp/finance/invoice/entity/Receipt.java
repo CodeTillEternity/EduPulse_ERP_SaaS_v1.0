@@ -1,11 +1,13 @@
 package com.erp.finance.invoice.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.time.Instant;
 import com.erp.finance.payment.entity.Payment;
 import com.erp.finance.enums.PaymentStatus;
 @Entity
 @Table(name = "finance_receipt")
-public class Receipt {
+public class Receipt extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(unique = true, nullable = false) private String receiptNumber;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "payment_id", nullable = false, unique = true) private Payment payment;

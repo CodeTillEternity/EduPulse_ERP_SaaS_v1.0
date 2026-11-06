@@ -1,9 +1,11 @@
 package com.erp.finance.fee_structure.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.time.Instant;
 @Entity
 @Table(name = "fee_head")
-public class FeeHead {
+public class FeeHead extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(nullable = false, unique = true) private String code;
     @Column(nullable = false) private String name;

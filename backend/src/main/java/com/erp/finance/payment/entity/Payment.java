@@ -1,4 +1,6 @@
 package com.erp.finance.payment.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -10,7 +12,7 @@ import com.erp.finance.enums.PaymentMethod;
 import com.erp.finance.student_fee.entity.StudentFee;
 @Entity
 @Table(name = "finance_payment")
-public class Payment {
+public class Payment extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(unique = true, nullable = false) private String referenceNumber;
     @Column(name="student_id", nullable = false) private Long studentId;

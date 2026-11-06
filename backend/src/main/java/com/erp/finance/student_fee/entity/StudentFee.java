@@ -1,4 +1,6 @@
 package com.erp.finance.student_fee.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
@@ -7,7 +9,7 @@ import java.util.ArrayList;
 import com.erp.finance.enums.StudentFeeStatus;
 @Entity
 @Table(name = "student_fee", uniqueConstraints = {@UniqueConstraint(columnNames = {"student_id", "academic_year_id", "fee_structure_id"})})
-public class StudentFee {
+public class StudentFee extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(name="student_id", nullable = false) private Long studentId;
     @Column(name="academic_year_id", nullable = false) private Long academicYearId;

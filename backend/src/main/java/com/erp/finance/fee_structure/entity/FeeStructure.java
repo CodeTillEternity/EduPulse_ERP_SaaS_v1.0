@@ -1,5 +1,7 @@
 package com.erp.finance.fee_structure.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.Instant;
@@ -9,7 +11,7 @@ import java.util.ArrayList;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "fee_structure")
-public class FeeStructure {
+public class FeeStructure extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(nullable = false, unique = true) private String code;
     @Column(nullable = false) private String name;

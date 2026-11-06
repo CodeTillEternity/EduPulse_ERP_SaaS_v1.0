@@ -1,11 +1,13 @@
 package com.erp.finance.scholarship.entity;
+
+import com.erp.multitenancy.BaseTenantEntity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.Instant;
 import com.erp.finance.enums.ConcessionStatus;
 @Entity
 @Table(name = "finance_student_scholarship")
-public class StudentScholarship {
+public class StudentScholarship extends BaseTenantEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) private Long id;
     @Column(name="student_id", nullable = false) private Long studentId;
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "scholarship_id", nullable = false) private Scholarship scholarship;

@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/health", "/api/v1/health", "/actuator/health").permitAll()
                 .requestMatchers("/auth/**").permitAll()
+                .requestMatchers("/api/v1/saas/admin/**").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/v1/saas/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                 .requestMatchers("/api/password/**").permitAll()

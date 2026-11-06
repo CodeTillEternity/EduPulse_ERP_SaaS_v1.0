@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   CheckCircle2, 
@@ -36,7 +36,7 @@ export default function RegistrationSuccess() {
 
   // Default to 14 days from today if not provided
   const trialEndDateRaw = state.trialEndDate || query.get('trialEndDate');
-  const formattedTrialDate = React.useMemo(() => {
+  const formattedTrialDate = useMemo(() => {
     try {
       const date = trialEndDateRaw ? new Date(trialEndDateRaw) : new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
       return date.toLocaleDateString('en-US', {

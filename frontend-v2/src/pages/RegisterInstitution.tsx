@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { Building2, Mail, User, Lock, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
@@ -169,7 +168,7 @@ export default function RegisterInstitution({ onSubmit, isLoading }: RegisterIns
               {/* Optional Admin Password */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
-                  <label htmlFor="adminPassword" block text-sm font-medium text-slate-200>
+                  <label htmlFor="adminPassword" className="block text-sm font-medium text-slate-200">
                     Initial Admin Password <span className="text-xs text-slate-400 font-normal">(optional)</span>
                   </label>
                 </div>

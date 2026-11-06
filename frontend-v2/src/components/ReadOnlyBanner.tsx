@@ -1,4 +1,3 @@
-import React from 'react';
 import { AlertTriangle, ArrowRight, Sparkles } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 

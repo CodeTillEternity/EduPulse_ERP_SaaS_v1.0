@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../config/api';
 import { 
@@ -14,7 +14,7 @@ import {
   Filter,
   Calendar
 } from 'lucide-react';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 

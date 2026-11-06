@@ -61,6 +61,34 @@ apiClient.interceptors.response.use(
       return Promise.reject(new Error('Server is taking too long to respond. Please try again.'));
     }
 
+    // Handle 403 Forbidden lifecycle lockouts and grace period status updates
+    if (error.response?.status === 403) {
+      const responseMessage =
+        typeof error.response?.data === 'string'
+          ? error.response.data
+          : error.response?.data?.message || '';
+
+      const lowerMessage = responseMessage.toLowerCase();
+
+      if (
+        lowerMessage.includes('suspended') ||
+        lowerMessage.includes('pending_deletion') ||
+        lowerMessage.includes('locked out')
+      ) {
+        const detectedStatus = lowerMessage.includes('pending_deletion')
+          ? 'PENDING_DELETION'
+          : 'SUSPENDED';
+
+        useAuthStore.getState().setTenantStatus(detectedStatus);
+
+        if (typeof window !== 'undefined' && window.location.pathname !== '/subscription-lockout') {
+          window.location.href = '/subscription-lockout';
+        }
+      } else if (lowerMessage.includes('read_only_grace') || lowerMessage.includes('read-only')) {
+        useAuthStore.getState().setTenantStatus('READ_ONLY_GRACE');
+      }
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (originalRequest.url?.includes('/auth/login') || originalRequest.url?.includes('/auth/refresh')) {
         return Promise.reject(error);

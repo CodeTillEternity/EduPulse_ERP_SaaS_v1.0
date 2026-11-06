@@ -17,6 +17,8 @@ import Admissions from './pages/Admissions';
 import Academics from './pages/Academics';
 import FacultySections from './pages/FacultySections';
 import PublicAdmissions from './pages/PublicAdmissions';
+import RegisterInstitution from './pages/RegisterInstitution';
+import RegistrationSuccess from './pages/RegistrationSuccess';
 import LandingPage from './pages/LandingPage';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
@@ -105,6 +107,8 @@ function App() {
                 <Login />
               </PublicOnlyRoute>
             } />
+            <Route path="/register" element={<RegisterInstitution />} />
+            <Route path="/register-success" element={<RegistrationSuccess />} />
             <Route path="/admissions" element={<PublicAdmissions />} />
             <Route path="/403" element={<Forbidden />} />
             <Route

@@ -1,10 +1,12 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Building2, Mail, User, Lock, Sparkles, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { useRegisterTenant } from '../hooks/useRegisterTenant';
+import { toast } from 'sonner';
 
 export interface RegisterInstitutionFormData {
   institutionName: string;
@@ -18,7 +20,10 @@ interface RegisterInstitutionProps {
   isLoading?: boolean;
 }
 
-export default function RegisterInstitution({ onSubmit, isLoading = false }: RegisterInstitutionProps) {
+export default function RegisterInstitution({ onSubmit, isLoading }: RegisterInstitutionProps) {
+  const navigate = useNavigate();
+  const registerMutation = useRegisterTenant();
+
   const {
     register,
     handleSubmit,
@@ -32,9 +37,21 @@ export default function RegisterInstitution({ onSubmit, isLoading = false }: Reg
     },
   });
 
-  const handleFormSubmit = (data: RegisterInstitutionFormData) => {
+  const loading = isLoading ?? registerMutation.isPending;
+
+  const handleFormSubmit = async (data: RegisterInstitutionFormData) => {
     if (onSubmit) {
       onSubmit(data);
+      return;
+    }
+
+    try {
+      const response = await registerMutation.mutateAsync(data);
+      toast.success(response.message || 'Tenant partition provisioned successfully!');
+      navigate('/register-success', { state: response });
+    } catch (err: any) {
+      const errorMessage = err?.response?.data?.message || err?.message || 'Failed to register institution';
+      toast.error(errorMessage);
     }
   };
 
@@ -192,10 +209,10 @@ export default function RegisterInstitution({ onSubmit, isLoading = false }: Reg
               {/* Submit Button */}
               <Button
                 type="submit"
-                disabled={isLoading}
+                disabled={loading}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-all shadow-lg shadow-indigo-600/30 flex items-center justify-center gap-2"
               >
-                {isLoading ? (
+                {loading ? (
                   <>Provisioning Tenant Partition...</>
                 ) : (
                   <>

@@ -7,6 +7,20 @@ import java.util.Set;
 
 public enum Role {
     SUPER_ADMIN("ROLE_SUPER_ADMIN", EnumSet.allOf(Permission.class)),
+    INSTITUTION_ADMIN("ROLE_INSTITUTION_ADMIN", EnumSet.of(
+            Permission.USER_MANAGE,
+            Permission.USER_CREATE,
+            Permission.USER_READ,
+            Permission.USER_UPDATE,
+            Permission.USER_DELETE,
+            Permission.STUDENT_MANAGE,
+            Permission.STUDENT_PROFILE_READ,
+            Permission.STUDENT_PROFILE_UPDATE,
+            Permission.ATTENDANCE_READ,
+            Permission.FEES_READ,
+            Permission.INSTITUTION_READ,
+            Permission.INSTITUTION_MANAGE
+    )),
     ADMIN("ROLE_ADMIN", EnumSet.of(
             Permission.USER_MANAGE,
             Permission.USER_CREATE,

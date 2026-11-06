@@ -1,5 +1,8 @@
 package com.erp.multitenancy.service;
 
+import com.erp.auth.entity.AppUser;
+import com.erp.auth.model.Role;
+import com.erp.auth.repository.UserRepository;
 import com.erp.multitenancy.dto.TenantRegistrationRequest;
 import com.erp.multitenancy.dto.TenantRegistrationResponse;
 import com.erp.multitenancy.entity.TenantRegistry;
@@ -7,6 +10,7 @@ import com.erp.multitenancy.model.TenantStatus;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,9 +26,15 @@ public class TenantProvisioningService {
     private static final Logger log = LoggerFactory.getLogger(TenantProvisioningService.class);
 
     private final TenantRegistryRepository tenantRegistryRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository) {
+    public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository,
+                                     UserRepository userRepository,
+                                     PasswordEncoder passwordEncoder) {
         this.tenantRegistryRepository = tenantRegistryRepository;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -72,6 +82,7 @@ public class TenantProvisioningService {
 
         String tenantId = generateTenantId(request.getInstitutionName());
 
+        // 1. Save new TenantRegistry in PROVISIONING state
         TenantRegistry newTenant = new TenantRegistry();
         newTenant.setTenantId(tenantId);
         newTenant.setInstitutionName(request.getInstitutionName());
@@ -82,13 +93,33 @@ public class TenantProvisioningService {
         TenantRegistry saved = tenantRegistryRepository.save(newTenant);
         log.info("Tenant [{}] saved in PROVISIONING state for '{}'", tenantId, request.getInstitutionName());
 
+        // 2. Create initial AppUser (Institution Admin) linked to this tenant_id
+        String adminUsername = (request.getAdminEmail() != null && request.getAdminEmail().contains("@"))
+                ? request.getAdminEmail().toLowerCase().trim()
+                : (request.getAdminName().toLowerCase().replaceAll("\\s+", ".") + "@" + tenantId);
+
+        String rawPassword = (request.getAdminPassword() != null && !request.getAdminPassword().isBlank())
+                ? request.getAdminPassword()
+                : "Admin@" + UUID.randomUUID().toString().substring(0, 8);
+
+        AppUser adminUser = new AppUser();
+        adminUser.setUsername(adminUsername);
+        adminUser.setEmail(request.getAdminEmail().toLowerCase().trim());
+        adminUser.setPassword(passwordEncoder.encode(rawPassword));
+        adminUser.setRole(Role.INSTITUTION_ADMIN);
+        adminUser.setEnabled(true);
+        adminUser.setTenantId(tenantId);
+
+        userRepository.save(adminUser);
+        log.info("Created Institution Admin user '{}' with role INSTITUTION_ADMIN for tenant [{}]", adminUsername, tenantId);
+
         return new TenantRegistrationResponse(
                 saved.getTenantId(),
                 saved.getStatus(),
                 saved.getTrialEndDate(),
                 saved.getInstitutionName(),
                 saved.getAdminEmail(),
-                "Tenant provisioning initiated"
+                "Tenant provisioning initiated and admin user created"
         );
     }
 

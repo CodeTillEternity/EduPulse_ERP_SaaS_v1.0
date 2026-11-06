@@ -1,5 +1,7 @@
 package com.erp.academic.timetable.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalTime;
@@ -13,7 +15,7 @@ import java.time.DayOfWeek;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TimeSlot {
+public class TimeSlot extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

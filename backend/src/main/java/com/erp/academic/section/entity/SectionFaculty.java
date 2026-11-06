@@ -1,5 +1,7 @@
 package com.erp.academic.section.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +16,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "section_faculty")
-public class SectionFaculty {
+public class SectionFaculty extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

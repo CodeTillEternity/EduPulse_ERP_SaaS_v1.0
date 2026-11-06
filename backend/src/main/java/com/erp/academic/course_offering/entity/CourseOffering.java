@@ -1,5 +1,7 @@
 package com.erp.academic.course_offering.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.academic.course.entity.Course;
 import com.erp.academic.semester.entity.Semester;
 import jakarta.persistence.*;
@@ -13,7 +15,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CourseOffering {
+public class CourseOffering extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

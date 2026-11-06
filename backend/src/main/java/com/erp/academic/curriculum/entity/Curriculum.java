@@ -1,11 +1,13 @@
 package com.erp.academic.curriculum.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "curriculum")
-public class Curriculum {
+public class Curriculum extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

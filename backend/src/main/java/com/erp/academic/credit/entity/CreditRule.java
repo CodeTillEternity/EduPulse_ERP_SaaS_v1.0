@@ -1,5 +1,7 @@
 package com.erp.academic.credit.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.academic.semester.entity.Semester;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreditRule {
+public class CreditRule extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

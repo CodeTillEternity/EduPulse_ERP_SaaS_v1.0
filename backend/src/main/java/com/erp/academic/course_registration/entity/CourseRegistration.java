@@ -1,5 +1,7 @@
 package com.erp.academic.course_registration.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.academic.course_offering.entity.CourseOffering;
 import com.erp.academic.section.entity.Section;
 import com.erp.student.entity.Student;
@@ -19,7 +21,7 @@ import java.time.Instant;
 @Table(name = "course_registration", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"student_id", "course_offering_id"})
 })
-public class CourseRegistration {
+public class CourseRegistration extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

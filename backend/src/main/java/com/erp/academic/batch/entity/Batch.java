@@ -1,11 +1,13 @@
 package com.erp.academic.batch.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "batch")
-public class Batch {
+public class Batch extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

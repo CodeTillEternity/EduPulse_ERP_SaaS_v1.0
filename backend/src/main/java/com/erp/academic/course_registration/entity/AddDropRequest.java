@@ -1,5 +1,7 @@
 package com.erp.academic.course_registration.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.Instant;
@@ -10,7 +12,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AddDropRequest {
+public class AddDropRequest extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

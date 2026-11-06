@@ -1,11 +1,13 @@
 package com.erp.academic.academic_year.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import java.time.Instant;
 
 @Entity
 @Table(name = "academic_year")
-public class AcademicYear {
+public class AcademicYear extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

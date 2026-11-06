@@ -1,5 +1,7 @@
 package com.erp.academic.timetable.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.academic.room.entity.Room;
 import com.erp.academic.section.entity.Section;
 import jakarta.persistence.*;
@@ -15,7 +17,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ClassSchedule {
+public class ClassSchedule extends BaseTenantEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

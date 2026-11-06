@@ -19,6 +19,7 @@ import FacultySections from './pages/FacultySections';
 import PublicAdmissions from './pages/PublicAdmissions';
 import RegisterInstitution from './pages/RegisterInstitution';
 import RegistrationSuccess from './pages/RegistrationSuccess';
+import SubscriptionLockout from './pages/SubscriptionLockout';
 import LandingPage from './pages/LandingPage';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
@@ -109,6 +110,7 @@ function App() {
             } />
             <Route path="/register" element={<RegisterInstitution />} />
             <Route path="/register-success" element={<RegistrationSuccess />} />
+            <Route path="/subscription-lockout" element={<SubscriptionLockout />} />
             <Route path="/admissions" element={<PublicAdmissions />} />
             <Route path="/403" element={<Forbidden />} />
             <Route

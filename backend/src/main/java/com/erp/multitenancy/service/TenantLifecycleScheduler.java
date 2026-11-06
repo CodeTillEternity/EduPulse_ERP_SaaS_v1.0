@@ -32,6 +32,9 @@ public class TenantLifecycleScheduler {
 
         int suspendedCount = tenantLifecycleService.transitionGracePeriodToSuspended();
         log.info("Finished grace expiration check. {} tenant(s) updated to SUSPENDED.", suspendedCount);
+
+        int pendingDeletionCount = tenantLifecycleService.transitionSuspendedToPendingDeletion();
+        log.info("Finished suspension expiration check. {} tenant(s) updated to PENDING_DELETION.", pendingDeletionCount);
     }
 }
 

@@ -78,5 +78,33 @@ public class TenantLifecycleService {
 
         return graceTenants.size();
     }
+
+    /**
+     * Finds all tenants where status is SUSPENDED and 30 additional days have passed
+     * since suspension (60 days total since trial ended), and transitions their status
+     * to PENDING_DELETION.
+     *
+     * @return the number of transitioned tenants
+     */
+    @Transactional
+    public int transitionSuspendedToPendingDeletion() {
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(60);
+        List<TenantRegistry> suspendedTenants = tenantRegistryRepository
+                .findByStatusAndTrialEndDateBefore(TenantStatus.SUSPENDED, cutoff);
+
+        if (suspendedTenants.isEmpty()) {
+            log.debug("No SUSPENDED tenants found exceeding 30 additional days at {}", cutoff);
+            return 0;
+        }
+
+        for (TenantRegistry tenant : suspendedTenants) {
+            tenant.setStatus(TenantStatus.PENDING_DELETION);
+            tenantRegistryRepository.save(tenant);
+            log.info("Transitioned tenant [{}] ('{}') from SUSPENDED to PENDING_DELETION (trial ended on {}, 60 days total elapsed)",
+                    tenant.getTenantId(), tenant.getInstitutionName(), tenant.getTrialEndDate());
+        }
+
+        return suspendedTenants.size();
+    }
 }
 

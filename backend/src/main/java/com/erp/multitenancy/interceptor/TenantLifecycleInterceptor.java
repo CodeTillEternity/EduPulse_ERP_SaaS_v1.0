@@ -38,8 +38,7 @@ public class TenantLifecycleInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String method = request.getMethod();
 
-        // Safe methods (GET, OPTIONS, HEAD) are always permitted during read-only grace period
-        if (!MUTATING_METHODS.contains(method.toUpperCase())) {
+        if ("OPTIONS".equalsIgnoreCase(method)) {
             return true;
         }
 
@@ -64,15 +63,21 @@ public class TenantLifecycleInterceptor implements HandlerInterceptor {
         Optional<TenantRegistry> tenantOpt = tenantRegistryRepository.findById(tenantId);
         if (tenantOpt.isPresent()) {
             TenantRegistry tenant = tenantOpt.get();
-            if (tenant.getStatus() == TenantStatus.READ_ONLY_GRACE) {
+            TenantStatus status = tenant.getStatus();
+
+            // Total lockout for SUSPENDED, PENDING_DELETION, or DELETED: block ALL requests including GET
+            if (status == TenantStatus.SUSPENDED || status == TenantStatus.PENDING_DELETION || status == TenantStatus.DELETED) {
+                log.warn("Blocked HTTP {} request to [{}] for tenant [{}] with status {}",
+                        method, path, tenantId, status);
+                sendForbiddenResponse(response, "Tenant account is " + status + ". Access is locked out.");
+                return false;
+            }
+
+            // READ_ONLY_GRACE: block mutating methods (POST, PUT, PATCH, DELETE) while allowing safe queries
+            if (status == TenantStatus.READ_ONLY_GRACE && MUTATING_METHODS.contains(method.toUpperCase())) {
                 log.warn("Blocked mutating HTTP {} request to [{}] for tenant [{}] in READ_ONLY_GRACE status",
                         method, path, tenantId);
                 sendForbiddenResponse(response, "Tenant account is in READ_ONLY_GRACE period. Mutating operations are forbidden.");
-                return false;
-            } else if (tenant.getStatus() == TenantStatus.SUSPENDED || tenant.getStatus() == TenantStatus.DELETED) {
-                log.warn("Blocked HTTP {} request to [{}] for tenant [{}] with status {}",
-                        method, path, tenantId, tenant.getStatus());
-                sendForbiddenResponse(response, "Tenant account is " + tenant.getStatus() + ". Access is restricted.");
                 return false;
             }
         }

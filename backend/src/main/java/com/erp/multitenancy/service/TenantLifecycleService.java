@@ -51,4 +51,32 @@ public class TenantLifecycleService {
 
         return expiredTenants.size();
     }
+
+    /**
+     * Finds all tenants where status is READ_ONLY_GRACE and 30 days have passed
+     * since the trial ended, and transitions their status to SUSPENDED.
+     *
+     * @return the number of transitioned tenants
+     */
+    @Transactional
+    public int transitionGracePeriodToSuspended() {
+        LocalDateTime cutoff = LocalDateTime.now().minusDays(30);
+        List<TenantRegistry> graceTenants = tenantRegistryRepository
+                .findByStatusAndTrialEndDateBefore(TenantStatus.READ_ONLY_GRACE, cutoff);
+
+        if (graceTenants.isEmpty()) {
+            log.debug("No expired READ_ONLY_GRACE tenants found exceeding 30 days at {}", cutoff);
+            return 0;
+        }
+
+        for (TenantRegistry tenant : graceTenants) {
+            tenant.setStatus(TenantStatus.SUSPENDED);
+            tenantRegistryRepository.save(tenant);
+            log.info("Transitioned tenant [{}] ('{}') from READ_ONLY_GRACE to SUSPENDED (trial ended on {}, 30 days grace expired)",
+                    tenant.getTenantId(), tenant.getInstitutionName(), tenant.getTrialEndDate());
+        }
+
+        return graceTenants.size();
+    }
 }
+

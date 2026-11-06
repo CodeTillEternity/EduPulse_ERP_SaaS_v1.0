@@ -29,5 +29,9 @@ public class TenantLifecycleScheduler {
         log.info("Executing scheduled midnight trial expiration check...");
         int count = tenantLifecycleService.transitionExpiredTrialsToReadOnlyGrace();
         log.info("Finished trial expiration check. {} tenant(s) updated to READ_ONLY_GRACE.", count);
+
+        int suspendedCount = tenantLifecycleService.transitionGracePeriodToSuspended();
+        log.info("Finished grace expiration check. {} tenant(s) updated to SUSPENDED.", suspendedCount);
     }
 }
+

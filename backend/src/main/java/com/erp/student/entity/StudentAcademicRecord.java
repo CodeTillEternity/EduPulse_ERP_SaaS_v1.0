@@ -1,5 +1,7 @@
 package com.erp.student.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -8,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "student_academic_records")
 @EntityListeners(AuditingEntityListener.class)
-public class StudentAcademicRecord {
+public class StudentAcademicRecord extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

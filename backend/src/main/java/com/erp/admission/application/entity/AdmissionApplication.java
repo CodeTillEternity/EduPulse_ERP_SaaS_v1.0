@@ -1,5 +1,7 @@
 package com.erp.admission.application.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.academic.academic_year.entity.AcademicYear;
 import com.erp.academic.program.entity.Program;
 import com.erp.admission.applicant.entity.Applicant;
@@ -18,7 +20,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Table(name = "admission_application")
 @com.fasterxml.jackson.annotation.JsonIgnoreProperties(value = {"hibernateLazyInitializer", "handler"}, ignoreUnknown = true)
-public class AdmissionApplication {
+public class AdmissionApplication extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

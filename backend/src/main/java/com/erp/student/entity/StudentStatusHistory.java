@@ -1,5 +1,7 @@
 package com.erp.student.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
@@ -12,7 +14,7 @@ import java.time.LocalDateTime;
 @Table(name = "student_status_history")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class StudentStatusHistory {
+public class StudentStatusHistory extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

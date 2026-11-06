@@ -1,5 +1,7 @@
 package com.erp.admission.document.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.admission.applicant.entity.Applicant;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,7 +17,7 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "applicant_document")
-public class ApplicantDocument {
+public class ApplicantDocument extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

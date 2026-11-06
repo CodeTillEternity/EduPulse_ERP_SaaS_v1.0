@@ -1,5 +1,7 @@
 package com.erp.guardian.entity;
 
+import com.erp.multitenancy.BaseTenantEntity;
+
 import com.erp.student.entity.Student;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "guardians")
 @EntityListeners(AuditingEntityListener.class)
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Guardian {
+public class Guardian extends BaseTenantEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

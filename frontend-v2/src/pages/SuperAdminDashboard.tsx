@@ -103,6 +103,24 @@ export default function SuperAdminDashboard() {
     }
   };
 
+  const getDatabaseModeBadge = (mode?: string) => {
+    const isDedicated = mode?.toUpperCase() === 'DEDICATED';
+    if (isDedicated) {
+      return (
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-100 text-purple-900 border border-purple-300 shadow-sm">
+          <Database className="w-3.5 h-3.5 text-purple-600" />
+          Dedicated DB
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+        <Database className="w-3.5 h-3.5 text-slate-500" />
+        Shared DB
+      </span>
+    );
+  };
+
   return (
     <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -258,10 +276,7 @@ export default function SuperAdminDashboard() {
                       {tenant.adminEmail || '—'}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium bg-slate-100 text-slate-700">
-                        <Database className="w-3 h-3 text-slate-500" />
-                        {tenant.databaseMode || 'SHARED'}
-                      </span>
+                      {getDatabaseModeBadge(tenant.databaseMode)}
                     </td>
                     <td className="px-6 py-4">
                       {getStatusBadge(tenant.status)}

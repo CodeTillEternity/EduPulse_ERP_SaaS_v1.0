@@ -23,7 +23,7 @@ export default function CheckoutCancel() {
           </h2>
 
           <p className="text-sm text-slate-600 mb-8 leading-relaxed">
-            Your Stripe checkout session was cancelled. You can review available plans and restart the upgrade process at any time.
+            Your checkout session was cancelled. You can review available plans and restart the upgrade process at any time.
           </p>
 
           <div className="space-y-3">

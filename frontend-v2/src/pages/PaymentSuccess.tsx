@@ -72,7 +72,7 @@ export default function PaymentSuccess() {
                 <span className="text-indigo-300 font-semibold">{paramTenantId}</span>
               </div>
               <div className="flex items-center justify-between border-t border-slate-800/80 pt-2">
-                <span className="text-slate-500">Stripe Session:</span>
+                <span className="text-slate-500">Payment / Subscription Ref:</span>
                 <span className="text-slate-400 truncate max-w-[200px]">{sessionId}</span>
               </div>
               <div className="flex items-center justify-between border-t border-slate-800/80 pt-2">

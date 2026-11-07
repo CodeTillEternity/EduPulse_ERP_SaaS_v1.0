@@ -1,8 +1,10 @@
 package com.erp.config;
 
-import com.erp.multitenancy.async.TenantAwareTaskDecorator;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.core.task.TaskDecorator;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -17,14 +19,15 @@ import java.util.concurrent.Executor;
 @EnableAsync
 public class AsyncConfig implements AsyncConfigurer {
 
-    private final TenantAwareTaskDecorator tenantAwareTaskDecorator;
+    private final TaskDecorator tenantAwareTaskDecorator;
 
-    public AsyncConfig(TenantAwareTaskDecorator tenantAwareTaskDecorator) {
+    public AsyncConfig(@Qualifier("coreTenantAwareTaskDecorator") TaskDecorator tenantAwareTaskDecorator) {
         this.tenantAwareTaskDecorator = tenantAwareTaskDecorator;
     }
 
     @Override
     @Bean(name = "taskExecutor")
+    @Primary
     public Executor getAsyncExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         executor.setCorePoolSize(5);

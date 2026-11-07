@@ -1,6 +1,7 @@
 package com.edupulse.core.multitenancy.context;
 
 import com.edupulse.core.domain.base.TenantContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
  * ThreadLocal memory leakage.
  */
 @Component("coreTenantAwareTaskDecorator")
+@Primary
 public class TenantAwareTaskDecorator implements TaskDecorator {
 
     @Override

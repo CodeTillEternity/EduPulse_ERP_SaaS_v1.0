@@ -17,4 +17,7 @@ public interface TenantRegistryRepository extends JpaRepository<TenantRegistry, 
     boolean existsByAdminEmailIgnoreCase(String adminEmail);
 
     List<TenantRegistry> findByStatusAndTrialEndDateBefore(TenantStatus status, LocalDateTime dateTime);
+
+    List<TenantRegistry> findByDatabaseMode(String databaseMode);
+    List<TenantRegistry> findByDatabaseModeIgnoreCase(String databaseMode);
 }

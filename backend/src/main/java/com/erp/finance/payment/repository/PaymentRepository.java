@@ -19,6 +19,11 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Optional<Payment> findByReferenceNumber(String referenceNumber);
     Optional<Payment> findByIdempotencyKey(String idempotencyKey);
 
-    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.status = :status")
-    BigDecimal sumAmountByStatus(@Param("status") PaymentStatus status);
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM Payment p WHERE p.status = :status AND (:tenantId IS NULL OR p.tenantId = :tenantId)")
+    BigDecimal sumAmountByStatusAndTenant(@Param("status") PaymentStatus status, @Param("tenantId") String tenantId);
+
+    default BigDecimal sumAmountByStatus(PaymentStatus status) {
+        String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+        return sumAmountByStatusAndTenant(status, tenantId);
+    }
 }

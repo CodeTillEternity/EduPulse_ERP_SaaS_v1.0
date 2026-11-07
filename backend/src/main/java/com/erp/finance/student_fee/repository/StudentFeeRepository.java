@@ -22,11 +22,21 @@ public interface StudentFeeRepository extends JpaRepository<StudentFee, Long> {
     @Query("SELECT sf FROM StudentFee sf WHERE sf.id = :id")
     Optional<StudentFee> findByIdForUpdate(@Param("id") Long id);
 
-    @Query("SELECT COALESCE(SUM(sf.grossAmount), 0) FROM StudentFee sf")
-    BigDecimal sumGrossAmount();
+    @Query("SELECT COALESCE(SUM(sf.grossAmount), 0) FROM StudentFee sf WHERE (:tenantId IS NULL OR sf.tenantId = :tenantId)")
+    BigDecimal sumGrossAmountByTenant(@Param("tenantId") String tenantId);
 
-    @Query("SELECT COALESCE(SUM(sf.outstandingAmount), 0) FROM StudentFee sf")
-    BigDecimal sumOutstandingAmount();
+    default BigDecimal sumGrossAmount() {
+        String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+        return sumGrossAmountByTenant(tenantId);
+    }
+
+    @Query("SELECT COALESCE(SUM(sf.outstandingAmount), 0) FROM StudentFee sf WHERE (:tenantId IS NULL OR sf.tenantId = :tenantId)")
+    BigDecimal sumOutstandingAmountByTenant(@Param("tenantId") String tenantId);
+
+    default BigDecimal sumOutstandingAmount() {
+        String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+        return sumOutstandingAmountByTenant(tenantId);
+    }
 
     @EntityGraph(attributePaths = {"components", "components.feeHead"})
     @Query("SELECT DISTINCT sf FROM StudentFee sf")

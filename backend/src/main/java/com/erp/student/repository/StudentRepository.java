@@ -49,4 +49,10 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
                                  @Param("status") StudentStatus status,
                                  @Param("department") String department,
                                  Pageable pageable);
+
+    @Query(value = "SELECT COUNT(*) FROM student s WHERE s.tenant_id = :tenantId", nativeQuery = true)
+    long countByTenantIdNative(@Param("tenantId") String tenantId);
+
+    @Query(value = "SELECT * FROM student s WHERE s.id = :id AND s.tenant_id = :tenantId", nativeQuery = true)
+    Optional<Student> findByIdAndTenantIdNative(@Param("id") Long id, @Param("tenantId") String tenantId);
 }

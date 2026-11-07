@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, GraduationCap, CalendarCheck, Wallet, 
   Store, ShieldAlert, UserCheck, 
   Menu, X, LogOut, ChevronDown, UserCircle, Bell,
-  Check, KeyRound
+  Check, KeyRound, CreditCard
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ChangePasswordModal } from './ChangePasswordModal';
@@ -159,6 +159,7 @@ export default function Layout() {
             </NavGroup>
 
             <NavGroup title="System Setup">
+              <NavItem path="/dashboard/billing" icon={CreditCard} label="Billing & Plans" />
               <NavItem path="/dashboard/admin/users" icon={ShieldAlert} label="Access Control" />
               {role === 'SUPER_ADMIN' && (
                 <NavItem path="/super-admin" icon={ShieldAlert} label="SaaS Tenant Registry" />

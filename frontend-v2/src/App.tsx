@@ -21,6 +21,9 @@ import RegisterInstitution from './pages/RegisterInstitution';
 import RegistrationSuccess from './pages/RegistrationSuccess';
 import SubscriptionLockout from './pages/SubscriptionLockout';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentCancelled from './pages/PaymentCancelled';
+import BillingDashboard from './pages/BillingDashboard';
 import LandingPage from './pages/LandingPage';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
@@ -112,6 +115,8 @@ function App() {
             <Route path="/register" element={<RegisterInstitution />} />
             <Route path="/register-success" element={<RegistrationSuccess />} />
             <Route path="/subscription-lockout" element={<SubscriptionLockout />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/payment-cancelled" element={<PaymentCancelled />} />
             <Route path="/admissions" element={<PublicAdmissions />} />
             <Route path="/403" element={<Forbidden />} />
             <Route
@@ -136,6 +141,7 @@ function App() {
               <Route path="sections" element={<RoleProtectedRoute allowedRoles={['FACULTY']}><FacultySections /></RoleProtectedRoute>} />
               <Route path="guardians" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><GuardiansList /></RoleProtectedRoute>} />
               <Route path="admin/users" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><AdminUsersList /></RoleProtectedRoute>} />
+              <Route path="billing" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><BillingDashboard /></RoleProtectedRoute>} />
               <Route path="super-admin" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><SuperAdminDashboard /></RoleProtectedRoute>} />
             </Route>
             <Route

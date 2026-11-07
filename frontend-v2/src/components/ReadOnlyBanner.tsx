@@ -16,11 +16,8 @@ export default function ReadOnlyBanner({ onUpgradeClick }: ReadOnlyBannerProps) 
   const handleUpgrade = () => {
     if (onUpgradeClick) {
       onUpgradeClick();
-    } else {
-      window.open(
-        `mailto:billing@edupulse.io?subject=Upgrade%20Plan%20for%20Tenant%20${tenantId || ''}`,
-        '_blank'
-      );
+    } else if (typeof window !== 'undefined') {
+      window.location.href = '/dashboard/billing';
     }
   };
 

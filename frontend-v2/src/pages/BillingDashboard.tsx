@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
+import { useCheckoutSession } from '../hooks/useCheckoutSession';
+import { toast } from 'sonner';
 import { 
   CreditCard, 
   Check, 
@@ -8,7 +10,6 @@ import {
   ShieldCheck, 
   Zap, 
   Building2, 
-  Database,
   ArrowRight
 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '../components/ui/card';
@@ -88,6 +89,9 @@ interface BillingDashboardProps {
 export default function BillingDashboard({ onSelectPlan, isLoadingPlan = null }: BillingDashboardProps) {
   const { tenantId, tenantStatus } = useAuthStore();
   const [billingCycle, setBillingCycle] = useState<'MONTHLY' | 'ANNUAL'>('MONTHLY');
+  const [activePlanLoading, setActivePlanLoading] = useState<string | null>(null);
+
+  const checkoutMutation = useCheckoutSession();
 
   // Calculate days remaining (mocked or computed from trial window)
   const isTrial = tenantStatus === 'TRIAL_ACTIVE';
@@ -101,11 +105,29 @@ export default function BillingDashboard({ onSelectPlan, isLoadingPlan = null }:
     return 12;
   }, [isActive, isGrace]);
 
-  const handlePlanClick = (planName: string) => {
+  const handlePlanClick = async (planName: string) => {
     if (onSelectPlan) {
       onSelectPlan(planName, billingCycle);
+      return;
+    }
+
+    try {
+      setActivePlanLoading(planName);
+      const origin = typeof window !== 'undefined' ? window.location.origin : '';
+      await checkoutMutation.mutateAsync({
+        planName,
+        billingCycle,
+        successUrl: `${origin}/payment-success`,
+        cancelUrl: `${origin}/payment-cancelled`,
+      });
+    } catch (err: any) {
+      const msg = err?.response?.data?.message || err?.message || 'Failed to initiate checkout';
+      toast.error(msg);
+      setActivePlanLoading(null);
     }
   };
+
+  const loadingPlan = isLoadingPlan || activePlanLoading;
 
   return (
     <div className="p-6 md:p-10 max-w-7xl mx-auto space-y-10">
@@ -258,7 +280,7 @@ export default function BillingDashboard({ onSelectPlan, isLoadingPlan = null }:
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
           {PRICING_PLANS.map((plan) => {
             const price = billingCycle === 'ANNUAL' ? Math.round(plan.annualPrice / 12) : plan.monthlyPrice;
-            const isPlanLoading = isLoadingPlan === plan.name;
+            const isPlanLoading = loadingPlan === plan.name;
 
             return (
               <Card

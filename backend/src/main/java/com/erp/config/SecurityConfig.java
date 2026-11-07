@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/health", "/api/v1/health", "/actuator/health").permitAll()
                 .requestMatchers("/auth/**").permitAll()
                 .requestMatchers("/api/v1/saas/webhooks/**").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/billing/webhook").permitAll()
                 .requestMatchers("/api/v1/saas/admin/**").hasRole("SUPER_ADMIN")
                 .requestMatchers("/api/v1/saas/billing/**").authenticated()
                 .requestMatchers("/api/v1/saas/**").permitAll()

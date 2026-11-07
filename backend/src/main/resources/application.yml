@@ -25,6 +25,14 @@ stripe:
   webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_placeholder}
   success-url: ${STRIPE_SUCCESS_URL:http://localhost:5173/payment-success}
   cancel-url: ${STRIPE_CANCEL_URL:http://localhost:5173/payment-cancelled}
+
+# Dedicated Database Routing Configuration (Hybrid Multi-Tenancy)
+multitenancy:
+  dedicated:
+    url: ${DEDICATED_DB_URL:jdbc:h2:mem:dedicated_secondary_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=VALUE}
+    username: ${DEDICATED_DB_USERNAME:sa}
+    password: ${DEDICATED_DB_PASSWORD:}
+    driver-class-name: ${DEDICATED_DB_DRIVER:org.h2.Driver}
 app:
   storage:
     document-dir: ${APP_STORAGE_DOCUMENT_DIR:uploads/documents}

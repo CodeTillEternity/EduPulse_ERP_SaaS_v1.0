@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../config/api';
 import { 
   Building2, 
@@ -32,6 +32,17 @@ export interface SaaSAdminTenant {
 export default function SuperAdminDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const queryClient = useQueryClient();
+
+  const upgradeDbMutation = useMutation({
+    mutationFn: async (tenantId: string) => {
+      const res = await apiClient.post(`/api/v1/saas/admin/tenants/${tenantId}/upgrade-database`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['super-admin-tenants'] });
+    },
+  });
 
   const { data: tenantsResponse, isLoading, error, refetch, isFetching } = useQuery<{
     success: boolean;
@@ -260,6 +271,7 @@ export default function SuperAdminDashboard() {
                   <th className="px-6 py-3.5 font-semibold">Database Mode</th>
                   <th className="px-6 py-3.5 font-semibold">Status</th>
                   <th className="px-6 py-3.5 font-semibold">Trial End Date</th>
+                  <th className="px-6 py-3.5 font-semibold text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -289,6 +301,31 @@ export default function SuperAdminDashboard() {
                         </span>
                       ) : (
                         '—'
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      {tenant.databaseMode?.toUpperCase() === 'DEDICATED' ? (
+                        <span className="text-xs font-medium text-emerald-600 inline-flex items-center gap-1 justify-end">
+                          <CheckCircle2 className="w-3.5 h-3.5" /> Isolated Instance
+                        </span>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={upgradeDbMutation.isPending && upgradeDbMutation.variables === tenant.tenantId}
+                          onClick={() => upgradeDbMutation.mutate(tenant.tenantId)}
+                          className="text-xs border-purple-200 text-purple-700 hover:bg-purple-50 hover:text-purple-800 flex items-center gap-1.5 ml-auto"
+                        >
+                          {upgradeDbMutation.isPending && upgradeDbMutation.variables === tenant.tenantId ? (
+                            <>
+                              <RefreshCw className="w-3 h-3 animate-spin" /> Provisioning...
+                            </>
+                          ) : (
+                            <>
+                              <Database className="w-3 h-3" /> Provision Dedicated DB
+                            </>
+                          )}
+                        </Button>
                       )}
                     </td>
                   </tr>

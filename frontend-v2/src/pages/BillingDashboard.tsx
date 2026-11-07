@@ -94,7 +94,6 @@ export default function BillingDashboard({ onSelectPlan, isLoadingPlan = null }:
   const checkoutMutation = useCheckoutSession();
 
   // Calculate days remaining (mocked or computed from trial window)
-  const isTrial = tenantStatus === 'TRIAL_ACTIVE';
   const isGrace = tenantStatus === 'READ_ONLY_GRACE';
   const isActive = tenantStatus === 'ACTIVE';
 

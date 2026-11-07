@@ -6,7 +6,7 @@ interface ReadOnlyBannerProps {
 }
 
 export default function ReadOnlyBanner({ onUpgradeClick }: ReadOnlyBannerProps) {
-  const { tenantStatus, tenantId } = useAuthStore();
+  const { tenantStatus } = useAuthStore();
 
   // Only render if tenant is in READ_ONLY_GRACE period
   if (tenantStatus !== 'READ_ONLY_GRACE') {

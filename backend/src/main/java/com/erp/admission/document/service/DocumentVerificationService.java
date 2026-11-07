@@ -70,7 +70,16 @@ public class DocumentVerificationService {
         }
 
         String storedFileName = "applicant_" + applicantId + "_" + documentType.replaceAll("[^a-zA-Z0-9_]", "_") + "_" + UUID.randomUUID().toString().substring(0, 8) + extension;
-        Path targetLocation = this.storageLocation.resolve(storedFileName);
+        String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+        if (tenantId == null || tenantId.isBlank()) {
+            tenantId = "default";
+        }
+        Path tenantDir = this.storageLocation.resolve(tenantId).resolve("applicants");
+        try {
+            Files.createDirectories(tenantDir);
+        } catch (IOException ignored) {
+        }
+        Path targetLocation = tenantDir.resolve(storedFileName);
 
         try {
             Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
@@ -94,7 +103,14 @@ public class DocumentVerificationService {
 
     public Resource loadFileAsResource(String filename) {
         try {
-            Path filePath = this.storageLocation.resolve(filename).normalize();
+            String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+            if (tenantId == null || tenantId.isBlank()) {
+                tenantId = "default";
+            }
+            Path filePath = this.storageLocation.resolve(tenantId).resolve("applicants").resolve(filename).normalize();
+            if (!Files.exists(filePath)) {
+                filePath = this.storageLocation.resolve(filename).normalize();
+            }
             Resource resource = new UrlResource(filePath.toUri());
             if (resource.exists() && resource.isReadable()) {
                 return resource;

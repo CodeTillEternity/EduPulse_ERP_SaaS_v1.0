@@ -99,7 +99,16 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         }
 
         String storedFileName = studentId + "_" + documentType.name() + "_" + UUID.randomUUID().toString().substring(0, 8) + extension;
-        Path targetLocation = this.storageLocation.resolve(storedFileName);
+        String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+        if (tenantId == null || tenantId.isBlank()) {
+            tenantId = "default";
+        }
+        Path tenantDir = this.storageLocation.resolve(tenantId).resolve("students");
+        try {
+            Files.createDirectories(tenantDir);
+        } catch (IOException ignored) {
+        }
+        Path targetLocation = tenantDir.resolve(storedFileName);
         String storagePath = targetLocation.toString();
 
         if (documentType == DocumentType.PHOTOGRAPH) {
@@ -208,11 +217,18 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
                         baseName = cleanPath.substring(lastSlash + 1);
                     }
                 }
+                String currentTenant = com.erp.multitenancy.TenantContext.getTenantId();
+                if (currentTenant == null || currentTenant.isBlank()) {
+                    currentTenant = "default";
+                }
                 List<Path> candidateRoots = List.of(
+                        this.storageLocation.resolve(currentTenant).resolve("students"),
+                        this.storageLocation.resolve(currentTenant),
                         this.storageLocation,
                         this.storageLocation.resolve("documents"),
                         this.storageLocation.resolve("students"),
                         Paths.get("uploads").toAbsolutePath().normalize(),
+                        Paths.get("uploads").resolve(currentTenant).resolve("students").toAbsolutePath().normalize(),
                         Paths.get("uploads/documents").toAbsolutePath().normalize(),
                         Paths.get("data/dev-json/uploads").toAbsolutePath().normalize(),
                         Paths.get("data/dev-json/uploads/documents").toAbsolutePath().normalize()

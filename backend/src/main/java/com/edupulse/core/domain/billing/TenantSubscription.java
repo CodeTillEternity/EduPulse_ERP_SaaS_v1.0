@@ -39,6 +39,9 @@ public class TenantSubscription implements Serializable {
     @Column(name = "tenant_id", nullable = false, unique = true, length = 64)
     private String tenantId;
 
+    @Column(name = "razorpay_subscription_id", length = 100)
+    private String razorpaySubscriptionId;
+
     @Column(name = "stripe_customer_id", length = 100)
     private String stripeCustomerId;
 

@@ -11,6 +11,8 @@ public interface TenantSubscriptionRepository extends JpaRepository<TenantSubscr
 
     Optional<TenantSubscription> findByTenantId(String tenantId);
 
+    Optional<TenantSubscription> findByRazorpaySubscriptionId(String razorpaySubscriptionId);
+
     Optional<TenantSubscription> findByStripeCustomerId(String stripeCustomerId);
 
     Optional<TenantSubscription> findByStripeSubscriptionId(String stripeSubscriptionId);

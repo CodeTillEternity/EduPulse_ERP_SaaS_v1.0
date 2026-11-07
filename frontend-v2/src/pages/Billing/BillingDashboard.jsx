@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import axiosClient from '../../api/axiosClient';
 
@@ -8,7 +9,7 @@ const PLANS = [
     name: 'Starter Institution',
     price: '$199',
     period: '/month',
-    priceId: 'price_starter_institutional_199',
+    priceId: 'plan_starter_institutional_199',
     description: 'Perfect for small academies and specialized training schools.',
     features: [
       'Up to 1,000 enrolled students',
@@ -24,7 +25,7 @@ const PLANS = [
     name: 'Pro Institutional Plan',
     price: '$499',
     period: '/month',
-    priceId: 'price_pro_institutional_499',
+    priceId: 'plan_pro_institutional_499',
     description: 'Comprehensive ERP architecture for expanding colleges and universities.',
     features: [
       'Up to 5,000 enrolled students',
@@ -41,7 +42,7 @@ const PLANS = [
     name: 'Enterprise Dedicated',
     price: '$999',
     period: '/month',
-    priceId: 'price_enterprise_dedicated_999',
+    priceId: 'plan_enterprise_dedicated_999',
     description: 'Hardware-isolated dedicated PostgreSQL database routing for large campuses.',
     features: [
       'Unlimited student enrollments',
@@ -56,40 +57,54 @@ const PLANS = [
 ];
 
 export default function BillingDashboard() {
+  const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(null);
 
-  const handleUpgrade = async (priceId = 'price_pro_institutional_499') => {
+  const handleUpgrade = async (priceId = 'plan_pro_institutional_499') => {
     setIsProcessing(priceId);
     try {
-      const response = await axiosClient.post('/api/v1/billing/checkout', { priceId });
-      const checkoutUrl = response.data?.checkoutUrl || response.data?.url;
+      const response = await axiosClient.post('/api/v1/billing/razorpay-subscription', {
+        planId: priceId,
+        priceId,
+      });
 
-      if (checkoutUrl) {
-        window.location.href = checkoutUrl;
+      const subscriptionId = response.data?.subscriptionId || response.data?.subscription_id;
+      const keyId = response.data?.keyId || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_placeholder';
+
+      if (!subscriptionId) {
+        toast.error('Razorpay subscription ID was not returned by server.');
+        return;
+      }
+
+      if (typeof window !== 'undefined' && window.Razorpay) {
+        const rzp = new window.Razorpay({
+          key: keyId,
+          subscription_id: subscriptionId,
+          name: 'EduPulse SaaS',
+          description: 'Institutional SaaS Recurring Subscription',
+          handler: function (paymentResponse) {
+            toast.success('Subscription activated successfully!');
+            navigate('/payment-success?session_id=' + (paymentResponse?.razorpay_payment_id || subscriptionId));
+          },
+          modal: {
+            ondismiss: function () {
+              setIsProcessing(null);
+            },
+          },
+          theme: {
+            color: '#4f46e5',
+          },
+        });
+        rzp.open();
       } else {
-        toast.error('Stripe checkout URL was not returned by server.');
+        toast.error('Razorpay Checkout SDK is not loaded. Please refresh and try again.');
       }
     } catch (err) {
       console.error('Checkout error:', err);
-      try {
-        // Fallback to platform saas billing route if configured
-        const altResponse = await axiosClient.post('/api/v1/saas/billing/checkout', {
-          planId: 2,
-          priceId,
-        });
-        const altUrl = altResponse.data?.checkoutUrl || altResponse.data?.url;
-        if (altUrl) {
-          window.location.href = altUrl;
-          return;
-        }
-      } catch (fallbackErr) {
-        console.warn('Fallback checkout route also returned error');
-      }
-
       const message =
         err.response?.data?.message ||
         (typeof err.response?.data === 'string' ? err.response.data : null) ||
-        'Failed to initialize Stripe checkout. Please try again.';
+        'Failed to initialize Razorpay checkout. Please try again.';
       toast.error(message);
     } finally {
       setIsProcessing(null);
@@ -108,7 +123,7 @@ export default function BillingDashboard() {
             Institutional Billing & Plans
           </h1>
           <p className="mt-4 text-base sm:text-lg text-slate-600">
-            Scale your educational platform with automated Stripe checkout, real-time quota upgrades, and multi-tenant isolation.
+            Scale your educational platform with RBI-compliant Razorpay recurring subscriptions, real-time quota upgrades, and multi-tenant isolation.
           </p>
         </div>
 
@@ -182,7 +197,7 @@ export default function BillingDashboard() {
                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
                         </svg>
-                        Redirecting to Stripe...
+                        Opening Razorpay Checkout...
                       </>
                     ) : (
                       plan.cta
@@ -200,10 +215,10 @@ export default function BillingDashboard() {
             <svg className="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            <span>All transactions are secured via 256-bit TLS Stripe Checkout. No card details stored on ERP servers.</span>
+            <span>All transactions are secured via 256-bit TLS Razorpay Checkout. RBI-compliant e-mandate and recurring SaaS billing.</span>
           </div>
           <span className="text-xs bg-slate-100 px-3 py-1.5 rounded-lg font-mono text-slate-700">
-            PCI-DSS Level 1 Compliant
+            RBI & PCI-DSS Compliant
           </span>
         </div>
       </div>

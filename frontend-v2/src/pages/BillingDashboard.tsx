@@ -225,7 +225,7 @@ export default function BillingDashboard({ onSelectPlan, isLoadingPlan = null }:
             </div>
             <div className="flex items-start gap-2.5">
               <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
-              <span>Stripe 256-bit SSL encrypted PCI compliance</span>
+              <span>Razorpay 256-bit SSL encrypted PCI & RBI compliance</span>
             </div>
             <div className="flex items-start gap-2.5">
               <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
@@ -337,7 +337,7 @@ export default function BillingDashboard({ onSelectPlan, isLoadingPlan = null }:
                     }`}
                   >
                     {isPlanLoading ? (
-                      'Redirecting to Stripe...'
+                      'Opening Razorpay Checkout...'
                     ) : (
                       <>
                         Upgrade to {plan.name} <ArrowRight className="w-4 h-4" />

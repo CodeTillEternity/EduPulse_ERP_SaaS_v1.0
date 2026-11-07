@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
 import BillingDashboard from '../pages/Billing/BillingDashboard.jsx';
 import axiosClient from '../api/axiosClient.js';
 
@@ -16,39 +17,61 @@ vi.mock('sonner', () => ({
   },
 }));
 
-describe('BillingDashboard Pricing Cards & Upgrade UI', () => {
+describe('BillingDashboard Pricing Cards & Razorpay Modal Checkout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    delete (window as any).location;
-    (window as any).location = { href: '' };
   });
 
   it('renders all pricing tiers with proper features and prices', () => {
-    render(<BillingDashboard />);
+    render(
+      <BrowserRouter>
+        <BillingDashboard />
+      </BrowserRouter>
+    );
 
     expect(screen.getByText('Pro Institutional Plan')).toBeInTheDocument();
     expect(screen.getByText('$499')).toBeInTheDocument();
     expect(screen.getByText('Starter Institution')).toBeInTheDocument();
     expect(screen.getByText('Enterprise Dedicated')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /Upgrade Now/i })).toBeInTheDocument();
+    expect(screen.getByText(/RBI & PCI-DSS Compliant/i)).toBeInTheDocument();
   });
 
-  it('handleUpgrade makes POST request to checkout and redirects window.location.href', async () => {
-    const mockCheckoutUrl = 'https://checkout.stripe.com/c/pay/cs_test_mock_session_123';
-    (axiosClient.post as any).mockResolvedValue({
-      data: { checkoutUrl: mockCheckoutUrl },
+  it('handleUpgrade makes POST request to /api/v1/billing/razorpay-subscription and opens Razorpay modal', async () => {
+    const mockOpen = vi.fn();
+    (window as any).Razorpay = vi.fn().mockImplementation(function (this: any) {
+      this.open = mockOpen;
+      return this;
     });
 
-    render(<BillingDashboard />);
+    (axiosClient.post as any).mockResolvedValue({
+      data: {
+        subscriptionId: 'sub_rzp_mock_session_123',
+        keyId: 'rzp_test_key_123',
+      },
+    });
+
+    render(
+      <BrowserRouter>
+        <BillingDashboard />
+      </BrowserRouter>
+    );
 
     const upgradeBtn = screen.getByRole('button', { name: /Upgrade Now/i });
     fireEvent.click(upgradeBtn);
 
     await waitFor(() => {
-      expect(axiosClient.post).toHaveBeenCalledWith('/api/v1/billing/checkout', {
-        priceId: 'price_pro_institutional_499',
+      expect(axiosClient.post).toHaveBeenCalledWith('/api/v1/billing/razorpay-subscription', {
+        planId: 'plan_pro_institutional_499',
+        priceId: 'plan_pro_institutional_499',
       });
-      expect(window.location.href).toBe(mockCheckoutUrl);
+      expect(window.Razorpay).toHaveBeenCalledWith(
+        expect.objectContaining({
+          subscription_id: 'sub_rzp_mock_session_123',
+          name: 'EduPulse SaaS',
+        })
+      );
+      expect(mockOpen).toHaveBeenCalled();
     });
   });
 });

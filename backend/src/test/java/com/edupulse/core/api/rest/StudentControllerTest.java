@@ -33,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
+@org.springframework.test.context.TestPropertySource(properties = "edupulse.core.student-controller.enabled=true")
 @ContextConfiguration(classes = {
         StudentController.class,
         StudentControllerTest.SecurityTestConfig.class

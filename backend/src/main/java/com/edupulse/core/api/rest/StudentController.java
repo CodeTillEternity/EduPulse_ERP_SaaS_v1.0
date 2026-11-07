@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("coreStudentController")
 @RequestMapping("/api/v1/students")
 @Tag(name = "Core Student Admissions Registry", description = "Tenant-scoped student registry and admissions API")
+@org.springframework.boot.autoconfigure.condition.ConditionalOnProperty(name = "edupulse.core.student-controller.enabled", havingValue = "true", matchIfMissing = false)
 public class StudentController {
 
     private final StudentService studentService;

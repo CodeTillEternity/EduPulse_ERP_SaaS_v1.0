@@ -1,5 +1,6 @@
 package com.erp.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,8 +22,10 @@ public class AsyncConfig implements AsyncConfigurer {
 
     private final TaskDecorator tenantAwareTaskDecorator;
 
-    public AsyncConfig(@Qualifier("coreTenantAwareTaskDecorator") TaskDecorator tenantAwareTaskDecorator) {
-        this.tenantAwareTaskDecorator = tenantAwareTaskDecorator;
+    public AsyncConfig(
+            @Autowired(required = false) @Qualifier("coreTenantAwareTaskDecorator") TaskDecorator coreDecorator,
+            @Autowired(required = false) com.erp.multitenancy.async.TenantAwareTaskDecorator erpDecorator) {
+        this.tenantAwareTaskDecorator = coreDecorator != null ? coreDecorator : erpDecorator;
     }
 
     @Override
@@ -34,7 +37,9 @@ public class AsyncConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(20);
         executor.setQueueCapacity(100);
         executor.setThreadNamePrefix("saas-async-");
-        executor.setTaskDecorator(tenantAwareTaskDecorator);
+        if (tenantAwareTaskDecorator != null) {
+            executor.setTaskDecorator(tenantAwareTaskDecorator);
+        }
         executor.initialize();
         return executor;
     }

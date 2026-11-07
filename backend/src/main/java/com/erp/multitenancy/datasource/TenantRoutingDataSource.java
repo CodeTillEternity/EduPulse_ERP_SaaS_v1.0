@@ -32,7 +32,7 @@ public class TenantRoutingDataSource extends AbstractRoutingDataSource {
      * @return current tenant_id string or null if unpartitioned/platform scope
      */
     @Override
-    protected Object determineCurrentLookupKey() {
+    public Object determineCurrentLookupKey() {
         String tenantId = TenantContext.getTenantId();
         if (log.isDebugEnabled()) {
             log.debug("TenantRoutingDataSource lookup key resolved to: [{}]", tenantId);
@@ -79,5 +79,15 @@ public class TenantRoutingDataSource extends AbstractRoutingDataSource {
      */
     public Map<Object, Object> getCurrentTargetDataSources() {
         return Collections.unmodifiableMap(this.targetDataSourcesMap);
+    }
+
+    /**
+     * Exposes determineTargetDataSource for explicit verification of resolved data source routing.
+     *
+     * @return resolved javax.sql.DataSource
+     */
+    @Override
+    public DataSource determineTargetDataSource() {
+        return super.determineTargetDataSource();
     }
 }

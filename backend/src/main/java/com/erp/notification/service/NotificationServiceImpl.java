@@ -115,7 +115,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public int markAllAsRead(Long userId) {
         if (userId == null) return 0;
-        int count = notificationRepository.markAllAsReadForUser(userId);
+        String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+        int count = (tenantId != null && !tenantId.isBlank())
+                ? notificationRepository.markAllAsReadForUserAndTenant(userId, tenantId)
+                : notificationRepository.markAllAsReadForUser(userId);
 
         // Mirror to dev-json store if active
         if (devJsonNotificationManager != null) {

@@ -19,6 +19,10 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     long countByUserIdAndReadFalse(Long userId);
 
     @Modifying
+    @Query("UPDATE Notification n SET n.read = true WHERE n.userId = :userId AND n.read = false AND (:tenantId IS NULL OR n.tenantId = :tenantId)")
+    int markAllAsReadForUserAndTenant(@Param("userId") Long userId, @Param("tenantId") String tenantId);
+
+    @Modifying
     @Query("UPDATE Notification n SET n.read = true WHERE n.userId = :userId AND n.read = false")
     int markAllAsReadForUser(@Param("userId") Long userId);
 

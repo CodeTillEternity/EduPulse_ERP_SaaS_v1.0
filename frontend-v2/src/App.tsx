@@ -28,6 +28,7 @@ import EnrollStudent from './pages/Admissions/EnrollStudent';
 import SaaSBillingDashboard from './pages/Billing/BillingDashboard';
 import CheckoutSuccess from './pages/Billing/CheckoutSuccess';
 import CheckoutCancel from './pages/Billing/CheckoutCancel';
+import CourseManager from './pages/Academic/CourseManager';
 import LandingPage from './pages/LandingPage';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
@@ -123,6 +124,8 @@ function App() {
             <Route path="/payment-cancelled" element={<PaymentCancelled />} />
             <Route path="/admissions" element={<PublicAdmissions />} />
             <Route path="/admissions/enroll" element={<EnrollStudent />} />
+            <Route path="/academic/courses" element={<CourseManager />} />
+            <Route path="/academic/course-manager" element={<CourseManager />} />
             <Route path="/billing" element={<SaaSBillingDashboard />} />
             <Route path="/billing/success" element={<CheckoutSuccess />} />
             <Route path="/billing/cancel" element={<CheckoutCancel />} />

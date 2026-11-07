@@ -53,7 +53,7 @@ class RazorpayBillingServiceTest {
 
     @Test
     @DisplayName("createSubscription passes tenant_id in notes and returns generated subscription_id")
-    void createSubscription_createsSubscriptionWithTenantInNotes() {
+    void createSubscription_createsSubscriptionWithTenantInNotes() throws Exception {
         when(tenantSubscriptionRepository.findByTenantId("tenant-oxford")).thenReturn(Optional.empty());
 
         String subscriptionId = billingService.createSubscription("tenant-oxford", "plan_growth_tier");

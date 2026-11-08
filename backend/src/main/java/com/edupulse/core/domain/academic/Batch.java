@@ -35,4 +35,11 @@ public class Batch extends BaseTenantEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
+
+    public String getName() {
+        if (department != null && department.getName() != null) {
+            return department.getName() + " (" + academicYear + ")";
+        }
+        return academicYear;
+    }
 }

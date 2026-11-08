@@ -18,7 +18,7 @@ public class PaymentController {
         this.paymentService = paymentService;
     }
 
-    @PostMapping
+    @PostMapping("/direct")
     @PreAuthorize("hasAuthority('PAYMENT_CREATE') or hasAnyRole('FINANCE', 'ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<ReceiptResponseDto> recordPaymentDirect(
             @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKeyHeader,

@@ -29,6 +29,8 @@ import SaaSBillingDashboard from './pages/Billing/BillingDashboard';
 import CheckoutSuccess from './pages/Billing/CheckoutSuccess';
 import CheckoutCancel from './pages/Billing/CheckoutCancel';
 import CourseManager from './pages/Academic/CourseManager';
+import TimetableManager from './pages/Operations/TimetableManager';
+import AttendanceTracker from './pages/Operations/AttendanceTracker';
 import LandingPage from './pages/LandingPage';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
@@ -126,6 +128,8 @@ function App() {
             <Route path="/admissions/enroll" element={<EnrollStudent />} />
             <Route path="/academic/courses" element={<CourseManager />} />
             <Route path="/academic/course-manager" element={<CourseManager />} />
+            <Route path="/operations/timetable" element={<TimetableManager />} />
+            <Route path="/operations/attendance" element={<AttendanceTracker />} />
             <Route path="/billing" element={<SaaSBillingDashboard />} />
             <Route path="/billing/success" element={<CheckoutSuccess />} />
             <Route path="/billing/cancel" element={<CheckoutCancel />} />
@@ -144,6 +148,8 @@ function App() {
               <Route path="students/:id" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentProfile /></RoleProtectedRoute>} />
               <Route path="departments" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><DepartmentsList /></RoleProtectedRoute>} />
               <Route path="attendance" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT']}><Attendance /></RoleProtectedRoute>} />
+              <Route path="operations/timetable" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY']}><TimetableManager /></RoleProtectedRoute>} />
+              <Route path="operations/attendance" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY']}><AttendanceTracker /></RoleProtectedRoute>} />
               <Route path="finance" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FINANCE', 'STUDENT', 'PARENT']}><FinanceDashboard /></RoleProtectedRoute>} />
               <Route path="institutions" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><InstitutionsList /></RoleProtectedRoute>} />
               <Route path="campuses" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><CampusesList /></RoleProtectedRoute>} />

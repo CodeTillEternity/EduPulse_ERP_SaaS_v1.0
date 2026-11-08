@@ -29,6 +29,8 @@ import SaaSBillingDashboard from './pages/Billing/BillingDashboard';
 import CheckoutSuccess from './pages/Billing/CheckoutSuccess';
 import CheckoutCancel from './pages/Billing/CheckoutCancel';
 import CourseManager from './pages/Academic/CourseManager';
+import ExamManager from './pages/Academic/ExamManager';
+import TranscriptViewer from './pages/Academic/TranscriptViewer';
 import TimetableManager from './pages/Operations/TimetableManager';
 import AttendanceTracker from './pages/Operations/AttendanceTracker';
 import FeeManager from './pages/Finance/FeeManager';
@@ -132,6 +134,8 @@ function App() {
             <Route path="/admissions/enroll" element={<EnrollStudent />} />
             <Route path="/academic/courses" element={<CourseManager />} />
             <Route path="/academic/course-manager" element={<CourseManager />} />
+            <Route path="/academic/exams" element={<ExamManager />} />
+            <Route path="/academic/transcripts" element={<TranscriptViewer />} />
             <Route path="/operations/timetable" element={<TimetableManager />} />
             <Route path="/operations/attendance" element={<AttendanceTracker />} />
             <Route path="/finance/fees" element={<FeeManager />} />
@@ -168,6 +172,8 @@ function App() {
               <Route path="campuses" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><CampusesList /></RoleProtectedRoute>} />
               <Route path="admissions" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><Admissions /></RoleProtectedRoute>} />
               <Route path="academics" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY']}><Academics /></RoleProtectedRoute>} />
+              <Route path="academic/exams" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'ACADEMIC_ADMIN', 'FACULTY']}><ExamManager /></RoleProtectedRoute>} />
+              <Route path="academic/transcripts" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'ACADEMIC_ADMIN', 'FACULTY', 'STUDENT']}><TranscriptViewer /></RoleProtectedRoute>} />
               <Route path="sections" element={<RoleProtectedRoute allowedRoles={['FACULTY']}><FacultySections /></RoleProtectedRoute>} />
               <Route path="guardians" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><GuardiansList /></RoleProtectedRoute>} />
               <Route path="admin/users" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><AdminUsersList /></RoleProtectedRoute>} />

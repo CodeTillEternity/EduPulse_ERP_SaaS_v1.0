@@ -81,6 +81,9 @@ public class Exam extends BaseTenantEntity {
     @Column(name = "allowed_ip_subnet", length = 100)
     private String allowedIpSubnet;
 
+    @Column(name = "seb_config_key", length = 128)
+    private String sebConfigKey;
+
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("orderIndex ASC")
     @Builder.Default

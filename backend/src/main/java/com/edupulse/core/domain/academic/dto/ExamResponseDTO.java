@@ -37,6 +37,7 @@ public class ExamResponseDTO {
     private String semester;
     private String examPin;
     private String allowedIpSubnet;
+    private String sebConfigKey;
     private List<ExamQuestionDTO> questions;
 
     public String getTitle() {

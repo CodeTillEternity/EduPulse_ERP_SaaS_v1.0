@@ -219,6 +219,9 @@ public class AcademicServiceImpl implements AcademicService {
         exam.setCourseId(resolvedCourseId);
         exam.setExamPin(request.getExamPin());
         exam.setAllowedIpSubnet(request.getAllowedIpSubnet());
+        exam.setSebConfigKey(request.getSebConfigKey() != null && !request.getSebConfigKey().isBlank()
+                ? request.getSebConfigKey()
+                : java.util.UUID.randomUUID().toString().replace("-", ""));
         exam.setStatus(request.getStatus() != null ? request.getStatus() : ExamStatus.DRAFT);
         exam.setTenantId(tenantId);
 
@@ -481,6 +484,7 @@ public class AcademicServiceImpl implements AcademicService {
                 .semester(semester)
                 .examPin(exam.getExamPin())
                 .allowedIpSubnet(exam.getAllowedIpSubnet())
+                .sebConfigKey(exam.getSebConfigKey())
                 .questions(questionDTOs)
                 .build();
     }

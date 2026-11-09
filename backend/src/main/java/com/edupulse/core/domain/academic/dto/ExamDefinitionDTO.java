@@ -48,5 +48,7 @@ public class ExamDefinitionDTO {
 
     private String allowedIpSubnet;
 
+    private String sebConfigKey;
+
     private List<ExamQuestionDTO> questions;
 }

@@ -48,6 +48,7 @@ import Layout from './components/Layout';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/sonner';
 import { Button } from './components/ui/button';
+import { useTenantTheme } from './hooks/useTenantTheme';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
   state = { hasError: false };
@@ -135,6 +136,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  useTenantTheme();
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

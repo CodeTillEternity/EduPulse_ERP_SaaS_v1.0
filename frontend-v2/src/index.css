@@ -4,6 +4,10 @@
 
 @layer base {
   :root {
+    /* Dynamic White-Label Tenant Colors */
+    --color-primary: #0f172a;
+    --color-secondary: #0284c7;
+
     /* Dense, Monochrome Enterprise Theme (EduPulse) */
     --background: 0 0% 100%; /* Pure White */
     --foreground: 0 0% 9%; /* Almost Black */

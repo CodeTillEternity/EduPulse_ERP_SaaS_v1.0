@@ -7,6 +7,7 @@ import com.edupulse.core.domain.finance.InvoiceStatus;
 import com.edupulse.core.domain.finance.StudentInvoice;
 import com.edupulse.core.domain.finance.repository.FeePaymentRepository;
 import com.edupulse.core.domain.finance.repository.StudentInvoiceRepository;
+import com.edupulse.core.service.finance.WebhookIdempotencyService;
 import com.razorpay.RazorpayException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +40,9 @@ class RazorpayWebhookControllerTest {
     @Mock
     private FeePaymentRepository feePaymentRepository;
 
+    @Mock
+    private WebhookIdempotencyService webhookIdempotencyService;
+
     private RazorpayProperties razorpayProperties;
     private RazorpayWebhookController controller;
     private boolean signatureValid = true;
@@ -53,7 +57,8 @@ class RazorpayWebhookControllerTest {
                 razorpayBillingService,
                 razorpayProperties,
                 studentInvoiceRepository,
-                feePaymentRepository) {
+                feePaymentRepository,
+                webhookIdempotencyService) {
             @Override
             protected boolean verifyWebhookSignature(String payload, String signatureHeader, String webhookSecret) throws RazorpayException {
                 return signatureValid;
@@ -62,9 +67,24 @@ class RazorpayWebhookControllerTest {
     }
 
     @Test
+    @DisplayName("handleRazorpayWebhook returns 200 OK immediately when x-razorpay-event-id is duplicate")
+    void handleRazorpayWebhook_duplicateEventId_returnsOkImmediately() {
+        when(webhookIdempotencyService.isDuplicate("evt_mock_duplicate_999")).thenReturn(true);
+
+        ResponseEntity<String> response = controller.handleRazorpayWebhook(
+                "{\"event\":\"payment.captured\"}",
+                "valid_signature",
+                "evt_mock_duplicate_999"
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).contains("Duplicate event acknowledged");
+    }
+
+    @Test
     @DisplayName("handleRazorpayWebhook returns 400 when x-razorpay-signature header is missing")
     void handleRazorpayWebhook_missingSignature_returnsBadRequest() {
-        ResponseEntity<String> response = controller.handleRazorpayWebhook("{}", null);
+        ResponseEntity<String> response = controller.handleRazorpayWebhook("{}", null, null);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).contains("Missing x-razorpay-signature header");
     }

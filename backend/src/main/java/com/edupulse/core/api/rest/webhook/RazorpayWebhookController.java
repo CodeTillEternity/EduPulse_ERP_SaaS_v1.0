@@ -7,6 +7,7 @@ import com.edupulse.core.domain.finance.InvoiceStatus;
 import com.edupulse.core.domain.finance.StudentInvoice;
 import com.edupulse.core.domain.finance.repository.FeePaymentRepository;
 import com.edupulse.core.domain.finance.repository.StudentInvoiceRepository;
+import com.edupulse.core.service.finance.WebhookIdempotencyService;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 import io.swagger.v3.oas.annotations.Operation;
@@ -41,32 +42,46 @@ public class RazorpayWebhookController {
     private final RazorpayProperties razorpayProperties;
     private final StudentInvoiceRepository studentInvoiceRepository;
     private final FeePaymentRepository feePaymentRepository;
+    private final WebhookIdempotencyService webhookIdempotencyService;
 
     public RazorpayWebhookController(
             RazorpayBillingService razorpayBillingService,
             RazorpayProperties razorpayProperties,
             @Qualifier("coreStudentInvoiceRepository") StudentInvoiceRepository studentInvoiceRepository,
-            @Qualifier("coreFeePaymentRepository") FeePaymentRepository feePaymentRepository) {
+            @Qualifier("coreFeePaymentRepository") FeePaymentRepository feePaymentRepository,
+            WebhookIdempotencyService webhookIdempotencyService) {
         this.razorpayBillingService = razorpayBillingService;
         this.razorpayProperties = razorpayProperties;
         this.studentInvoiceRepository = studentInvoiceRepository;
         this.feePaymentRepository = feePaymentRepository;
+        this.webhookIdempotencyService = webhookIdempotencyService;
     }
 
     /**
      * Ingests and cryptographically validates incoming Razorpay webhook events using HMAC-SHA256.
+     * Enforces Redis-backed idempotency via x-razorpay-event-id to eliminate duplicate payments.
      * Listens for subscription.charged, order.paid, and payment.captured events to activate tenant subscriptions
      * or settle student fee invoices.
      *
      * @param payload   Raw JSON request body
      * @param sigHeader x-razorpay-signature HTTP header
+     * @param eventId   x-razorpay-event-id HTTP header for deduplication
      * @return 200 OK upon valid signature verification and processing
      */
     @PostMapping("/razorpay-webhook")
     @Operation(summary = "Handle Razorpay Webhook", description = "Verifies cryptographic HMAC signature and processes billing or student fee payments")
     public ResponseEntity<String> handleRazorpayWebhook(
             @RequestBody String payload,
-            @RequestHeader(value = "x-razorpay-signature", required = false) String sigHeader) {
+            @RequestHeader(value = "x-razorpay-signature", required = false) String sigHeader,
+            @RequestHeader(value = "x-razorpay-event-id", required = false) String eventId) {
+
+        // Check Redis idempotency registry first if event ID is supplied
+        if (eventId != null && !eventId.isBlank()) {
+            if (webhookIdempotencyService.isDuplicate(eventId)) {
+                log.info("Duplicate Razorpay webhook event [{}] detected via Redis idempotency registry. Returning 200 OK immediately.", eventId);
+                return ResponseEntity.ok("Duplicate event acknowledged");
+            }
+        }
 
         if (sigHeader == null || sigHeader.isBlank()) {
             log.warn("Missing x-razorpay-signature header on billing webhook");
@@ -116,6 +131,13 @@ public class RazorpayWebhookController {
             log.error("Failed to parse Razorpay webhook payload: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Malformed payload");
         }
+    }
+
+    /**
+     * Backward-compatible handler without explicit event ID header.
+     */
+    public ResponseEntity<String> handleRazorpayWebhook(String payload, String sigHeader) {
+        return handleRazorpayWebhook(payload, sigHeader, null);
     }
 
     /**

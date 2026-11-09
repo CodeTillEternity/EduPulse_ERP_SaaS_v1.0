@@ -41,6 +41,13 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
+		<!-- AWS S3 Object Storage SDK -->
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.772</version>
+		</dependency>
+
 		<!-- Validation API (Hibernate Validator) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

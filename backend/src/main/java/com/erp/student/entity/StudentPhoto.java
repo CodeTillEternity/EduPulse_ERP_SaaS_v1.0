@@ -16,8 +16,11 @@ public class StudentPhoto extends BaseTenantEntity {
     @Column(name = "student_id", nullable = false, unique = true)
     private Long studentId;
 
-    @Column(name = "data", nullable = false)
+    @Column(name = "data", nullable = true)
     private byte[] data;
+
+    @Column(name = "photo_url", length = 1000)
+    private String photoUrl;
 
     @Column(name = "content_type", nullable = false, length = 100)
     private String contentType;
@@ -109,5 +112,13 @@ public class StudentPhoto extends BaseTenantEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

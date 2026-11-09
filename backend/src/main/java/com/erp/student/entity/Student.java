@@ -82,6 +82,9 @@ public class Student extends BaseTenantEntity {
     @Column(nullable = false, length = 30)
     private StudentStatus status = StudentStatus.ACTIVE;
 
+    @Column(name = "photo_url", length = 1000)
+    private String photoUrl;
+
     @Column(name = "user_id", unique = true)
     private Long userId;
 
@@ -342,5 +345,13 @@ public class Student extends BaseTenantEntity {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

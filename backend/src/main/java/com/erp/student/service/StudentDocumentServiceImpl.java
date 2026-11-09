@@ -2,6 +2,7 @@ package com.erp.student.service;
 
 import com.erp.common.exception.BusinessException;
 import com.erp.common.exception.ResourceNotFoundException;
+import com.erp.common.storage.StorageService;
 import com.erp.student.dto.StudentDocumentResponseDto;
 import com.erp.student.entity.DocumentType;
 import com.erp.student.entity.Student;
@@ -42,6 +43,7 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
     private final StudentRepository studentRepository;
     private final StudentMapper studentMapper;
     private final StudentPhotoRepository studentPhotoRepository;
+    private final StorageService storageService;
     private final Path storageLocation;
 
     @Autowired
@@ -49,25 +51,34 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
                                      StudentRepository studentRepository,
                                      StudentMapper studentMapper,
                                      @Autowired(required = false) StudentPhotoRepository studentPhotoRepository,
+                                     @Autowired(required = false) StorageService storageService,
                                      @Value("${app.storage.document-dir:uploads/documents}") String uploadDir) {
         this.documentRepository = documentRepository;
         this.studentRepository = studentRepository;
         this.studentMapper = studentMapper;
         this.studentPhotoRepository = studentPhotoRepository;
+        this.storageService = storageService;
         this.storageLocation = Paths.get(uploadDir).toAbsolutePath().normalize();
 
         try {
             Files.createDirectories(this.storageLocation);
-        } catch (IOException ex) {
-            throw new BusinessException("Could not initialize storage directory: " + ex.getMessage());
+        } catch (IOException ignored) {
         }
     }
 
     public StudentDocumentServiceImpl(StudentDocumentRepository documentRepository,
                                       StudentRepository studentRepository,
                                       StudentMapper studentMapper,
-                                      @Value("${app.storage.document-dir:uploads/documents}") String uploadDir) {
-        this(documentRepository, studentRepository, studentMapper, null, uploadDir);
+                                      StudentPhotoRepository studentPhotoRepository,
+                                      String uploadDir) {
+        this(documentRepository, studentRepository, studentMapper, studentPhotoRepository, null, uploadDir);
+    }
+
+    public StudentDocumentServiceImpl(StudentDocumentRepository documentRepository,
+                                      StudentRepository studentRepository,
+                                      StudentMapper studentMapper,
+                                      String uploadDir) {
+        this(documentRepository, studentRepository, studentMapper, null, null, uploadDir);
     }
 
     private static final List<String> ALLOWED_PHOTO_CONTENT_TYPES = List.of(
@@ -111,6 +122,14 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
         Path targetLocation = tenantDir.resolve(storedFileName);
         String storagePath = targetLocation.toString();
 
+        if (storageService != null) {
+            try {
+                String s3Key = "tenants/" + tenantId + "/students/" + studentId + "/" + storedFileName;
+                storagePath = storageService.uploadFile(s3Key, file.getInputStream(), file.getContentType(), file.getSize());
+            } catch (Exception ignored) {
+            }
+        }
+
         if (documentType == DocumentType.PHOTOGRAPH) {
             // Validate image MIME type and size limit
             String contentType = file.getContentType();
@@ -128,19 +147,29 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
                 throw new BusinessException("Failed to read photo data: " + ex.getMessage());
             }
 
-            // Persist photo bytes in PostgreSQL
+            // Persist photo in PostgreSQL
             if (studentPhotoRepository != null) {
                 StudentPhoto photo = studentPhotoRepository.findByStudentId(studentId)
                         .orElse(new StudentPhoto());
                 photo.setStudentId(studentId);
                 photo.setData(photoBytes);
+                if (storagePath != null && storagePath.startsWith("http")) {
+                    photo.setPhotoUrl(storagePath);
+                }
                 photo.setContentType(contentType);
                 photo.setFileSize(file.getSize());
                 photo.setFileName(storedFileName);
                 photo.setOriginalFileName(rawOriginalFilename);
                 photo.setUpdatedAt(LocalDateTime.now());
                 studentPhotoRepository.save(photo);
-                storagePath = "db:student_photos/" + studentId;
+                if (!storagePath.startsWith("http")) {
+                    storagePath = "db:student_photos/" + studentId;
+                }
+            }
+
+            if (storagePath != null && storagePath.startsWith("http")) {
+                student.setPhotoUrl(storagePath);
+                studentRepository.save(student);
             }
 
             // Optional local cache copy on disk
@@ -152,7 +181,9 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
             try {
                 Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ex) {
-                throw new BusinessException("Failed to store file " + storedFileName + ": " + ex.getMessage());
+                if (storagePath == null || !storagePath.startsWith("http")) {
+                    throw new BusinessException("Failed to store file " + storedFileName + ": " + ex.getMessage());
+                }
             }
         }
 
@@ -202,6 +233,20 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
             var photoOpt = studentPhotoRepository.findByStudentId(document.getStudent().getId());
             if (photoOpt.isPresent() && photoOpt.get().getData() != null && photoOpt.get().getData().length > 0) {
                 return new ByteArrayResource(photoOpt.get().getData());
+            }
+        }
+
+        // If stored in S3 cloud storage, retrieve directly from S3
+        if (storageService != null && document.getFileName() != null) {
+            try {
+                String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+                if (tenantId == null || tenantId.isBlank()) {
+                    tenantId = "default";
+                }
+                String s3Key = "tenants/" + tenantId + "/students/" + (document.getStudent() != null ? document.getStudent().getId() : "0") + "/" + document.getFileName();
+                byte[] cloudData = storageService.downloadFile(s3Key);
+                return new ByteArrayResource(cloudData);
+            } catch (Exception ignored) {
             }
         }
 
@@ -271,6 +316,18 @@ public class StudentDocumentServiceImpl implements StudentDocumentService {
 
         if (document.getDocumentType() == DocumentType.PHOTOGRAPH && document.getStudent() != null && studentPhotoRepository != null) {
             studentPhotoRepository.deleteByStudentId(document.getStudent().getId());
+        }
+
+        if (storageService != null && document.getFileName() != null) {
+            try {
+                String tenantId = com.erp.multitenancy.TenantContext.getTenantId();
+                if (tenantId == null || tenantId.isBlank()) {
+                    tenantId = "default";
+                }
+                String s3Key = "tenants/" + tenantId + "/students/" + (document.getStudent() != null ? document.getStudent().getId() : "0") + "/" + document.getFileName();
+                storageService.deleteFile(s3Key);
+            } catch (Exception ignored) {
+            }
         }
 
         try {

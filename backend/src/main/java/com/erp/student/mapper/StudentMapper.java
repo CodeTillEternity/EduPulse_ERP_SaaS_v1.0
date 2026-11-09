@@ -92,7 +92,9 @@ public class StudentMapper {
         dto.setUserId(entity.getUserId());
         dto.setCreatedAt(entity.getCreatedAt());
         dto.setUpdatedAt(entity.getUpdatedAt());
-        if (entity.getId() != null) {
+        if (entity.getPhotoUrl() != null && !entity.getPhotoUrl().isBlank()) {
+            dto.setPhotoUrl(entity.getPhotoUrl());
+        } else if (entity.getId() != null) {
             dto.setPhotoUrl("/api/v1/students/" + entity.getId() + "/photo");
         }
 

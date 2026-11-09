@@ -1,5 +1,7 @@
 package com.erp.multitenancy.service;
 
+import com.erp.common.exception.BusinessException;
+import com.erp.common.storage.StorageService;
 import com.erp.multitenancy.dto.TenantBrandingDTO;
 import com.erp.multitenancy.entity.TenantBranding;
 import com.erp.multitenancy.entity.TenantRegistry;
@@ -7,10 +9,15 @@ import com.erp.multitenancy.repository.TenantBrandingRepository;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Service managing white-label visual branding and subdomain resolutions for multi-tenant institutions.
@@ -22,11 +29,20 @@ public class TenantBrandingService {
 
     private final TenantBrandingRepository brandingRepository;
     private final TenantRegistryRepository tenantRegistryRepository;
+    private final StorageService storageService;
+
+    @Autowired
+    public TenantBrandingService(TenantBrandingRepository brandingRepository,
+                                 TenantRegistryRepository tenantRegistryRepository,
+                                 @Autowired(required = false) StorageService storageService) {
+        this.brandingRepository = brandingRepository;
+        this.tenantRegistryRepository = tenantRegistryRepository;
+        this.storageService = storageService;
+    }
 
     public TenantBrandingService(TenantBrandingRepository brandingRepository,
                                  TenantRegistryRepository tenantRegistryRepository) {
-        this.brandingRepository = brandingRepository;
-        this.tenantRegistryRepository = tenantRegistryRepository;
+        this(brandingRepository, tenantRegistryRepository, null);
     }
 
     /**
@@ -119,6 +135,98 @@ public class TenantBrandingService {
         return toDTO(saved);
     }
 
+    /**
+     * Uploads institutional logo directly to AWS S3 and links the CDN URL to tenant branding in PostgreSQL.
+     */
+    @Transactional
+    public String uploadLogo(String tenantId, InputStream inputStream, String contentType, long contentLength, String originalFilename) {
+        if (storageService == null) {
+            throw new BusinessException("Cloud storage service is not configured");
+        }
+        TenantRegistry tenant = tenantRegistryRepository.findById(tenantId)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant not found with ID: " + tenantId));
+
+        String extension = ".png";
+        if (originalFilename != null && originalFilename.lastIndexOf('.') > 0) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+        }
+
+        String s3Key = "tenants/" + tenantId + "/branding/logo_" + UUID.randomUUID().toString().substring(0, 8) + extension;
+        String logoUrl = storageService.uploadFile(s3Key, inputStream, contentType, contentLength);
+
+        TenantBranding branding = brandingRepository.findByTenant_TenantId(tenantId)
+                .orElseGet(() -> {
+                    TenantBranding tb = new TenantBranding();
+                    tb.setTenant(tenant);
+                    tb.setCustomSubdomain(tenantId.toLowerCase());
+                    tb.setInstitutionName(tenant.getInstitutionName());
+                    return tb;
+                });
+
+        branding.setLogoUrl(logoUrl);
+        brandingRepository.save(branding);
+        log.info("Uploaded tenant logo to S3 and persisted CDN URL for tenant [{}]: [{}]", tenantId, logoUrl);
+        return logoUrl;
+    }
+
+    @Transactional
+    public String uploadLogo(String tenantId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("Logo file cannot be empty");
+        }
+        try {
+            return uploadLogo(tenantId, file.getInputStream(), file.getContentType(), file.getSize(), file.getOriginalFilename());
+        } catch (IOException e) {
+            throw new BusinessException("Failed to read logo input stream: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Uploads institutional favicon directly to AWS S3 and links the CDN URL to tenant branding in PostgreSQL.
+     */
+    @Transactional
+    public String uploadFavicon(String tenantId, InputStream inputStream, String contentType, long contentLength, String originalFilename) {
+        if (storageService == null) {
+            throw new BusinessException("Cloud storage service is not configured");
+        }
+        TenantRegistry tenant = tenantRegistryRepository.findById(tenantId)
+                .orElseThrow(() -> new IllegalArgumentException("Tenant not found with ID: " + tenantId));
+
+        String extension = ".ico";
+        if (originalFilename != null && originalFilename.lastIndexOf('.') > 0) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf('.'));
+        }
+
+        String s3Key = "tenants/" + tenantId + "/branding/favicon_" + UUID.randomUUID().toString().substring(0, 8) + extension;
+        String faviconUrl = storageService.uploadFile(s3Key, inputStream, contentType, contentLength);
+
+        TenantBranding branding = brandingRepository.findByTenant_TenantId(tenantId)
+                .orElseGet(() -> {
+                    TenantBranding tb = new TenantBranding();
+                    tb.setTenant(tenant);
+                    tb.setCustomSubdomain(tenantId.toLowerCase());
+                    tb.setInstitutionName(tenant.getInstitutionName());
+                    return tb;
+                });
+
+        branding.setFaviconUrl(faviconUrl);
+        brandingRepository.save(branding);
+        log.info("Uploaded tenant favicon to S3 and persisted CDN URL for tenant [{}]: [{}]", tenantId, faviconUrl);
+        return faviconUrl;
+    }
+
+    @Transactional
+    public String uploadFavicon(String tenantId, MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new BusinessException("Favicon file cannot be empty");
+        }
+        try {
+            return uploadFavicon(tenantId, file.getInputStream(), file.getContentType(), file.getSize(), file.getOriginalFilename());
+        } catch (IOException e) {
+            throw new BusinessException("Failed to read favicon input stream: " + e.getMessage());
+        }
+    }
+
     public TenantBrandingDTO toDTO(TenantBranding branding) {
         return new TenantBrandingDTO(
                 branding.getTenantId(),
@@ -131,3 +239,4 @@ public class TenantBrandingService {
         );
     }
 }
+

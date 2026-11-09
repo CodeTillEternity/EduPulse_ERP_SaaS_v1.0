@@ -1,59 +1,52 @@
 # ==============================================================================
-# EduPulse Backend Dockerfile
-# Stage 1: Build application JAR using Maven & Java 21
+# EduPulse Spring Boot Multi-Tenant SaaS ERP - Production Backend Dockerfile
+# Stage 1: Build stage with Maven & Eclipse Temurin Java 21 (Alpine)
 # ==============================================================================
-FROM maven:3.9.6-eclipse-temurin-21-jammy AS build
+FROM maven:3.9.9-eclipse-temurin-21-alpine AS builder
 
-WORKDIR /app
+WORKDIR /build
 
-# Cache Maven dependencies
+# Pre-cache Maven dependencies for faster reproducible builds
 COPY pom.xml .
 RUN mvn dependency:go-offline -B || true
 
-# Copy source and build production artifact
+# Copy application source tree and package executable fat JAR (skipping tests)
 COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # ==============================================================================
-# Stage 2: Minimal Java 21 Runtime Image
+# Stage 2: Minimal, Secure Runtime Image with Eclipse Temurin Java 21 Alpine
 # ==============================================================================
-FROM eclipse-temurin:21-jre-jammy
+FROM eclipse-temurin:21-jre-alpine AS runtime
 
-# Install curl for container health checks
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
+# Install curl for container health check probes and tzdata for accurate scheduling
+RUN apk add --no-cache curl tzdata
 
-# Create dedicated non-root user and group
-RUN groupadd -g 1001 edupulse \
-    && useradd -u 1001 -g edupulse -s /bin/sh -d /app edupulse
-
-# Create predictable app and persistent storage directories with non-root ownership
-RUN mkdir -p /app /var/lib/edupulse/data \
-    && chown -R edupulse:edupulse /app /var/lib/edupulse/data
+# Security hardening: Create non-root unprivileged service account
+RUN addgroup -g 1001 -S edupulse && \
+    adduser -u 1001 -S edupulse -G edupulse
 
 WORKDIR /app
 
-# Copy executable jar from build stage
-COPY --from=build --chown=edupulse:edupulse /app/target/institutional-erp-backend-1.0.0-SNAPSHOT.jar /app/app.jar
+# Ensure directories exist with proper non-root ownership
+RUN mkdir -p /app /var/log/edupulse /var/lib/edupulse/uploads && \
+    chown -R edupulse:edupulse /app /var/log/edupulse /var/lib/edupulse
 
-# Switch to non-root user
+# Copy compiled production JAR from builder stage with proper ownership
+COPY --from=builder --chown=edupulse:edupulse /build/target/institutional-erp-backend-1.0.0-SNAPSHOT.jar /app/app.jar
+
+# Enforce non-root execution
 USER edupulse:edupulse
 
-# Expose backend application port
+# Expose backend service port
 EXPOSE 8081
 
-# Container environment defaults
-ENV SPRING_PROFILES_ACTIVE=dev-json \
-    ERP_DEVJSON_STORAGE_DIR=/var/lib/edupulse/data \
-    APP_STORAGE_DOCUMENT_DIR=/var/lib/edupulse/data/uploads
-
-# Container-aware JVM memory options
+# Production JVM container memory settings and entropy generation
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -XX:InitialRAMPercentage=50.0 -Djava.security.egd=file:/dev/./urandom"
 
-# Health check against dedicated liveness endpoint
-HEALTHCHECK --interval=30s --timeout=5s --start-period=45s --retries=3 \
-  CMD curl -f http://localhost:8081/api/health || exit 1
+# Container health check probe
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8081/actuator/health || curl -f http://localhost:8081/api/health || exit 1
 
-# Graceful termination handling: exec ensures java receives SIGTERM directly
+# Launch application via exec to properly propagate SIGTERM/SIGINT signals
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar /app/app.jar"]

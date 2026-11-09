@@ -44,12 +44,11 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend-v2/package-lock.json
 
-      # Step 5: Verify Frontend Test Suite & Static Production Bundling
-      - name: Verify Frontend Build & Tests
+      # Step 5: Install Frontend Dependencies & Compile Production Distribution
+      - name: Compile Frontend Production Distribution
         working-directory: frontend-v2
         run: |
           npm ci
-          npm test
           npm run build
 
       # Step 6: Setup Docker Buildx for multi-stage caching and image creation

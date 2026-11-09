@@ -1,0 +1,109 @@
+# ==============================================================================
+# EduPulse Multi-Tenant SaaS ERP - Render.com Cloud Infrastructure-as-Code (IaC)
+# Blueprint specification for Managed PostgreSQL, Redis, Backend, and Frontend
+# ==============================================================================
+
+databases:
+  # ============================================================================
+  # 1. Managed PostgreSQL Database Instance
+  # ============================================================================
+  - name: edupulse-postgres
+    databaseName: edupulse_db
+    user: edupulse_user
+    region: oregon
+    plan: starter
+    ipAllowList: [] # Enforces strict internal-only VPC access
+
+services:
+  # ============================================================================
+  # 2. Managed Redis Cache & Session Broker
+  # ============================================================================
+  - type: redis
+    name: edupulse-redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: [] # Restrict connectivity to private internal services
+
+  # ============================================================================
+  # 3. Spring Boot SaaS Backend Web Service (Docker Runtime)
+  # ============================================================================
+  - type: web
+    name: edupulse-backend
+    env: docker
+    region: oregon
+    plan: starter
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: cloud
+      - key: PORT
+        value: 8081
+      - key: DATABASE_URL
+        fromDatabase:
+          name: edupulse-postgres
+          property: connectionString
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: edupulse-postgres
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: edupulse-postgres
+          property: user
+      - key: DB_PASS
+        fromDatabase:
+          name: edupulse-postgres
+          property: password
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: edupulse-redis
+          property: connectionString
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: edupulse-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: edupulse-redis
+          property: port
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ACCESS_EXPIRATION
+        value: 900000
+      - key: JWT_REFRESH_EXPIRATION
+        value: 604800000
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: APP_STORAGE_DOCUMENT_DIR
+        value: /var/lib/edupulse/uploads
+
+  # ============================================================================
+  # 4. React Single Page Application Static Site
+  # ============================================================================
+  - type: static
+    name: edupulse-frontend
+    region: oregon
+    rootDir: frontend-v2
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      # Route all incoming requests to index.html to support React Router SPA client-side routing
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_BASE_URL
+        fromService:
+          type: web
+          name: edupulse-backend
+          envVarKey: RENDER_EXTERNAL_URL

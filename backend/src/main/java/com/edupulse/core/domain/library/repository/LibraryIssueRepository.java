@@ -24,5 +24,7 @@ public interface LibraryIssueRepository extends JpaRepository<LibraryIssue, Long
 
     List<LibraryIssue> findByStatusAndTenantId(IssueStatus status, String tenantId);
 
+    List<LibraryIssue> findByStatusNotAndTenantId(IssueStatus status, String tenantId);
+
     List<LibraryIssue> findByStudentIdAndStatusAndTenantId(Long studentId, IssueStatus status, String tenantId);
 }

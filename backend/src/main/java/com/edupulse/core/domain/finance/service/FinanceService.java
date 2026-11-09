@@ -37,4 +37,12 @@ public interface FinanceService {
     StudentLedgerResponseDTO getStudentLedger(String enrollmentNumber);
 
     List<StudentInvoiceResponseDTO> getInvoicesByStudent(Long studentId);
+
+    com.edupulse.core.domain.finance.dto.BrandedDocumentDTO generateInvoiceDocument(Long invoiceId);
+
+    com.edupulse.core.domain.finance.dto.BrandedDocumentDTO generatePaymentReceiptDocument(Long paymentId);
+
+    String generateInvoiceDocumentHtml(Long invoiceId);
+
+    String generatePaymentReceiptHtml(Long paymentId);
 }

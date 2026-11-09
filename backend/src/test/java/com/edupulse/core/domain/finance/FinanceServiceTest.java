@@ -67,6 +67,12 @@ class FinanceServiceTest {
     @Mock
     private BatchRepository batchRepository;
 
+    @Mock
+    private com.erp.multitenancy.service.TenantBrandingService tenantBrandingService;
+
+    @Mock
+    private com.edupulse.core.domain.billing.repository.TenantSubscriptionRepository tenantSubscriptionRepository;
+
     @InjectMocks
     private FinanceServiceImpl financeService;
 
@@ -191,5 +197,159 @@ class FinanceServiceTest {
         assertThat(response.getAmount()).isEqualByComparingTo(new BigDecimal("20000.00"));
         assertThat(response.getInvoiceStatus()).isEqualTo(InvoiceStatus.PARTIAL);
         assertThat(response.getRemainingInvoiceBalance()).isEqualByComparingTo(new BigDecimal("30000.00"));
+    }
+
+    @Test
+    @DisplayName("generateInvoiceDocument embeds tenant branding and removes watermark for higher-tier subscribers")
+    void shouldGenerateInvoiceDocumentWithBrandingAndRemoveWatermarkForHigherTier() {
+        Student student = new Student();
+        student.setId(201L);
+        student.setFirstName("Marie");
+        student.setLastName("Curie");
+        student.setEnrollmentNumber("ENR-201");
+
+        FeeStructure structure = new FeeStructure();
+        structure.setId(10L);
+        structure.setName("Advanced Physics Tuition");
+
+        StudentInvoice invoice = new StudentInvoice();
+        invoice.setId(888L);
+        invoice.setInvoiceNumber("INV-2026-8888");
+        invoice.setStudent(student);
+        invoice.setFeeStructure(structure);
+        invoice.setGrossAmount(new BigDecimal("75000.00"));
+        invoice.setDiscount(new BigDecimal("5000.00"));
+        invoice.setNetAmount(new BigDecimal("70000.00"));
+        invoice.setAmountPaid(BigDecimal.ZERO);
+        invoice.setStatus(InvoiceStatus.UNPAID);
+        invoice.setTenantId(TENANT_ID);
+
+        when(studentInvoiceRepository.findByIdAndTenantId(888L, TENANT_ID)).thenReturn(Optional.of(invoice));
+
+        com.erp.multitenancy.dto.TenantBrandingDTO mockBranding = new com.erp.multitenancy.dto.TenantBrandingDTO(
+                TENANT_ID,
+                "Sorbonne Academy",
+                "sorbonne",
+                "https://cdn.sorbonne.edu/crest.png",
+                "https://cdn.sorbonne.edu/favicon.ico",
+                "#800000",
+                "#FFD700"
+        );
+        when(tenantBrandingService.getBrandingByTenantId(TENANT_ID)).thenReturn(Optional.of(mockBranding));
+
+        // Enterprise higher-tier subscription
+        com.edupulse.core.domain.billing.SubscriptionPlan plan = new com.edupulse.core.domain.billing.SubscriptionPlan();
+        plan.setName("ENTERPRISE");
+        com.edupulse.core.domain.billing.TenantSubscription sub = new com.edupulse.core.domain.billing.TenantSubscription();
+        sub.setPlan(plan);
+        when(tenantSubscriptionRepository.findByTenantId(TENANT_ID)).thenReturn(Optional.of(sub));
+
+        com.edupulse.core.domain.finance.dto.BrandedDocumentDTO doc = financeService.generateInvoiceDocument(888L);
+
+        assertThat(doc.getInstitutionName()).isEqualTo("Sorbonne Academy");
+        assertThat(doc.getLogoUrl()).isEqualTo("https://cdn.sorbonne.edu/crest.png");
+        assertThat(doc.getPrimaryColorHex()).isEqualTo("#800000");
+        assertThat(doc.isWatermarkRemoved()).isTrue();
+        assertThat(doc.getHtmlContent()).contains("Sorbonne Academy");
+        assertThat(doc.getHtmlContent()).contains("https://cdn.sorbonne.edu/crest.png");
+        assertThat(doc.getHtmlContent()).contains("#800000");
+        assertThat(doc.getHtmlContent()).doesNotContain("Powered by EduPulse ERP");
+    }
+
+    @Test
+    @DisplayName("generateInvoiceDocument includes watermark for starter or trial tier subscribers")
+    void shouldGenerateInvoiceDocumentWithWatermarkForStarterTier() {
+        Student student = new Student();
+        student.setId(202L);
+        student.setFirstName("Isaac");
+        student.setLastName("Newton");
+        student.setEnrollmentNumber("ENR-202");
+
+        StudentInvoice invoice = new StudentInvoice();
+        invoice.setId(999L);
+        invoice.setInvoiceNumber("INV-2026-9999");
+        invoice.setStudent(student);
+        invoice.setGrossAmount(new BigDecimal("30000.00"));
+        invoice.setDiscount(BigDecimal.ZERO);
+        invoice.setNetAmount(new BigDecimal("30000.00"));
+        invoice.setAmountPaid(BigDecimal.ZERO);
+        invoice.setStatus(InvoiceStatus.UNPAID);
+        invoice.setTenantId(TENANT_ID);
+
+        when(studentInvoiceRepository.findByIdAndTenantId(999L, TENANT_ID)).thenReturn(Optional.of(invoice));
+
+        com.erp.multitenancy.dto.TenantBrandingDTO mockBranding = new com.erp.multitenancy.dto.TenantBrandingDTO(
+                TENANT_ID,
+                "Cambridge School",
+                "cambridge",
+                null,
+                null,
+                "#002147",
+                "#38BDF8"
+        );
+        when(tenantBrandingService.getBrandingByTenantId(TENANT_ID)).thenReturn(Optional.of(mockBranding));
+
+        // Starter tier plan
+        com.edupulse.core.domain.billing.SubscriptionPlan plan = new com.edupulse.core.domain.billing.SubscriptionPlan();
+        plan.setName("STARTER");
+        com.edupulse.core.domain.billing.TenantSubscription sub = new com.edupulse.core.domain.billing.TenantSubscription();
+        sub.setPlan(plan);
+        when(tenantSubscriptionRepository.findByTenantId(TENANT_ID)).thenReturn(Optional.of(sub));
+
+        com.edupulse.core.domain.finance.dto.BrandedDocumentDTO doc = financeService.generateInvoiceDocument(999L);
+
+        assertThat(doc.isWatermarkRemoved()).isFalse();
+        assertThat(doc.getHtmlContent()).contains("Powered by EduPulse ERP");
+    }
+
+    @Test
+    @DisplayName("generatePaymentReceiptDocument embeds branding and transaction details")
+    void shouldGeneratePaymentReceiptDocument() {
+        Student student = new Student();
+        student.setId(203L);
+        student.setFirstName("Alan");
+        student.setLastName("Turing");
+        student.setEnrollmentNumber("ENR-203");
+
+        StudentInvoice invoice = new StudentInvoice();
+        invoice.setId(777L);
+        invoice.setInvoiceNumber("INV-2026-7777");
+        invoice.setStudent(student);
+        invoice.setGrossAmount(new BigDecimal("40000.00"));
+        invoice.setDiscount(BigDecimal.ZERO);
+        invoice.setNetAmount(new BigDecimal("40000.00"));
+        invoice.setAmountPaid(new BigDecimal("25000.00"));
+
+        FeePayment payment = new FeePayment();
+        payment.setId(444L);
+        payment.setStudentInvoice(invoice);
+        payment.setAmount(new BigDecimal("25000.00"));
+        payment.setPaymentMethod("NET_BANKING");
+        payment.setReferenceNumber("TXN-ALAN-444");
+        payment.setPaymentDate(java.time.LocalDateTime.now());
+        payment.setTenantId(TENANT_ID);
+
+        when(feePaymentRepository.findByIdAndTenantId(444L, TENANT_ID)).thenReturn(Optional.of(payment));
+
+        com.erp.multitenancy.dto.TenantBrandingDTO mockBranding = new com.erp.multitenancy.dto.TenantBrandingDTO(
+                TENANT_ID,
+                "Turing Computing Institute",
+                "turing",
+                "https://cdn.turing.ac.uk/logo.png",
+                null,
+                "#1E3A8A",
+                "#3B82F6"
+        );
+        when(tenantBrandingService.getBrandingByTenantId(TENANT_ID)).thenReturn(Optional.of(mockBranding));
+        when(tenantSubscriptionRepository.findByTenantId(TENANT_ID)).thenReturn(Optional.empty());
+
+        com.edupulse.core.domain.finance.dto.BrandedDocumentDTO receipt = financeService.generatePaymentReceiptDocument(444L);
+
+        assertThat(receipt.getDocumentType()).isEqualTo("PAYMENT_RECEIPT");
+        assertThat(receipt.getDocumentNumber()).isEqualTo("RCP-444");
+        assertThat(receipt.getAmount()).isEqualByComparingTo(new BigDecimal("25000.00"));
+        assertThat(receipt.getStudentName()).isEqualTo("Alan Turing");
+        assertThat(receipt.getHtmlContent()).contains("OFFICIAL PAYMENT RECEIPT");
+        assertThat(receipt.getHtmlContent()).contains("25000.00");
     }
 }

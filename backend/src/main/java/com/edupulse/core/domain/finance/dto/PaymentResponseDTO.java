@@ -25,4 +25,8 @@ public class PaymentResponseDTO {
     private String notes;
     private BigDecimal remainingInvoiceBalance;
     private InvoiceStatus invoiceStatus;
+    private String institutionName;
+    private String logoUrl;
+    private String primaryColorHex;
+    private Boolean watermarkRemoved;
 }

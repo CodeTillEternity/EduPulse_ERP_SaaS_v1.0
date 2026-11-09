@@ -31,4 +31,8 @@ public class StudentInvoiceResponseDTO {
     private LocalDate dueDate;
     private InvoiceStatus status;
     private LocalDateTime createdAt;
+    private String institutionName;
+    private String logoUrl;
+    private String primaryColorHex;
+    private Boolean watermarkRemoved;
 }

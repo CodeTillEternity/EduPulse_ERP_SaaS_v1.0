@@ -1,6 +1,7 @@
 package com.edupulse.core.api.rest;
 
 import com.edupulse.core.domain.finance.dto.BatchInvoiceRequestDTO;
+import com.edupulse.core.domain.finance.dto.BrandedDocumentDTO;
 import com.edupulse.core.domain.finance.dto.FeeHeadRequestDTO;
 import com.edupulse.core.domain.finance.dto.FeeHeadResponseDTO;
 import com.edupulse.core.domain.finance.dto.FeeStructureRequestDTO;
@@ -15,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -109,5 +111,33 @@ public class FinanceController {
     public ResponseEntity<List<StudentInvoiceResponseDTO>> getInvoicesByStudent(@PathVariable Long studentId) {
         List<StudentInvoiceResponseDTO> invoices = financeService.getInvoicesByStudent(studentId);
         return ResponseEntity.ok(invoices);
+    }
+
+    @GetMapping("/invoices/{invoiceId}/document")
+    @Operation(summary = "Get Branded Invoice Document", description = "Generates white-labeled fee invoice document metadata and HTML preview")
+    public ResponseEntity<BrandedDocumentDTO> getInvoiceDocument(@PathVariable Long invoiceId) {
+        BrandedDocumentDTO document = financeService.generateInvoiceDocument(invoiceId);
+        return ResponseEntity.ok(document);
+    }
+
+    @GetMapping(value = "/invoices/{invoiceId}/html", produces = MediaType.TEXT_HTML_VALUE)
+    @Operation(summary = "View Branded Invoice HTML", description = "Renders printable HTML document for the student fee invoice")
+    public ResponseEntity<String> getInvoiceDocumentHtml(@PathVariable Long invoiceId) {
+        String html = financeService.generateInvoiceDocumentHtml(invoiceId);
+        return ResponseEntity.ok(html);
+    }
+
+    @GetMapping("/payments/{paymentId}/receipt")
+    @Operation(summary = "Get Branded Payment Receipt Document", description = "Generates white-labeled payment receipt document metadata and HTML preview")
+    public ResponseEntity<BrandedDocumentDTO> getPaymentReceiptDocument(@PathVariable Long paymentId) {
+        BrandedDocumentDTO receipt = financeService.generatePaymentReceiptDocument(paymentId);
+        return ResponseEntity.ok(receipt);
+    }
+
+    @GetMapping(value = "/payments/{paymentId}/receipt/html", produces = MediaType.TEXT_HTML_VALUE)
+    @Operation(summary = "View Branded Payment Receipt HTML", description = "Renders printable HTML document for the payment transaction receipt")
+    public ResponseEntity<String> getPaymentReceiptHtml(@PathVariable Long paymentId) {
+        String html = financeService.generatePaymentReceiptHtml(paymentId);
+        return ResponseEntity.ok(html);
     }
 }

@@ -182,6 +182,53 @@ class FinanceControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = "FINANCE_MANAGER")
+    @DisplayName("GET /api/v1/finance/invoices/{id}/document returns branded invoice document")
+    void shouldGetInvoiceDocument() throws Exception {
+        com.edupulse.core.domain.finance.dto.BrandedDocumentDTO doc = com.edupulse.core.domain.finance.dto.BrandedDocumentDTO.builder()
+                .documentType("FEE_INVOICE")
+                .documentNumber("INV-2026-0001")
+                .institutionName("Stanford Academy")
+                .logoUrl("https://cdn.stanford.edu/logo.png")
+                .primaryColorHex("#8C1515")
+                .watermarkRemoved(true)
+                .amount(new BigDecimal("50000.00"))
+                .htmlContent("<html><body><h1>Stanford Academy</h1></body></html>")
+                .build();
+
+        when(financeService.generateInvoiceDocument(100L)).thenReturn(doc);
+
+        mockMvc.perform(get("/api/v1/finance/invoices/100/document"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.documentType").value("FEE_INVOICE"))
+                .andExpect(jsonPath("$.institutionName").value("Stanford Academy"))
+                .andExpect(jsonPath("$.primaryColorHex").value("#8C1515"))
+                .andExpect(jsonPath("$.watermarkRemoved").value(true));
+    }
+
+    @Test
+    @WithMockUser(roles = "FINANCE_MANAGER")
+    @DisplayName("GET /api/v1/finance/payments/{id}/receipt returns branded payment receipt")
+    void shouldGetPaymentReceipt() throws Exception {
+        com.edupulse.core.domain.finance.dto.BrandedDocumentDTO doc = com.edupulse.core.domain.finance.dto.BrandedDocumentDTO.builder()
+                .documentType("PAYMENT_RECEIPT")
+                .documentNumber("RCP-500")
+                .institutionName("Stanford Academy")
+                .primaryColorHex("#8C1515")
+                .watermarkRemoved(true)
+                .amount(new BigDecimal("25000.00"))
+                .htmlContent("<html><body><h1>Receipt</h1></body></html>")
+                .build();
+
+        when(financeService.generatePaymentReceiptDocument(500L)).thenReturn(doc);
+
+        mockMvc.perform(get("/api/v1/finance/payments/500/receipt"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.documentType").value("PAYMENT_RECEIPT"))
+                .andExpect(jsonPath("$.documentNumber").value("RCP-500"));
+    }
+
+    @Test
     @WithMockUser(roles = "STUDENT")
     @DisplayName("Unauthorized role returns 403 Forbidden")
     void shouldDenyUnauthorizedRole() throws Exception {

@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, GraduationCap, CalendarCheck, Wallet, 
   Store, ShieldAlert, UserCheck, 
   Menu, X, LogOut, ChevronDown, UserCircle, Bell,
-  Check, KeyRound, CreditCard
+  Check, KeyRound, CreditCard, Search
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ChangePasswordModal } from './ChangePasswordModal';
@@ -302,8 +302,21 @@ export default function Layout() {
         
         {/* Desktop Header */}
         <header className="hidden md:flex h-16 bg-white border-b border-slate-200 items-center justify-between px-8 sticky top-0 z-10 shrink-0">
-          <div className="flex items-center">
-            {/* Left side context - reserved for breadcrumbs or title injected by pages */}
+          <div className="flex items-center space-x-4">
+            <button
+              type="button"
+              onClick={() => {
+                window.dispatchEvent(new KeyboardEvent('keydown', { key: 'k', metaKey: true }));
+              }}
+              className="flex items-center gap-2 px-3 py-1.5 text-xs text-slate-500 bg-slate-100 hover:bg-slate-200/80 rounded-lg border border-slate-200 transition-colors shadow-2xs"
+              title="Global Search (Cmd+K / Ctrl+K)"
+            >
+              <Search className="w-3.5 h-3.5 text-slate-400" />
+              <span>Quick search or jump to...</span>
+              <kbd className="font-mono text-[10px] bg-white text-slate-500 px-1.5 py-0.5 rounded border border-slate-300">
+                ⌘K
+              </kbd>
+            </button>
             {!isOnline && (
               <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
                 Offline Mode

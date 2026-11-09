@@ -45,6 +45,7 @@ import StudentDashboard from './pages/Portal/StudentDashboard';
 import FeeCenter from './pages/Portal/FeeCenter';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
+import { GlobalSearch } from './components/GlobalSearch';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/sonner';
 import { Button } from './components/ui/button';
@@ -141,6 +142,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
+          <GlobalSearch />
           <Routes>
             <Route path="/login" element={
               <PublicOnlyRoute>

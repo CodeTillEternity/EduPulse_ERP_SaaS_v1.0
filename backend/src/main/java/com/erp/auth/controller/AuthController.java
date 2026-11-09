@@ -1,39 +1,78 @@
 package com.erp.auth.controller;
 
 import com.erp.auth.dto.AuthResponse;
+import com.erp.auth.dto.ChangePasswordRequest;
 import com.erp.auth.dto.LoginRequest;
 import com.erp.auth.dto.RefreshTokenRequest;
 import com.erp.auth.dto.SessionResponse;
+import com.erp.auth.entity.AppUser;
+import com.erp.auth.entity.RefreshToken;
+import com.erp.auth.model.Permission;
+import com.erp.auth.model.UserPrincipal;
+import com.erp.auth.repository.UserRepository;
 import com.erp.auth.service.AuthService;
+import com.erp.auth.service.RefreshTokenService;
+import com.erp.common.exception.InvalidTokenException;
+import com.erp.security.jwt.JwtProperties;
+import com.erp.security.jwt.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping({"/auth", "/api/auth"})
 @Tag(name = "Authentication & Session", description = "Endpoints for user authentication, token refresh, logout, and session validation")
 public class AuthController {
 
-    private final AuthService authService;
+    private static final String REFRESH_TOKEN_COOKIE_NAME = "refreshToken";
 
-    public AuthController(AuthService authService) {
+    private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
+    private final JwtProperties jwtProperties;
+
+    public AuthController(
+            AuthService authService,
+            RefreshTokenService refreshTokenService,
+            UserRepository userRepository,
+            JwtService jwtService,
+            JwtProperties jwtProperties) {
         this.authService = authService;
+        this.refreshTokenService = refreshTokenService;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
     }
 
     @PostMapping("/login")
-    @Operation(summary = "Authenticate user and issue JWT tokens", description = "Validates credentials and generates access & refresh tokens with RBAC claims")
+    @Operation(summary = "Authenticate user and issue JWT tokens", description = "Validates credentials and generates access token in body and refresh token in HttpOnly cookie")
     public ResponseEntity<AuthResponse> login(
             @Valid @RequestBody LoginRequest request,
             @RequestHeader(value = "X-Tenant-ID", required = false) String tenantHeader,
             HttpServletRequest httpRequest) {
+
         String effectiveTenantId = (request.tenantId() != null && !request.tenantId().isBlank())
                 ? request.tenantId().trim()
                 : (tenantHeader != null && !tenantHeader.isBlank() ? tenantHeader.trim() : null);
@@ -44,26 +83,101 @@ public class AuthController {
 
         String clientIp = httpRequest.getRemoteAddr();
         AuthResponse response = authService.login(scopedRequest, clientIp);
-        return ResponseEntity.ok(response);
+
+        // Generate persistent UUID-based RefreshToken for HttpOnly cookie rotation
+        String refreshTokenValue = response.refreshToken();
+        Optional<AppUser> userOpt = userRepository.findByUsernameIgnoreCase(response.username());
+        if (userOpt.isPresent()) {
+            RefreshToken entityToken = refreshTokenService.createRefreshToken(userOpt.get().getId());
+            refreshTokenValue = entityToken.getToken();
+        }
+
+        ResponseCookie refreshCookie = createHttpOnlyRefreshCookie(refreshTokenValue, Duration.ofDays(7));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(response);
     }
 
     @PostMapping("/refresh")
-    @Operation(summary = "Refresh access token", description = "Uses a valid refresh token to issue a new access token with token rotation")
-    public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
-        AuthResponse response = authService.refreshToken(request);
-        return ResponseEntity.ok(response);
+    @Operation(summary = "Refresh access token via HttpOnly cookie", description = "Validates the HttpOnly refresh token cookie, rotates it, and returns a new access token")
+    public ResponseEntity<AuthResponse> refresh(
+            @CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String cookieRefreshToken,
+            @RequestBody(required = false) RefreshTokenRequest request) {
+
+        String tokenToValidate = (cookieRefreshToken != null && !cookieRefreshToken.isBlank())
+                ? cookieRefreshToken.trim()
+                : (request != null ? request.refreshToken() : null);
+
+        if (tokenToValidate == null || tokenToValidate.isBlank()) {
+            throw new InvalidTokenException("Refresh token is required in HttpOnly cookie or request body");
+        }
+
+        AuthResponse authResponse;
+        String newRefreshTokenValue;
+
+        // Check if token matches UUID format (RefreshToken entity)
+        Optional<RefreshToken> entityTokenOpt = refreshTokenService.findByToken(tokenToValidate);
+        if (entityTokenOpt.isPresent()) {
+            RefreshToken rotated = refreshTokenService.rotateRefreshToken(tokenToValidate);
+            AppUser user = rotated.getUser();
+            UserPrincipal principal = new UserPrincipal(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getEmail(),
+                    user.getRole(),
+                    user.getRole().getPermissions(),
+                    user.isEnabled(),
+                    user.getTenantId()
+            );
+
+            String newAccessToken = jwtService.generateAccessToken(principal);
+            newRefreshTokenValue = rotated.getToken();
+
+            authResponse = new AuthResponse(
+                    newAccessToken,
+                    newRefreshTokenValue,
+                    "Bearer",
+                    jwtProperties.getAccessTokenExpiration(),
+                    user.getUsername(),
+                    user.getRole().name(),
+                    user.getRole().getPermissions().stream().map(Permission::getValue).collect(Collectors.toSet())
+            );
+        } else {
+            // Fallback to JWT-based refresh token handling
+            authResponse = authService.refreshToken(new RefreshTokenRequest(tokenToValidate));
+            newRefreshTokenValue = authResponse.refreshToken();
+        }
+
+        ResponseCookie rotatedCookie = createHttpOnlyRefreshCookie(newRefreshTokenValue, Duration.ofDays(7));
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, rotatedCookie.toString())
+                .body(authResponse);
     }
 
     @PostMapping("/logout")
-    @Operation(summary = "Logout user and invalidate session", description = "Revokes the active JWT token and clears user session state")
+    @Operation(summary = "Logout user and invalidate session", description = "Revokes the active JWT token and clears the HttpOnly refresh cookie")
     @SecurityRequirement(name = "BearerAuth")
     public ResponseEntity<Map<String, String>> logout(
             @RequestHeader(value = "Authorization", required = false) String bearerToken,
+            @CookieValue(name = REFRESH_TOKEN_COOKIE_NAME, required = false) String cookieRefreshToken,
             Authentication authentication) {
 
         String username = authentication != null ? authentication.getName() : null;
         authService.logout(bearerToken, username);
-        return ResponseEntity.ok(Map.of("message", "User logged out successfully. Session invalidated."));
+
+        if (cookieRefreshToken != null && !cookieRefreshToken.isBlank()) {
+            refreshTokenService.findByToken(cookieRefreshToken)
+                    .ifPresent(rt -> refreshTokenService.deleteByUserId(rt.getUser().getId()));
+        }
+
+        ResponseCookie expiredCookie = createHttpOnlyRefreshCookie("", Duration.ZERO);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, expiredCookie.toString())
+                .body(Map.of("message", "User logged out successfully. Session invalidated."));
     }
 
     @GetMapping("/session")
@@ -93,16 +207,25 @@ public class AuthController {
     @PostMapping({"/change-password", "/api/v1/auth/change-password"})
     @Operation(summary = "Change authenticated user password", description = "Allows user to change their own password by verifying current credentials")
     @SecurityRequirement(name = "BearerAuth")
-    @org.springframework.security.access.prepost.PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Map<String, String>> changePassword(
-            @Valid @RequestBody com.erp.auth.dto.ChangePasswordRequest request,
+            @Valid @RequestBody ChangePasswordRequest request,
             Authentication authentication) {
         if (authentication == null || authentication.getName() == null) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.UNAUTHORIZED)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "User is not authenticated"));
         }
         authService.changePassword(authentication.getName(), request);
         return ResponseEntity.ok(Map.of("message", "Password changed successfully. Please use your new password on next login."));
     }
-}
 
+    private ResponseCookie createHttpOnlyRefreshCookie(String token, Duration maxAge) {
+        return ResponseCookie.from(REFRESH_TOKEN_COOKIE_NAME, token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(maxAge)
+                .sameSite("Strict")
+                .build();
+    }
+}

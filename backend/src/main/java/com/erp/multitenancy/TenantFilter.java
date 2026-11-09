@@ -86,6 +86,8 @@ public class TenantFilter extends OncePerRequestFilter {
         }
         return "OPTIONS".equalsIgnoreCase(request.getMethod()) ||
                path.startsWith("/auth/") ||
+               path.startsWith("/api/public/") ||
+               path.startsWith("/api/v1/public/") ||
                path.startsWith("/api/v1/saas/") ||
                path.startsWith("/api/password/") ||
                path.equals("/api/health") ||

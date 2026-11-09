@@ -45,6 +45,7 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/api/health", "/api/v1/health", "/actuator/health").permitAll()
                 .requestMatchers("/auth/**", "/api/auth/**").permitAll()
+                .requestMatchers("/api/public/**", "/api/v1/public/**").permitAll()
                 .requestMatchers("/api/v1/saas/webhooks/**").permitAll()
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/billing/webhook", "/api/v1/billing/razorpay-webhook").permitAll()
                 .requestMatchers("/api/v1/saas/admin/**").hasRole("SUPER_ADMIN")

@@ -38,6 +38,10 @@ public class TenantRegistry {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToOne(mappedBy = "tenant", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @com.fasterxml.jackson.annotation.JsonIgnore
+    private TenantBranding branding;
+
     public TenantRegistry() {}
 
     public TenantRegistry(String tenantId, String institutionName, TenantStatus status, String databaseMode) {
@@ -127,5 +131,16 @@ public class TenantRegistry {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public TenantBranding getBranding() {
+        return branding;
+    }
+
+    public void setBranding(TenantBranding branding) {
+        this.branding = branding;
+        if (branding != null && branding.getTenant() != this) {
+            branding.setTenant(this);
+        }
     }
 }

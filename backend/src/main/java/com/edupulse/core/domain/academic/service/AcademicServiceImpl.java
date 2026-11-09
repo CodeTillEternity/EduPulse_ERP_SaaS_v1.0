@@ -4,25 +4,44 @@ import com.edupulse.core.domain.academic.Batch;
 import com.edupulse.core.domain.academic.Course;
 import com.edupulse.core.domain.academic.CourseOffering;
 import com.edupulse.core.domain.academic.Department;
+import com.edupulse.core.domain.academic.Exam;
+import com.edupulse.core.domain.academic.ExamQuestion;
+import com.edupulse.core.domain.academic.ExamStatus;
 import com.edupulse.core.domain.academic.Faculty;
 import com.edupulse.core.domain.academic.dto.CourseOfferingRequestDTO;
 import com.edupulse.core.domain.academic.dto.CourseOfferingResponseDTO;
 import com.edupulse.core.domain.academic.dto.CourseRequestDTO;
 import com.edupulse.core.domain.academic.dto.CourseResponseDTO;
+import com.edupulse.core.domain.academic.dto.ExamDefinitionDTO;
+import com.edupulse.core.domain.academic.dto.ExamQuestionDTO;
+import com.edupulse.core.domain.academic.dto.ExamResponseDTO;
 import com.edupulse.core.domain.academic.dto.FacultyRequestDTO;
 import com.edupulse.core.domain.academic.dto.FacultyResponseDTO;
 import com.edupulse.core.domain.academic.repository.BatchRepository;
 import com.edupulse.core.domain.academic.repository.CourseOfferingRepository;
 import com.edupulse.core.domain.academic.repository.CourseRepository;
 import com.edupulse.core.domain.academic.repository.DepartmentRepository;
+import com.edupulse.core.domain.academic.repository.ExamQuestionRepository;
+import com.edupulse.core.domain.academic.repository.ExamRepository;
 import com.edupulse.core.domain.academic.repository.FacultyRepository;
 import com.edupulse.core.domain.base.TenantContext;
+import com.edupulse.core.domain.student.Student;
+import com.edupulse.core.domain.student.repository.StudentRepository;
+import com.erp.common.exception.EduPulseBusinessException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service("coreAcademicService")
@@ -34,18 +53,27 @@ public class AcademicServiceImpl implements AcademicService {
     private final CourseOfferingRepository courseOfferingRepository;
     private final DepartmentRepository departmentRepository;
     private final BatchRepository batchRepository;
+    private final ExamRepository examRepository;
+    private final ExamQuestionRepository examQuestionRepository;
+    private final StudentRepository studentRepository;
 
     public AcademicServiceImpl(
             @Qualifier("coreFacultyRepository") FacultyRepository facultyRepository,
             @Qualifier("coreCourseRepository") CourseRepository courseRepository,
             @Qualifier("coreCourseOfferingRepository") CourseOfferingRepository courseOfferingRepository,
             @Qualifier("coreDepartmentRepository") DepartmentRepository departmentRepository,
-            @Qualifier("coreBatchRepository") BatchRepository batchRepository) {
+            @Qualifier("coreBatchRepository") BatchRepository batchRepository,
+            @Qualifier("coreExamRepository") ExamRepository examRepository,
+            @Qualifier("coreExamQuestionRepository") ExamQuestionRepository examQuestionRepository,
+            @Qualifier("coreStudentRepository") StudentRepository studentRepository) {
         this.facultyRepository = facultyRepository;
         this.courseRepository = courseRepository;
         this.courseOfferingRepository = courseOfferingRepository;
         this.departmentRepository = departmentRepository;
         this.batchRepository = batchRepository;
+        this.examRepository = examRepository;
+        this.examQuestionRepository = examQuestionRepository;
+        this.studentRepository = studentRepository;
     }
 
     private String resolveTenantId() {
@@ -157,6 +185,202 @@ public class AcademicServiceImpl implements AcademicService {
                 .toList();
     }
 
+    @Override
+    @PreAuthorize("hasAnyRole('ACADEMIC_ADMIN', 'FACULTY', 'SUPER_ADMIN', 'SUPERADMIN', 'ADMIN')")
+    public ExamResponseDTO createExam(ExamDefinitionDTO request) {
+        String tenantId = resolveTenantId();
+        assertNotStudentCaller("create exams");
+
+        CourseOffering offering = null;
+        if (request.getCourseOfferingId() != null) {
+            offering = courseOfferingRepository.findByIdAndTenantId(request.getCourseOfferingId(), tenantId)
+                    .orElseThrow(() -> new IllegalArgumentException("Course offering not found with ID: " + request.getCourseOfferingId()));
+        }
+
+        Long resolvedCourseId = request.getCourseId();
+        if (resolvedCourseId == null && offering != null && offering.getCourse() != null) {
+            resolvedCourseId = offering.getCourse().getId();
+        }
+
+        LocalDate examDate = request.getScheduledStartTime() != null
+                ? request.getScheduledStartTime().toLocalDate()
+                : LocalDate.now();
+
+        Exam exam = new Exam();
+        exam.setTitle(request.getTitle());
+        exam.setName(request.getTitle());
+        exam.setScheduledStartTime(request.getScheduledStartTime());
+        exam.setDurationMinutes(request.getDurationMinutes());
+        exam.setMaxMarks(request.getMaxMarks());
+        exam.setPassingMarks(request.getPassingMarks());
+        exam.setTotalMarks(request.getMaxMarks());
+        exam.setExamDate(examDate);
+        exam.setCourseOffering(offering);
+        exam.setCourseId(resolvedCourseId);
+        exam.setStatus(request.getStatus() != null ? request.getStatus() : ExamStatus.DRAFT);
+        exam.setTenantId(tenantId);
+
+        if (request.getQuestions() != null && !request.getQuestions().isEmpty()) {
+            for (ExamQuestionDTO qDto : request.getQuestions()) {
+                ExamQuestion question = ExamQuestion.builder()
+                        .questionText(qDto.getQuestionText())
+                        .questionType(qDto.getQuestionType() != null ? qDto.getQuestionType() : "MULTIPLE_CHOICE")
+                        .optionsJson(qDto.getOptionsJson())
+                        .correctAnswer(qDto.getCorrectAnswer())
+                        .marks(qDto.getMarks())
+                        .orderIndex(qDto.getOrderIndex() != null ? qDto.getOrderIndex() : 0)
+                        .build();
+                exam.addQuestion(question);
+            }
+        }
+
+        Exam savedExam = examRepository.save(exam);
+        log.info("Exam [{}] created with status [{}] by authorized academic staff for tenant [{}]",
+                savedExam.getId(), savedExam.getStatus(), tenantId);
+        return mapToExamResponse(savedExam);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExamResponseDTO> getPublishedExamsForStudent(Long studentId, Long courseId) {
+        String tenantId = resolveTenantId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        boolean isStudent = isStudentUser(auth);
+        if (isStudent) {
+            Student student = resolveStudent(studentId, auth, tenantId);
+            List<Long> enrolledCourseIds = getEnrolledCourseIds(student, tenantId);
+
+            if (courseId != null) {
+                if (!enrolledCourseIds.contains(courseId)) {
+                    throw new EduPulseBusinessException(
+                            "Access denied: Student is not enrolled in course ID " + courseId,
+                            HttpStatus.FORBIDDEN);
+                }
+                return examRepository.findPublishedExamsForCourse(courseId, ExamStatus.PUBLISHED, tenantId)
+                        .stream()
+                        .map(this::mapToExamResponse)
+                        .toList();
+            } else {
+                if (enrolledCourseIds.isEmpty()) {
+                    return Collections.emptyList();
+                }
+                return examRepository.findPublishedExamsForCourses(enrolledCourseIds, ExamStatus.PUBLISHED, tenantId)
+                        .stream()
+                        .map(this::mapToExamResponse)
+                        .toList();
+            }
+        }
+
+        // Faculty or Academic Admin querying student's course exams
+        if (courseId != null) {
+            return examRepository.findPublishedExamsForCourse(courseId, ExamStatus.PUBLISHED, tenantId)
+                    .stream()
+                    .map(this::mapToExamResponse)
+                    .toList();
+        }
+        return examRepository.findByStatusAndTenantId(ExamStatus.PUBLISHED, tenantId)
+                .stream()
+                .map(this::mapToExamResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ExamResponseDTO> getExamsForCourse(Long courseId) {
+        String tenantId = resolveTenantId();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (isStudentUser(auth)) {
+            return getPublishedExamsForStudent(null, courseId);
+        }
+
+        return examRepository.findByCourseOfferingIdAndTenantId(courseId, tenantId)
+                .stream()
+                .map(this::mapToExamResponse)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ExamResponseDTO getExamById(Long examId) {
+        String tenantId = resolveTenantId();
+        Exam exam = examRepository.findByIdAndTenantId(examId, tenantId)
+                .orElseThrow(() -> new EduPulseBusinessException("Exam not found with ID: " + examId, HttpStatus.NOT_FOUND));
+
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (isStudentUser(auth)) {
+            if (exam.getStatus() != ExamStatus.PUBLISHED) {
+                throw new EduPulseBusinessException("Access denied: Exam is not published", HttpStatus.FORBIDDEN);
+            }
+            Student student = resolveStudent(null, auth, tenantId);
+            List<Long> enrolledCourseIds = getEnrolledCourseIds(student, tenantId);
+            Long examCourseId = exam.getCourseId();
+            if (examCourseId != null && !enrolledCourseIds.contains(examCourseId)) {
+                throw new EduPulseBusinessException(
+                        "Access denied: Student is not enrolled in the course for this exam",
+                        HttpStatus.FORBIDDEN);
+            }
+        }
+
+        return mapToExamResponse(exam);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ACADEMIC_ADMIN', 'FACULTY', 'SUPER_ADMIN', 'SUPERADMIN', 'ADMIN')")
+    public ExamResponseDTO publishExam(Long examId) {
+        String tenantId = resolveTenantId();
+        assertNotStudentCaller("publish exams");
+
+        Exam exam = examRepository.findByIdAndTenantId(examId, tenantId)
+                .orElseThrow(() -> new EduPulseBusinessException("Exam not found with ID: " + examId, HttpStatus.NOT_FOUND));
+
+        exam.setStatus(ExamStatus.PUBLISHED);
+        Exam updated = examRepository.save(exam);
+        log.info("Exam [{}] published successfully under tenant [{}]", examId, tenantId);
+        return mapToExamResponse(updated);
+    }
+
+    private boolean isStudentUser(Authentication auth) {
+        return auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_STUDENT"));
+    }
+
+    private void assertNotStudentCaller(String action) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (isStudentUser(auth)) {
+            throw new EduPulseBusinessException(
+                    "Access denied: Students are not authorized to " + action,
+                    HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private Student resolveStudent(Long studentId, Authentication auth, String tenantId) {
+        if (studentId != null) {
+            return studentRepository.findByIdAndTenantId(studentId, tenantId)
+                    .orElseThrow(() -> new EduPulseBusinessException("Student not found with ID: " + studentId, HttpStatus.NOT_FOUND));
+        }
+        if (auth != null && auth.getName() != null) {
+            return studentRepository.findByEmailAndTenantId(auth.getName(), tenantId)
+                    .or(() -> studentRepository.findByEnrollmentNumberAndTenantId(auth.getName(), tenantId))
+                    .orElseThrow(() -> new EduPulseBusinessException("Student profile not found for authenticated principal", HttpStatus.NOT_FOUND));
+        }
+        throw new EduPulseBusinessException("Unable to resolve student identity from security context", HttpStatus.UNAUTHORIZED);
+    }
+
+    private List<Long> getEnrolledCourseIds(Student student, String tenantId) {
+        if (student.getBatch() == null) {
+            return Collections.emptyList();
+        }
+        Long batchId = student.getBatch().getId();
+        List<CourseOffering> offerings = courseOfferingRepository.findByBatchIdAndTenantId(batchId, tenantId);
+        return offerings.stream()
+                .map(o -> o.getCourse() != null ? o.getCourse().getId() : null)
+                .filter(Objects::nonNull)
+                .distinct()
+                .toList();
+    }
+
     private FacultyResponseDTO mapToFacultyResponse(Faculty faculty) {
         return FacultyResponseDTO.builder()
                 .id(faculty.getId())
@@ -205,5 +429,55 @@ public class AcademicServiceImpl implements AcademicService {
                 .createdAt(offering.getCreatedAt())
                 .build();
     }
-}
 
+    private ExamResponseDTO mapToExamResponse(Exam exam) {
+        List<ExamQuestionDTO> questionDTOs = exam.getQuestions() != null
+                ? exam.getQuestions().stream().map(q -> ExamQuestionDTO.builder()
+                        .id(q.getId())
+                        .questionText(q.getQuestionText())
+                        .questionType(q.getQuestionType())
+                        .optionsJson(q.getOptionsJson())
+                        .correctAnswer(q.getCorrectAnswer())
+                        .marks(q.getMarks())
+                        .orderIndex(q.getOrderIndex())
+                        .build()).toList()
+                : Collections.emptyList();
+
+        CourseOffering offering = exam.getCourseOffering();
+        Long courseOfferingId = offering != null ? offering.getId() : null;
+        Long courseId = exam.getCourseId();
+        String courseCode = offering != null && offering.getCourse() != null ? offering.getCourse().getCode() : null;
+        String courseName = offering != null && offering.getCourse() != null ? offering.getCourse().getName() : null;
+        String facultyName = offering != null && offering.getFaculty() != null
+                ? offering.getFaculty().getFirstName() + " " + offering.getFaculty().getLastName() : null;
+        Long batchId = offering != null && offering.getBatch() != null ? offering.getBatch().getId() : null;
+        String batchName = offering != null && offering.getBatch() != null ? offering.getBatch().getName() : null;
+        String semester = offering != null ? offering.getSemester() : null;
+
+        LocalDate examDate = exam.getExamDate() != null
+                ? exam.getExamDate()
+                : (exam.getScheduledStartTime() != null ? exam.getScheduledStartTime().toLocalDate() : null);
+
+        return ExamResponseDTO.builder()
+                .id(exam.getId())
+                .name(exam.getName())
+                .title(exam.getTitle())
+                .examDate(examDate)
+                .scheduledStartTime(exam.getScheduledStartTime())
+                .durationMinutes(exam.getDurationMinutes())
+                .totalMarks(exam.getTotalMarks())
+                .maxMarks(exam.getMaxMarks())
+                .passingMarks(exam.getPassingMarks())
+                .status(exam.getStatus())
+                .courseOfferingId(courseOfferingId)
+                .courseId(courseId)
+                .courseCode(courseCode)
+                .courseName(courseName)
+                .facultyName(facultyName)
+                .batchId(batchId)
+                .batchName(batchName)
+                .semester(semester)
+                .questions(questionDTOs)
+                .build();
+    }
+}

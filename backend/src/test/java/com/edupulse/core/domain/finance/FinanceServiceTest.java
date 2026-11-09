@@ -38,6 +38,7 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -72,6 +73,9 @@ class FinanceServiceTest {
 
     @Mock
     private com.edupulse.core.domain.billing.repository.TenantSubscriptionRepository tenantSubscriptionRepository;
+
+    @Mock
+    private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private FinanceServiceImpl financeService;
@@ -149,6 +153,8 @@ class FinanceServiceTest {
         assertThat(responses.get(0).getStudentEnrollmentNumber()).isEqualTo("ENR-101");
         assertThat(responses.get(0).getNetAmount()).isEqualByComparingTo(new BigDecimal("50000.00"));
         assertThat(responses.get(0).getStatus()).isEqualTo(InvoiceStatus.UNPAID);
+
+        verify(eventPublisher, times(1)).publishEvent(any(com.edupulse.core.domain.finance.event.InvoiceGeneratedEvent.class));
     }
 
     @Test
@@ -197,6 +203,8 @@ class FinanceServiceTest {
         assertThat(response.getAmount()).isEqualByComparingTo(new BigDecimal("20000.00"));
         assertThat(response.getInvoiceStatus()).isEqualTo(InvoiceStatus.PARTIAL);
         assertThat(response.getRemainingInvoiceBalance()).isEqualByComparingTo(new BigDecimal("30000.00"));
+
+        verify(eventPublisher, times(1)).publishEvent(any(com.edupulse.core.domain.finance.event.PaymentSuccessEvent.class));
     }
 
     @Test

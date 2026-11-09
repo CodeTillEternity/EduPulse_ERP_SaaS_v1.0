@@ -24,6 +24,8 @@ import com.edupulse.core.domain.finance.repository.FeeHeadRepository;
 import com.edupulse.core.domain.finance.repository.FeePaymentRepository;
 import com.edupulse.core.domain.billing.repository.TenantSubscriptionRepository;
 import com.edupulse.core.domain.finance.dto.BrandedDocumentDTO;
+import com.edupulse.core.domain.finance.event.InvoiceGeneratedEvent;
+import com.edupulse.core.domain.finance.event.PaymentSuccessEvent;
 import com.edupulse.core.domain.finance.repository.FeeStructureItemRepository;
 import com.edupulse.core.domain.finance.repository.FeeStructureRepository;
 import com.edupulse.core.domain.finance.repository.StudentInvoiceRepository;
@@ -34,6 +36,7 @@ import com.erp.multitenancy.dto.TenantBrandingDTO;
 import com.erp.multitenancy.service.TenantBrandingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,6 +65,7 @@ public class FinanceServiceImpl implements FinanceService {
     private final BatchRepository batchRepository;
     private final TenantBrandingService tenantBrandingService;
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     public FinanceServiceImpl(
             @Qualifier("coreFeeHeadRepository") FeeHeadRepository feeHeadRepository,
@@ -73,7 +77,22 @@ public class FinanceServiceImpl implements FinanceService {
             @Qualifier("coreBatchRepository") BatchRepository batchRepository) {
         this(feeHeadRepository, feeStructureRepository, feeStructureItemRepository,
              studentInvoiceRepository, feePaymentRepository, studentRepository, batchRepository,
-             null, null);
+             null, null, null);
+    }
+
+    public FinanceServiceImpl(
+            @Qualifier("coreFeeHeadRepository") FeeHeadRepository feeHeadRepository,
+            @Qualifier("coreFeeStructureRepository") FeeStructureRepository feeStructureRepository,
+            @Qualifier("coreFeeStructureItemRepository") FeeStructureItemRepository feeStructureItemRepository,
+            @Qualifier("coreStudentInvoiceRepository") StudentInvoiceRepository studentInvoiceRepository,
+            @Qualifier("coreFeePaymentRepository") FeePaymentRepository feePaymentRepository,
+            @Qualifier("coreStudentRepository") StudentRepository studentRepository,
+            @Qualifier("coreBatchRepository") BatchRepository batchRepository,
+            TenantBrandingService tenantBrandingService,
+            TenantSubscriptionRepository tenantSubscriptionRepository) {
+        this(feeHeadRepository, feeStructureRepository, feeStructureItemRepository,
+             studentInvoiceRepository, feePaymentRepository, studentRepository, batchRepository,
+             tenantBrandingService, tenantSubscriptionRepository, null);
     }
 
     @Autowired
@@ -86,7 +105,8 @@ public class FinanceServiceImpl implements FinanceService {
             @Qualifier("coreStudentRepository") StudentRepository studentRepository,
             @Qualifier("coreBatchRepository") BatchRepository batchRepository,
             @Autowired(required = false) TenantBrandingService tenantBrandingService,
-            @Autowired(required = false) @Qualifier("coreBillingTenantSubscriptionRepository") TenantSubscriptionRepository tenantSubscriptionRepository) {
+            @Autowired(required = false) @Qualifier("coreBillingTenantSubscriptionRepository") TenantSubscriptionRepository tenantSubscriptionRepository,
+            @Autowired(required = false) ApplicationEventPublisher eventPublisher) {
         this.feeHeadRepository = feeHeadRepository;
         this.feeStructureRepository = feeStructureRepository;
         this.feeStructureItemRepository = feeStructureItemRepository;
@@ -96,6 +116,7 @@ public class FinanceServiceImpl implements FinanceService {
         this.batchRepository = batchRepository;
         this.tenantBrandingService = tenantBrandingService;
         this.tenantSubscriptionRepository = tenantSubscriptionRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     private String getRequiredTenantId() {
@@ -254,6 +275,27 @@ public class FinanceServiceImpl implements FinanceService {
             createdInvoices.add(studentInvoiceRepository.save(invoice));
         }
 
+        if (eventPublisher != null) {
+            for (StudentInvoice invoice : createdInvoices) {
+                String studentName = invoice.getStudent() != null
+                        ? invoice.getStudent().getFirstName() + " " + invoice.getStudent().getLastName()
+                        : "Student";
+                String studentEmail = invoice.getStudent() != null ? invoice.getStudent().getEmail() : null;
+                Long studentId = invoice.getStudent() != null ? invoice.getStudent().getId() : null;
+
+                eventPublisher.publishEvent(new InvoiceGeneratedEvent(
+                        invoice.getId(),
+                        invoice.getInvoiceNumber(),
+                        studentId,
+                        studentName,
+                        studentEmail,
+                        invoice.getNetAmount(),
+                        invoice.getDueDate(),
+                        tenantId
+                ));
+            }
+        }
+
         return createdInvoices.stream()
                 .map(this::mapToStudentInvoiceResponse)
                 .collect(Collectors.toList());
@@ -294,6 +336,21 @@ public class FinanceServiceImpl implements FinanceService {
         // Update invoice balance and status
         invoice.applyPayment(request.getAmount());
         StudentInvoice updatedInvoice = studentInvoiceRepository.save(invoice);
+
+        if (eventPublisher != null) {
+            Long studentId = updatedInvoice.getStudent() != null ? updatedInvoice.getStudent().getId() : null;
+            eventPublisher.publishEvent(new PaymentSuccessEvent(
+                    savedPayment.getId(),
+                    updatedInvoice.getId(),
+                    updatedInvoice.getInvoiceNumber(),
+                    studentId,
+                    savedPayment.getReferenceNumber(),
+                    savedPayment.getAmount(),
+                    savedPayment.getPaymentMethod(),
+                    savedPayment.getPaymentDate(),
+                    tenantId
+            ));
+        }
 
         TenantBrandingDTO branding = resolveBranding(tenantId);
         boolean watermarkRemoved = isHigherTierSubscriber(tenantId);

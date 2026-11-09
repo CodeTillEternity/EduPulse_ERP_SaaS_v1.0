@@ -1,7 +1,14 @@
 package com.erp.common.exception;
 
-public class BusinessException extends RuntimeException {
+import org.springframework.http.HttpStatus;
+
+public class BusinessException extends EduPulseBusinessException {
+
     public BusinessException(String message) {
-        super(message);
+        super(message, HttpStatus.CONFLICT);
+    }
+
+    public BusinessException(String message, HttpStatus status) {
+        super(message, status);
     }
 }

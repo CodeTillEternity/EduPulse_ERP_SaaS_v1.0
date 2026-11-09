@@ -1,200 +1,295 @@
 package com.erp.common.exception;
 
-import com.erp.common.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
-import java.util.HashMap;
+import java.net.URI;
+import java.time.Instant;
+import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
+/**
+ * Standardized global exception handler compliant with RFC 7807 (Problem Details for HTTP APIs).
+ * Intercepts application exceptions, maps them to structured ProblemDetail responses,
+ * and ensures raw server stack traces are never exposed to clients.
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                HttpStatus.NOT_FOUND.getReasonPhrase(),
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    private ProblemDetail buildProblemDetail(HttpStatus status, String title, String detail, String path, String errorCode) {
+        ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
+        problem.setTitle(title);
+        problem.setType(URI.create("https://api.edupulse.com/errors/" + (errorCode != null ? errorCode.toLowerCase() : status.name().toLowerCase())));
+        if (path != null) {
+            problem.setInstance(URI.create(path));
+            problem.setProperty("path", path);
+        }
+        problem.setProperty("timestamp", Instant.now().toString());
+        problem.setProperty("status", status.value());
+        problem.setProperty("message", detail);
+        if (errorCode != null) {
+            problem.setProperty("errorCode", errorCode);
+        }
+        return problem;
     }
 
+    /**
+     * Intercepts domain EntityNotFoundException, ResourceNotFoundException, and JPA EntityNotFoundException.
+     * RFC 7807: 404 NOT_FOUND.
+     */
+    @ExceptionHandler({EntityNotFoundException.class, ResourceNotFoundException.class, jakarta.persistence.EntityNotFoundException.class})
+    public ResponseEntity<ProblemDetail> handleEntityNotFoundException(Exception ex, HttpServletRequest request) {
+        log.warn("Entity not found at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.NOT_FOUND,
+                "Entity Not Found",
+                ex.getMessage(),
+                request.getRequestURI(),
+                "ENTITY_NOT_FOUND"
+        );
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(problem);
+    }
+
+    /**
+     * Intercepts security authorization rejections.
+     * RFC 7807: 403 FORBIDDEN.
+     */
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ProblemDetail> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+        log.warn("Access denied at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.FORBIDDEN,
+                "Access Denied",
+                ex.getMessage() != null && !ex.getMessage().isBlank()
+                        ? ex.getMessage()
+                        : "You do not have permission to access this resource",
+                request.getRequestURI(),
+                "FORBIDDEN_OPERATION"
+        );
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(problem);
+    }
+
+    /**
+     * Intercepts Bean Validation failures (e.g. @Valid, @NotNull, @Size).
+     * RFC 7807: 400 BAD_REQUEST with structured validationErrors map.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        Map<String, String> errors = new HashMap<>();
+    public ResponseEntity<ProblemDetail> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        Map<String, String> validationErrors = new LinkedHashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
+            validationErrors.put(error.getField(), error.getDefaultMessage());
         }
 
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
+        log.warn("Validation failure at [{}] with {} errors", request.getRequestURI(), validationErrors.size());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
                 "Validation Failed",
                 "Input payload contains validation errors",
                 request.getRequestURI(),
-                errors
+                "VALIDATION_FAILED"
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        problem.setProperty("validationErrors", validationErrors);
+        problem.setProperty("errors", validationErrors);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
+    }
+
+    /**
+     * Intercepts custom EduPulse business rule violations.
+     * RFC 7807: 422 UNPROCESSABLE_ENTITY or configured status.
+     */
+    @ExceptionHandler(EduPulseBusinessException.class)
+    public ResponseEntity<ProblemDetail> handleEduPulseBusinessException(EduPulseBusinessException ex, HttpServletRequest request) {
+        HttpStatus status = ex.getStatus() != null ? ex.getStatus() : HttpStatus.UNPROCESSABLE_ENTITY;
+        log.warn("Business rule violation [{}] at [{}]: {}", ex.getErrorCode(), request.getRequestURI(), ex.getMessage());
+
+        ProblemDetail problem = buildProblemDetail(
+                status,
+                "Business Rule Violation",
+                ex.getMessage(),
+                request.getRequestURI(),
+                ex.getErrorCode()
+        );
+        return ResponseEntity.status(status).body(problem);
     }
 
     @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<ErrorResponse> handleCustomValidationException(ValidationException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+    public ResponseEntity<ProblemDetail> handleCustomValidationException(ValidationException ex, HttpServletRequest request) {
+        log.warn("Validation exception at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Validation Error",
                 ex.getMessage(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                "VALIDATION_ERROR"
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(BusinessException.class)
-    public ResponseEntity<ErrorResponse> handleBusinessException(BusinessException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler(MaxUploadSizeExceededException.class)
-    public ResponseEntity<ErrorResponse> handleMaxSizeException(MaxUploadSizeExceededException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.PAYLOAD_TOO_LARGE.value(),
-                HttpStatus.PAYLOAD_TOO_LARGE.getReasonPhrase(),
-                "Uploaded file exceeds the maximum allowed size limit (10MB)",
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.PAYLOAD_TOO_LARGE);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+    public ResponseEntity<ProblemDetail> handleIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        log.warn("Illegal argument at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Invalid Request Parameter",
                 ex.getMessage(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                "INVALID_ARGUMENT"
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> handleMethodArgumentTypeMismatch(org.springframework.web.method.annotation.MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
-        String msg = String.format("Invalid parameter value '%s' for parameter '%s'", ex.getValue(), ex.getName());
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                HttpStatus.BAD_REQUEST.getReasonPhrase(),
-                msg,
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler(org.springframework.security.authentication.BadCredentialsException.class)
-    public ResponseEntity<com.erp.common.exception.ApiErrorResponse> handleBadCredentialsException(org.springframework.security.authentication.BadCredentialsException ex, HttpServletRequest request) {
-        com.erp.common.exception.ApiErrorResponse errorResponse = com.erp.common.exception.ApiErrorResponse.of(
-                HttpStatus.UNAUTHORIZED.value(),
-                "INVALID_CREDENTIALS",
-                "Invalid username or password",
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(org.springframework.security.authentication.DisabledException.class)
-    public ResponseEntity<com.erp.common.exception.ApiErrorResponse> handleDisabledException(org.springframework.security.authentication.DisabledException ex, HttpServletRequest request) {
-        com.erp.common.exception.ApiErrorResponse errorResponse = com.erp.common.exception.ApiErrorResponse.of(
-                HttpStatus.UNAUTHORIZED.value(),
-                "INVALID_CREDENTIALS",
-                "Account is disabled",
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(com.erp.common.exception.InvalidTokenException.class)
-    public ResponseEntity<com.erp.common.exception.ApiErrorResponse> handleInvalidTokenException(com.erp.common.exception.InvalidTokenException ex, HttpServletRequest request) {
-        com.erp.common.exception.ApiErrorResponse errorResponse = com.erp.common.exception.ApiErrorResponse.of(
-                HttpStatus.UNAUTHORIZED.value(),
-                "INVALID_TOKEN",
-                ex.getMessage(),
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
-    public ResponseEntity<com.erp.common.exception.ApiErrorResponse> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex, HttpServletRequest request) {
-        com.erp.common.exception.ApiErrorResponse errorResponse = com.erp.common.exception.ApiErrorResponse.of(
-                HttpStatus.UNAUTHORIZED.value(),
-                "UNAUTHORIZED",
-                ex.getMessage() != null ? ex.getMessage() : "Full authentication is required to access this resource",
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<com.erp.common.exception.ApiErrorResponse> handleAccessDeniedException(org.springframework.security.access.AccessDeniedException ex, HttpServletRequest request) {
-        com.erp.common.exception.ApiErrorResponse errorResponse = com.erp.common.exception.ApiErrorResponse.of(
-                HttpStatus.FORBIDDEN.value(),
-                "FORBIDDEN_OPERATION",
-                ex.getMessage() != null ? ex.getMessage() : "You do not have permission to access this resource",
-                request.getRequestURI()
-        );
-        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
     }
 
     @ExceptionHandler(IllegalStateException.class)
-    public ResponseEntity<ErrorResponse> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                ex.getMessage() != null ? ex.getMessage() : "The requested operation conflicts with current system state",
-                request.getRequestURI()
+    public ResponseEntity<ProblemDetail> handleIllegalStateException(IllegalStateException ex, HttpServletRequest request) {
+        log.warn("Illegal state conflict at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.CONFLICT,
+                "State Conflict",
+                ex.getMessage(),
+                request.getRequestURI(),
+                "STATE_CONFLICT"
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
     }
 
-    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(org.springframework.dao.DataIntegrityViolationException ex, HttpServletRequest request) {
-        String correlationId = java.util.UUID.randomUUID().toString();
-        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class).error("[{}] Data integrity violation: {}", correlationId, ex.getMessage(), ex);
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ProblemDetail> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest request) {
+        String msg = String.format("Invalid parameter value '%s' for parameter '%s'", ex.getValue(), ex.getName());
+        log.warn("Type mismatch at [{}]: {}", request.getRequestURI(), msg);
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.BAD_REQUEST,
+                "Type Mismatch",
+                msg,
+                request.getRequestURI(),
+                "TYPE_MISMATCH"
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(problem);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ProblemDetail> handleMaxSizeException(MaxUploadSizeExceededException ex, HttpServletRequest request) {
+        log.warn("Max upload size exceeded at [{}]", request.getRequestURI());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.PAYLOAD_TOO_LARGE,
+                "Payload Too Large",
+                "Uploaded file exceeds the maximum allowed size limit (10MB)",
+                request.getRequestURI(),
+                "PAYLOAD_TOO_LARGE"
+        );
+        return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(problem);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ProblemDetail> handleBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        log.warn("Bad credentials authentication failure at [{}]", request.getRequestURI());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Unauthorized",
+                "Invalid username or password",
+                request.getRequestURI(),
+                "INVALID_CREDENTIALS"
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ProblemDetail> handleDisabledException(DisabledException ex, HttpServletRequest request) {
+        log.warn("Disabled account attempt at [{}]", request.getRequestURI());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Account Disabled",
+                "Account is disabled",
+                request.getRequestURI(),
+                "ACCOUNT_DISABLED"
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
+    }
+
+    @ExceptionHandler(InvalidTokenException.class)
+    public ResponseEntity<ProblemDetail> handleInvalidTokenException(InvalidTokenException ex, HttpServletRequest request) {
+        log.warn("Invalid JWT token at [{}]", request.getRequestURI());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid Token",
+                ex.getMessage(),
+                request.getRequestURI(),
+                "INVALID_TOKEN"
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ProblemDetail> handleAuthenticationException(AuthenticationException ex, HttpServletRequest request) {
+        log.warn("Authentication required at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Unauthorized",
+                ex.getMessage() != null ? ex.getMessage() : "Full authentication is required to access this resource",
+                request.getRequestURI(),
+                "UNAUTHORIZED"
+        );
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(problem);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ProblemDetail> handleDataIntegrityViolation(DataIntegrityViolationException ex, HttpServletRequest request) {
+        String correlationId = UUID.randomUUID().toString();
+        log.error("[{}] Database integrity constraint violation at [{}]: {}", correlationId, request.getRequestURI(), ex.getMessage(), ex);
+
         String userMessage = "A database conflict occurred. The submitted information or identifier is already in use.";
         if (ex.getMessage() != null && ex.getMessage().toUpperCase().contains("PHONE")) {
             userMessage = "The contact phone number is already registered. Please verify your contact information.";
         } else if (ex.getMessage() != null && ex.getMessage().toUpperCase().contains("EMAIL")) {
             userMessage = "The email address is already registered. Please use your existing account or provide another email.";
         }
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
+
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.CONFLICT,
+                "Database Conflict",
                 userMessage,
-                request.getRequestURI()
+                request.getRequestURI(),
+                "DATA_INTEGRITY_VIOLATION"
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+        problem.setProperty("correlationId", correlationId);
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(problem);
     }
 
+    /**
+     * Fallback catch-all handler for unhandled exceptions.
+     * Sanitizes errors to prevent exposing raw stack traces to clients.
+     * RFC 7807: 500 INTERNAL_SERVER_ERROR with correlation tracking ID.
+     */
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGlobalException(Exception ex, HttpServletRequest request) {
-        String correlationId = java.util.UUID.randomUUID().toString();
-        org.slf4j.LoggerFactory.getLogger(GlobalExceptionHandler.class).error("[{}] Unexpected server error: {}", correlationId, ex.getMessage(), ex);
-        ErrorResponse errorResponse = new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(),
+    public ResponseEntity<ProblemDetail> handleGlobalException(Exception ex, HttpServletRequest request) {
+        String correlationId = UUID.randomUUID().toString();
+        log.error("[{}] Internal server error at [{}]: {}", correlationId, request.getRequestURI(), ex.getMessage(), ex);
+
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "Internal Server Error",
                 "An unexpected server error occurred. Please contact support with reference ID: " + correlationId,
-                request.getRequestURI()
+                request.getRequestURI(),
+                "INTERNAL_SERVER_ERROR"
         );
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        problem.setProperty("correlationId", correlationId);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(problem);
     }
 }

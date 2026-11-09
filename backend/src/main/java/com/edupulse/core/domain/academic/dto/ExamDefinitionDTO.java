@@ -44,5 +44,9 @@ public class ExamDefinitionDTO {
 
     private ExamStatus status;
 
+    private String examPin;
+
+    private String allowedIpSubnet;
+
     private List<ExamQuestionDTO> questions;
 }

@@ -35,6 +35,8 @@ public class ExamResponseDTO {
     private Long batchId;
     private String batchName;
     private String semester;
+    private String examPin;
+    private String allowedIpSubnet;
     private List<ExamQuestionDTO> questions;
 
     public String getTitle() {

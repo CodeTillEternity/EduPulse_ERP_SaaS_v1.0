@@ -75,6 +75,12 @@ public class Exam extends BaseTenantEntity {
     @Column(name = "course_id")
     private Long courseId;
 
+    @Column(name = "exam_pin", length = 50)
+    private String examPin;
+
+    @Column(name = "allowed_ip_subnet", length = 100)
+    private String allowedIpSubnet;
+
     @OneToMany(mappedBy = "exam", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @OrderBy("orderIndex ASC")
     @Builder.Default

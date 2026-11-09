@@ -217,6 +217,8 @@ public class AcademicServiceImpl implements AcademicService {
         exam.setExamDate(examDate);
         exam.setCourseOffering(offering);
         exam.setCourseId(resolvedCourseId);
+        exam.setExamPin(request.getExamPin());
+        exam.setAllowedIpSubnet(request.getAllowedIpSubnet());
         exam.setStatus(request.getStatus() != null ? request.getStatus() : ExamStatus.DRAFT);
         exam.setTenantId(tenantId);
 
@@ -477,6 +479,8 @@ public class AcademicServiceImpl implements AcademicService {
                 .batchId(batchId)
                 .batchName(batchName)
                 .semester(semester)
+                .examPin(exam.getExamPin())
+                .allowedIpSubnet(exam.getAllowedIpSubnet())
                 .questions(questionDTOs)
                 .build();
     }

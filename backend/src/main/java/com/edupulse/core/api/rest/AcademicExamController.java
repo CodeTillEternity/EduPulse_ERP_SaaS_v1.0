@@ -2,9 +2,13 @@ package com.edupulse.core.api.rest;
 
 import com.edupulse.core.domain.academic.dto.ExamDefinitionDTO;
 import com.edupulse.core.domain.academic.dto.ExamResponseDTO;
+import com.edupulse.core.domain.academic.dto.ExamStartRequestDTO;
+import com.edupulse.core.domain.academic.dto.ExamStartResponseDTO;
 import com.edupulse.core.domain.academic.service.AcademicService;
+import com.edupulse.core.domain.academic.service.ExamSecurityService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -23,19 +27,22 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * REST controller managing Academic Examination definitions and multi-tenant RBAC.
- * Allows ACADEMIC_ADMIN and FACULTY to author and publish exams, while STUDENT roles
- * are restricted strictly to querying published exams mapped to their enrolled courses.
+ * REST controller managing Academic Examination definitions, multi-tenant RBAC,
+ * and physical layer proctoring (IP subnet filtering & dynamic exam PIN verification).
  */
 @RestController("academicExamRbacController")
 @RequestMapping({"/api/exams", "/api/v1/exams"})
-@Tag(name = "Academic Examinations", description = "Exam creation, scheduling, and RBAC-scoped examination queries")
+@Tag(name = "Academic Examinations", description = "Exam creation, scheduling, RBAC scoping, and physical proctoring API")
 public class AcademicExamController {
 
     private final AcademicService academicService;
+    private final ExamSecurityService examSecurityService;
 
-    public AcademicExamController(@Qualifier("coreAcademicService") AcademicService academicService) {
+    public AcademicExamController(
+            @Qualifier("coreAcademicService") AcademicService academicService,
+            @Qualifier("coreExamSecurityService") ExamSecurityService examSecurityService) {
         this.academicService = academicService;
+        this.examSecurityService = examSecurityService;
     }
 
     @PostMapping
@@ -69,5 +76,16 @@ public class AcademicExamController {
     public ResponseEntity<ExamResponseDTO> publishExam(@PathVariable Long id) {
         ExamResponseDTO published = academicService.publishExam(id);
         return ResponseEntity.ok(published);
+    }
+
+    @PostMapping("/{id}/start")
+    @Operation(summary = "Start Examination Session", description = "Validates physical subnet whitelisting via X-Forwarded-For and dynamic exam PIN")
+    public ResponseEntity<ExamStartResponseDTO> startExam(
+            @PathVariable Long id,
+            @Valid @RequestBody ExamStartRequestDTO request,
+            HttpServletRequest servletRequest) {
+        String clientIp = examSecurityService.extractClientIp(servletRequest);
+        ExamStartResponseDTO response = examSecurityService.startExam(id, request, clientIp);
+        return ResponseEntity.ok(response);
     }
 }

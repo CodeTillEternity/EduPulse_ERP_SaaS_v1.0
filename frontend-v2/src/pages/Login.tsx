@@ -88,7 +88,11 @@ export default function Login() {
       
       login(accessToken, refreshToken, { username: user, role, permissions });
       toast.success('Login successful!');
-      navigate('/dashboard');
+      if (role === 'STUDENT' || activeTab === 'STUDENT') {
+        navigate('/portal');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err: any) {
       const errMsg = err.response?.data?.message || err.message || 'Invalid credentials or role mismatch.';
       toast.error(errMsg);

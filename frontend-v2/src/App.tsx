@@ -38,6 +38,9 @@ import StudentLedger from './pages/Finance/StudentLedger';
 import LeaveManager from './pages/HR/LeaveManager';
 import PayrollDashboard from './pages/HR/PayrollDashboard';
 import LandingPage from './pages/LandingPage';
+import StudentPortalLayout from './layouts/StudentPortalLayout';
+import StudentDashboard from './pages/Portal/StudentDashboard';
+import FeeCenter from './pages/Portal/FeeCenter';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -86,7 +89,22 @@ function RoleProtectedRoute({ children, allowedRoles }: { children: ReactNode, a
 
 function PublicOnlyRoute({ children }: { children: ReactNode }) {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  return isAuthenticated ? <Navigate to="/dashboard" replace /> : <>{children}</>;
+  const user = useAuthStore((state) => state.user);
+  if (isAuthenticated) {
+    if (user?.role === 'STUDENT') {
+      return <Navigate to="/portal" replace />;
+    }
+    return <Navigate to="/dashboard" replace />;
+  }
+  return <>{children}</>;
+}
+
+function DashboardRoute() {
+  const user = useAuthStore((state) => state.user);
+  if (user?.role === 'STUDENT') {
+    return <Navigate to="/portal" replace />;
+  }
+  return <Dashboard />;
 }
 
 const NotFound = () => (
@@ -154,7 +172,7 @@ function App() {
                 </ProtectedRoute>
               }
             >
-              <Route index element={<Dashboard />} />
+              <Route index element={<DashboardRoute />} />
               <Route path="profile" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><ProfileRedirect /></RoleProtectedRoute>} />
               <Route path="students" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentsList /></RoleProtectedRoute>} />
               <Route path="students/:id" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentProfile /></RoleProtectedRoute>} />
@@ -179,6 +197,21 @@ function App() {
               <Route path="admin/users" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><AdminUsersList /></RoleProtectedRoute>} />
               <Route path="billing" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><BillingDashboard /></RoleProtectedRoute>} />
               <Route path="super-admin" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><SuperAdminDashboard /></RoleProtectedRoute>} />
+            </Route>
+            <Route
+              path="/portal"
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={['STUDENT', 'SUPER_ADMIN', 'ADMIN']}>
+                    <StudentPortalLayout />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<StudentDashboard />} />
+              <Route path="schedule" element={<TimetableManager />} />
+              <Route path="academics" element={<TranscriptViewer />} />
+              <Route path="fees" element={<FeeCenter />} />
             </Route>
             <Route
               path="/super-admin"

@@ -1,6 +1,8 @@
 package com.edupulse.core.domain.finance.repository;
 
 import com.edupulse.core.domain.finance.StudentInvoice;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,10 @@ public interface StudentInvoiceRepository extends JpaRepository<StudentInvoice, 
     Optional<StudentInvoice> findByIdAndTenantId(Long id, String tenantId);
 
     List<StudentInvoice> findByTenantId(String tenantId);
+
+    Page<StudentInvoice> findByTenantId(String tenantId, Pageable pageable);
+
+    Page<StudentInvoice> findByTenantIdAndStatus(String tenantId, com.edupulse.core.domain.finance.InvoiceStatus status, Pageable pageable);
 
     boolean existsByStudentIdAndFeeStructureIdAndTenantId(Long studentId, Long feeStructureId, String tenantId);
 }

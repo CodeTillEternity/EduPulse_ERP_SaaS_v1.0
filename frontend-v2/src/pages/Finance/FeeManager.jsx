@@ -22,6 +22,7 @@ import {
   createFeeStructure,
   generateInvoicesForBatch,
 } from '../../api/financeService';
+import FeeInvoiceList from '../../components/FeeInvoiceList';
 
 export default function FeeManager() {
   const queryClient = useQueryClient();
@@ -255,6 +256,17 @@ export default function FeeManager() {
           >
             Fee Heads ({feeHeads.length})
           </button>
+          <button
+            type="button"
+            onClick={() => setActiveTab('invoices')}
+            className={`pb-3 text-sm font-semibold border-b-2 transition-colors ${
+              activeTab === 'invoices'
+                ? 'border-indigo-600 text-indigo-600'
+                : 'border-transparent text-slate-500 hover:text-slate-700'
+            }`}
+          >
+            Student Invoices
+          </button>
         </div>
 
         {/* Tab 1: Fee Structures Blueprint List */}
@@ -386,6 +398,13 @@ export default function FeeManager() {
                 </tbody>
               </table>
             </div>
+          </div>
+        )}
+
+        {/* Tab 3: Student Invoices Enterprise Data Grid */}
+        {activeTab === 'invoices' && (
+          <div className="space-y-4">
+            <FeeInvoiceList />
           </div>
         )}
 

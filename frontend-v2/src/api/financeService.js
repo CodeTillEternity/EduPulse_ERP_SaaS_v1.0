@@ -97,6 +97,17 @@ export const getInvoicesByStudent = async (studentId) => {
   return response.data;
 };
 
+/**
+ * Retrieves paginated fee invoices with optional search, status filtering, and sorting.
+ *
+ * @param {Object} params Query parameters { page, size, search, status, sortBy, sortDir }
+ * @returns {Promise<Object>} Spring Page object of student invoices
+ */
+export const getInvoices = async (params = {}) => {
+  const response = await axiosClient.get('/api/v1/finance/invoices', { params });
+  return response.data;
+};
+
 const financeService = {
   createFeeHead,
   getFeeHeads,
@@ -107,6 +118,7 @@ const financeService = {
   recordPayment,
   getStudentLedger,
   getInvoicesByStudent,
+  getInvoices,
 };
 
 export default financeService;

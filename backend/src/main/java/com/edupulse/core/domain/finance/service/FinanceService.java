@@ -11,6 +11,7 @@ import com.edupulse.core.domain.finance.dto.StudentInvoiceResponseDTO;
 import com.edupulse.core.domain.finance.dto.StudentLedgerResponseDTO;
 
 import java.util.List;
+import org.springframework.data.domain.Page;
 
 /**
  * High-level business service interface for Student Finance management:
@@ -37,6 +38,8 @@ public interface FinanceService {
     StudentLedgerResponseDTO getStudentLedger(String enrollmentNumber);
 
     List<StudentInvoiceResponseDTO> getInvoicesByStudent(Long studentId);
+
+    Page<StudentInvoiceResponseDTO> getInvoices(int page, int size, String search, String status, String sortBy, String sortDir);
 
     com.edupulse.core.domain.finance.dto.BrandedDocumentDTO generateInvoiceDocument(Long invoiceId);
 

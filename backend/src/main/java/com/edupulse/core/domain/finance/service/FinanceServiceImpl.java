@@ -39,6 +39,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -447,6 +451,31 @@ public class FinanceServiceImpl implements FinanceService {
                 .stream()
                 .map(this::mapToStudentInvoiceResponse)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<StudentInvoiceResponseDTO> getInvoices(int page, int size, String search, String status, String sortBy, String sortDir) {
+        String tenantId = getRequiredTenantId();
+        String validSortBy = (sortBy != null && !sortBy.isBlank()) ? sortBy : "createdAt";
+        if ("studentName".equalsIgnoreCase(validSortBy) || "feeStructureName".equalsIgnoreCase(validSortBy)) {
+            validSortBy = "createdAt";
+        }
+        Sort sort = Sort.by("asc".equalsIgnoreCase(sortDir) ? Sort.Direction.ASC : Sort.Direction.DESC, validSortBy);
+        Pageable pageable = PageRequest.of(Math.max(0, page), Math.max(1, size), sort);
+
+        Page<StudentInvoice> invoicePage;
+        if (status != null && !status.isBlank() && !"ALL".equalsIgnoreCase(status)) {
+            try {
+                InvoiceStatus invoiceStatus = InvoiceStatus.valueOf(status.toUpperCase());
+                invoicePage = studentInvoiceRepository.findByTenantIdAndStatus(tenantId, invoiceStatus, pageable);
+            } catch (IllegalArgumentException e) {
+                invoicePage = studentInvoiceRepository.findByTenantId(tenantId, pageable);
+            }
+        } else {
+            invoicePage = studentInvoiceRepository.findByTenantId(tenantId, pageable);
+        }
+        return invoicePage.map(this::mapToStudentInvoiceResponse);
     }
 
     private FeeHeadResponseDTO mapToFeeHeadResponse(FeeHead head) {

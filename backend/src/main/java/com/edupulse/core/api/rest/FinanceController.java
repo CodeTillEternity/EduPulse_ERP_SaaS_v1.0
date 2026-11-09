@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -104,6 +106,19 @@ public class FinanceController {
     public ResponseEntity<StudentLedgerResponseDTO> getStudentLedger(@PathVariable String enrollmentNumber) {
         StudentLedgerResponseDTO ledger = financeService.getStudentLedger(enrollmentNumber);
         return ResponseEntity.ok(ledger);
+    }
+
+    @GetMapping("/invoices")
+    @Operation(summary = "Get Paginated Invoices", description = "Retrieves paginated student fee invoices for the tenant")
+    public ResponseEntity<Page<StudentInvoiceResponseDTO>> getInvoices(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir) {
+        Page<StudentInvoiceResponseDTO> invoices = financeService.getInvoices(page, size, search, status, sortBy, sortDir);
+        return ResponseEntity.ok(invoices);
     }
 
     @GetMapping("/invoices/student/{studentId}")

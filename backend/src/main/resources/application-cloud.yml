@@ -1,0 +1,106 @@
+# ==============================================================================
+# EduPulse Multi-Tenant SaaS ERP - Render.com Cloud Profile Configuration
+# Profile: cloud (Activated via SPRING_PROFILES_ACTIVE=cloud)
+# ==============================================================================
+
+server:
+  port: ${PORT:8081}
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: institutional-erp-backend
+
+  # Relational Database: Configured for Render's managed PostgreSQL instance
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL}}
+    username: ${DB_USER:${SPRING_DATASOURCE_USERNAME:${DATABASE_USERNAME:}}}
+    password: ${DB_PASS:${SPRING_DATASOURCE_PASSWORD:${DATABASE_PASSWORD:}}}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-timeout: 30000
+      maximum-pool-size: 15
+      minimum-idle: 3
+      idle-timeout: 300000
+      max-lifetime: 1800000
+      pool-name: EduPulseCloudHikariCP
+      data-source-properties:
+        sslmode: ${DB_SSL_MODE:prefer}
+
+  # JPA & Hibernate: Set ddl-auto to update for initial live database schema generation
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+        jdbc:
+          batch_size: 25
+          order_inserts: true
+          order_updates: true
+
+  # Distributed Redis Cache & Session Broker
+  data:
+    redis:
+      url: ${REDIS_URL:}
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+
+  # Schema Migrations (Flyway baseline ready)
+  flyway:
+    enabled: ${FLYWAY_ENABLED:false}
+    baseline-on-migrate: true
+    baseline-version: "0"
+
+# Cloud Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.erp: INFO
+    com.edupulse: INFO
+    org.springframework.web: INFO
+    org.springframework.security: WARN
+    org.hibernate: WARN
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql: ERROR
+
+# JWT Authentication
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  token-prefix: "Bearer "
+  header-string: "Authorization"
+
+# Razorpay SaaS Payment Gateway Keys
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID:rzp_test_placeholder}
+  key-secret: ${RAZORPAY_KEY_SECRET:rzp_secret_placeholder}
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:rzp_webhook_secret_placeholder}
+
+# File Upload Storage
+app:
+  storage:
+    document-dir: ${APP_STORAGE_DOCUMENT_DIR:/var/lib/edupulse/uploads}
+
+# Dedicated Multi-Tenant Database Fallback Routing
+multitenancy:
+  dedicated:
+    url: ${DEDICATED_DB_URL:${SPRING_DATASOURCE_URL:${DATABASE_URL}}}
+    username: ${DEDICATED_DB_USERNAME:${DB_USER:${SPRING_DATASOURCE_USERNAME:}}}
+    password: ${DEDICATED_DB_PASSWORD:${DB_PASS:${SPRING_DATASOURCE_PASSWORD:}}}
+    driver-class-name: org.postgresql.Driver
+
+# OpenAPI / Swagger Documentation
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:true}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:true}

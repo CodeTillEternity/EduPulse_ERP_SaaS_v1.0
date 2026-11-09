@@ -14,4 +14,4 @@ public record TenantBrandingDTO(
         String faviconUrl,
         String primaryColorHex,
         String secondaryColorHex
-) {}
+) implements java.io.Serializable {}

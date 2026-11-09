@@ -10,6 +10,8 @@ import com.erp.multitenancy.repository.TenantRegistryRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +51,7 @@ public class TenantBrandingService {
      * Finds branding data by custom subdomain (e.g. "dps", "stanford").
      * Also checks if the subdomain directly matches a tenant_id as fallback.
      */
+    @Cacheable(value = "tenantBranding", key = "#subdomain != null ? #subdomain.trim().toLowerCase() : ''", unless = "#result == null || !#result.isPresent()")
     @Transactional(readOnly = true)
     public Optional<TenantBrandingDTO> getBrandingBySubdomain(String subdomain) {
         if (subdomain == null || subdomain.isBlank()) {
@@ -101,7 +104,9 @@ public class TenantBrandingService {
 
     /**
      * Persists or updates tenant white-label branding configuration.
+     * Clears cached branding entries across all subdomains.
      */
+    @CacheEvict(value = "tenantBranding", allEntries = true)
     @Transactional
     public TenantBrandingDTO saveOrUpdateBranding(String tenantId,
                                                   String customSubdomain,
@@ -138,6 +143,7 @@ public class TenantBrandingService {
     /**
      * Uploads institutional logo directly to AWS S3 and links the CDN URL to tenant branding in PostgreSQL.
      */
+    @CacheEvict(value = "tenantBranding", allEntries = true)
     @Transactional
     public String uploadLogo(String tenantId, InputStream inputStream, String contentType, long contentLength, String originalFilename) {
         if (storageService == null) {
@@ -184,6 +190,7 @@ public class TenantBrandingService {
     /**
      * Uploads institutional favicon directly to AWS S3 and links the CDN URL to tenant branding in PostgreSQL.
      */
+    @CacheEvict(value = "tenantBranding", allEntries = true)
     @Transactional
     public String uploadFavicon(String tenantId, InputStream inputStream, String contentType, long contentLength, String originalFilename) {
         if (storageService == null) {

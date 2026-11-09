@@ -33,6 +33,8 @@ import ExamManager from './pages/Academic/ExamManager';
 import TranscriptViewer from './pages/Academic/TranscriptViewer';
 import TimetableManager from './pages/Operations/TimetableManager';
 import AttendanceTracker from './pages/Operations/AttendanceTracker';
+import LibraryManager from './pages/Operations/LibraryManager';
+import TransportManager from './pages/Operations/TransportManager';
 import FeeManager from './pages/Finance/FeeManager';
 import StudentLedger from './pages/Finance/StudentLedger';
 import LeaveManager from './pages/HR/LeaveManager';
@@ -156,6 +158,8 @@ function App() {
             <Route path="/academic/transcripts" element={<TranscriptViewer />} />
             <Route path="/operations/timetable" element={<TimetableManager />} />
             <Route path="/operations/attendance" element={<AttendanceTracker />} />
+            <Route path="/operations/library" element={<LibraryManager />} />
+            <Route path="/operations/transport" element={<TransportManager />} />
             <Route path="/finance/fees" element={<FeeManager />} />
             <Route path="/finance/ledger" element={<StudentLedger />} />
             <Route path="/hr/leaves" element={<LeaveManager />} />
@@ -180,6 +184,8 @@ function App() {
               <Route path="attendance" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT']}><Attendance /></RoleProtectedRoute>} />
               <Route path="operations/timetable" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY']}><TimetableManager /></RoleProtectedRoute>} />
               <Route path="operations/attendance" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY']}><AttendanceTracker /></RoleProtectedRoute>} />
+              <Route path="operations/library" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'LIBRARIAN', 'FACULTY']}><LibraryManager /></RoleProtectedRoute>} />
+              <Route path="operations/transport" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'TRANSPORT_MANAGER', 'FACULTY']}><TransportManager /></RoleProtectedRoute>} />
               <Route path="finance" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FINANCE', 'STUDENT', 'PARENT']}><FinanceDashboard /></RoleProtectedRoute>} />
               <Route path="finance/fees" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FINANCE', 'FINANCE_MANAGER']}><FeeManager /></RoleProtectedRoute>} />
               <Route path="finance/structures" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FINANCE', 'FINANCE_MANAGER']}><FeeManager /></RoleProtectedRoute>} />

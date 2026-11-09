@@ -12,6 +12,16 @@ export const getPortalDashboard = async () => {
 };
 
 /**
+ * Retrieves all historical and pending fee invoices for the authenticated student.
+ *
+ * @returns {Promise<Array>} List of StudentInvoiceResponseDTO
+ */
+export const getStudentInvoices = async () => {
+  const response = await axiosClient.get('/api/v1/portal/fees/invoices');
+  return response.data;
+};
+
+/**
  * Initializes a Razorpay order for an unpaid fee invoice owned by the student.
  *
  * @param {number|string} invoiceId Target StudentInvoice ID

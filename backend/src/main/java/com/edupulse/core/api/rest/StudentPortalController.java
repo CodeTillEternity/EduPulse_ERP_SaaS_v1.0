@@ -150,6 +150,19 @@ public class StudentPortalController {
     }
 
     /**
+     * Retrieves all historical and pending fee invoices for the authenticated student.
+     *
+     * @return List of StudentInvoiceResponseDTO
+     */
+    @GetMapping("/fees/invoices")
+    @Operation(summary = "Get Student Invoices", description = "Retrieves all historical and pending fee invoices for the authenticated student")
+    public ResponseEntity<List<StudentInvoiceResponseDTO>> getMyInvoices() {
+        StudentResponseDTO student = resolveAuthenticatedStudent();
+        List<StudentInvoiceResponseDTO> invoices = financeService.getInvoicesByStudent(student.getId());
+        return ResponseEntity.ok(invoices != null ? invoices : Collections.emptyList());
+    }
+
+    /**
      * Initializes a Razorpay order for an unpaid fee invoice owned by the authenticated student.
      *
      * @param invoiceId Target StudentInvoice identifier

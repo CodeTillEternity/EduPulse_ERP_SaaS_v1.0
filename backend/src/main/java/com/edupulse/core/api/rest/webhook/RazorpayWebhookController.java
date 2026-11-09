@@ -2,12 +2,18 @@ package com.edupulse.core.api.rest.webhook;
 
 import com.edupulse.core.config.RazorpayProperties;
 import com.edupulse.core.domain.billing.service.RazorpayBillingService;
+import com.edupulse.core.domain.finance.FeePayment;
+import com.edupulse.core.domain.finance.InvoiceStatus;
+import com.edupulse.core.domain.finance.StudentInvoice;
+import com.edupulse.core.domain.finance.repository.FeePaymentRepository;
+import com.edupulse.core.domain.finance.repository.StudentInvoiceRepository;
 import com.razorpay.RazorpayException;
 import com.razorpay.Utils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Public webhook listener capturing and cryptographically verifying real-time billing
- * lifecycle events from Razorpay for RBI-compliant recurring SaaS subscriptions.
+ * and student fee collection events from Razorpay for RBI-compliant payment settlements.
  */
 @RestController("coreRazorpayWebhookController")
 @RequestMapping("/api/v1/billing")
@@ -31,23 +39,31 @@ public class RazorpayWebhookController {
 
     private final RazorpayBillingService razorpayBillingService;
     private final RazorpayProperties razorpayProperties;
+    private final StudentInvoiceRepository studentInvoiceRepository;
+    private final FeePaymentRepository feePaymentRepository;
 
-    public RazorpayWebhookController(RazorpayBillingService razorpayBillingService,
-                                     RazorpayProperties razorpayProperties) {
+    public RazorpayWebhookController(
+            RazorpayBillingService razorpayBillingService,
+            RazorpayProperties razorpayProperties,
+            @Qualifier("coreStudentInvoiceRepository") StudentInvoiceRepository studentInvoiceRepository,
+            @Qualifier("coreFeePaymentRepository") FeePaymentRepository feePaymentRepository) {
         this.razorpayBillingService = razorpayBillingService;
         this.razorpayProperties = razorpayProperties;
+        this.studentInvoiceRepository = studentInvoiceRepository;
+        this.feePaymentRepository = feePaymentRepository;
     }
 
     /**
      * Ingests and cryptographically validates incoming Razorpay webhook events using HMAC-SHA256.
-     * Listens for subscription.charged and payment.captured events to activate tenant subscriptions.
+     * Listens for subscription.charged, order.paid, and payment.captured events to activate tenant subscriptions
+     * or settle student fee invoices.
      *
      * @param payload   Raw JSON request body
      * @param sigHeader x-razorpay-signature HTTP header
      * @return 200 OK upon valid signature verification and processing
      */
     @PostMapping("/razorpay-webhook")
-    @Operation(summary = "Handle Razorpay Webhook", description = "Verifies cryptographic HMAC signature and activates tenant subscriptions")
+    @Operation(summary = "Handle Razorpay Webhook", description = "Verifies cryptographic HMAC signature and processes billing or student fee payments")
     public ResponseEntity<String> handleRazorpayWebhook(
             @RequestBody String payload,
             @RequestHeader(value = "x-razorpay-signature", required = false) String sigHeader) {
@@ -75,15 +91,21 @@ public class RazorpayWebhookController {
             String event = root.optString("event");
             log.info("Received verified Razorpay webhook event: [event={}]", event);
 
-            if ("subscription.charged".equals(event) || "payment.captured".equals(event)) {
-                String tenantId = extractTenantId(root);
-                String subscriptionId = extractSubscriptionId(root);
-
-                if (tenantId != null && !tenantId.isBlank()) {
-                    log.info("Processing {} for tenant [{}], subscription [{}]", event, tenantId, subscriptionId);
-                    razorpayBillingService.activateSubscription(tenantId, subscriptionId, "ACTIVE");
+            if ("order.paid".equals(event) || "payment.captured".equals(event) || "subscription.charged".equals(event)) {
+                String invoiceIdStr = extractInvoiceId(root);
+                if (invoiceIdStr != null && !invoiceIdStr.isBlank()) {
+                    log.info("Processing student fee settlement event [{}] for invoice ID [{}]", event, invoiceIdStr);
+                    processStudentInvoicePayment(root, invoiceIdStr);
                 } else {
-                    log.warn("No tenant_id found in Razorpay webhook payload notes for event: {}", event);
+                    String tenantId = extractTenantId(root);
+                    String subscriptionId = extractSubscriptionId(root);
+
+                    if (tenantId != null && !tenantId.isBlank()) {
+                        log.info("Processing {} for tenant [{}], subscription [{}]", event, tenantId, subscriptionId);
+                        razorpayBillingService.activateSubscription(tenantId, subscriptionId, "ACTIVE");
+                    } else {
+                        log.warn("No tenant_id found in Razorpay webhook payload notes for event: {}", event);
+                    }
                 }
             } else {
                 log.debug("Ignored unhandled Razorpay event: {}", event);
@@ -140,14 +162,120 @@ public class RazorpayWebhookController {
     }
 
     /**
+     * Settles student invoice fee payment upon receiving verified webhook event.
+     */
+    private void processStudentInvoicePayment(JSONObject root, String invoiceIdStr) {
+        try {
+            Long invoiceId = Long.parseLong(invoiceIdStr.trim());
+            Optional<StudentInvoice> invoiceOpt = studentInvoiceRepository.findById(invoiceId);
+            if (invoiceOpt.isEmpty()) {
+                log.warn("StudentInvoice with ID [{}] not found for fee settlement", invoiceId);
+                return;
+            }
+
+            StudentInvoice invoice = invoiceOpt.get();
+            invoice.setStatus(InvoiceStatus.PAID);
+            invoice.setAmountPaid(invoice.getNetAmount());
+            studentInvoiceRepository.save(invoice);
+
+            String paymentId = extractPaymentId(root);
+            String orderId = extractOrderId(root);
+
+            FeePayment feePayment = new FeePayment();
+            feePayment.setStudentInvoice(invoice);
+            feePayment.setAmount(invoice.getNetAmount());
+            feePayment.setPaymentMethod("RAZORPAY");
+            feePayment.setReferenceNumber(paymentId != null ? paymentId : "rzp_" + orderId);
+            feePayment.setPaymentDate(LocalDateTime.now());
+            feePayment.setNotes("Online fee collection settlement via Razorpay webhook [order: " + orderId + "]");
+            feePayment.setTenantId(invoice.getTenantId() != null ? invoice.getTenantId() : "default");
+
+            feePaymentRepository.save(feePayment);
+            log.info("Successfully settled invoice [{}] (ID: {}) and recorded FeePayment [{}]",
+                    invoice.getInvoiceNumber(), invoice.getId(), feePayment.getReferenceNumber());
+        } catch (Exception ex) {
+            log.error("Failed to process student invoice payment for invoice ID [{}]: {}", invoiceIdStr, ex.getMessage(), ex);
+        }
+    }
+
+    /**
      * Verifies cryptographic signature using Razorpay SDK Utils.
      */
     protected boolean verifyWebhookSignature(String payload, String signatureHeader, String webhookSecret) throws RazorpayException {
         return Utils.verifyWebhookSignature(payload, signatureHeader, webhookSecret);
     }
 
+    private String extractInvoiceId(JSONObject root) {
+        if (root.has("payload")) {
+            JSONObject payloadObj = root.optJSONObject("payload");
+            if (payloadObj != null) {
+                if (payloadObj.has("order")) {
+                    JSONObject orderObj = payloadObj.optJSONObject("order");
+                    if (orderObj != null && orderObj.has("entity")) {
+                        JSONObject entityObj = orderObj.optJSONObject("entity");
+                        if (entityObj != null && entityObj.has("notes")) {
+                            String inv = entityObj.optJSONObject("notes").optString("invoice_id", null);
+                            if (inv != null && !inv.isBlank()) return inv;
+                        }
+                    }
+                }
+                if (payloadObj.has("payment")) {
+                    JSONObject paymentObj = payloadObj.optJSONObject("payment");
+                    if (paymentObj != null && paymentObj.has("entity")) {
+                        JSONObject entityObj = paymentObj.optJSONObject("entity");
+                        if (entityObj != null && entityObj.has("notes")) {
+                            String inv = entityObj.optJSONObject("notes").optString("invoice_id", null);
+                            if (inv != null && !inv.isBlank()) return inv;
+                        }
+                    }
+                }
+            }
+        }
+        if (root.has("entity")) {
+            JSONObject entity = root.optJSONObject("entity");
+            if (entity != null && entity.has("notes")) {
+                String inv = entity.optJSONObject("notes").optString("invoice_id", null);
+                if (inv != null && !inv.isBlank()) return inv;
+            }
+        }
+        return null;
+    }
+
+    private String extractPaymentId(JSONObject root) {
+        if (root.has("payload")) {
+            JSONObject payloadObj = root.optJSONObject("payload");
+            if (payloadObj != null && payloadObj.has("payment")) {
+                JSONObject paymentObj = payloadObj.optJSONObject("payment");
+                if (paymentObj != null && paymentObj.has("entity")) {
+                    return paymentObj.optJSONObject("entity").optString("id", null);
+                }
+            }
+        }
+        return null;
+    }
+
+    private String extractOrderId(JSONObject root) {
+        if (root.has("payload")) {
+            JSONObject payloadObj = root.optJSONObject("payload");
+            if (payloadObj != null) {
+                if (payloadObj.has("order")) {
+                    JSONObject orderObj = payloadObj.optJSONObject("order");
+                    if (orderObj != null && orderObj.has("entity")) {
+                        return orderObj.optJSONObject("entity").optString("id", null);
+                    }
+                }
+                if (payloadObj.has("payment")) {
+                    JSONObject paymentObj = payloadObj.optJSONObject("payment");
+                    if (paymentObj != null && paymentObj.has("entity")) {
+                        return paymentObj.optJSONObject("entity").optString("order_id", null);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private String extractTenantId(JSONObject root) {
-        // 1. Direct payload.entity.notes check
         if (root.has("payload")) {
             JSONObject payloadObj = root.optJSONObject("payload");
             if (payloadObj != null) {
@@ -180,7 +308,6 @@ public class RazorpayWebhookController {
                 }
             }
         }
-        // 2. Direct entity.notes check
         if (root.has("entity")) {
             JSONObject entity = root.optJSONObject("entity");
             if (entity != null && entity.has("notes")) {

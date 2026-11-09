@@ -1,16 +1,21 @@
 package com.edupulse.core.api.rest;
 
+import com.edupulse.core.config.RazorpayProperties;
 import com.edupulse.core.domain.academic.dto.StudentTranscriptDTO;
 import com.edupulse.core.domain.academic.service.ExamService;
 import com.edupulse.core.domain.finance.InvoiceStatus;
+import com.edupulse.core.domain.finance.StudentInvoice;
 import com.edupulse.core.domain.finance.dto.StudentInvoiceResponseDTO;
+import com.edupulse.core.domain.finance.repository.StudentInvoiceRepository;
 import com.edupulse.core.domain.finance.service.FinanceService;
 import com.edupulse.core.domain.operations.dto.TimetableResponseDTO;
 import com.edupulse.core.domain.operations.service.OperationsService;
 import com.edupulse.core.domain.student.EnrollmentStatus;
+import com.edupulse.core.domain.student.Student;
 import com.edupulse.core.domain.student.dto.StudentResponseDTO;
 import com.edupulse.core.domain.student.service.StudentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.razorpay.RazorpayClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +37,13 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -64,6 +71,15 @@ class StudentPortalControllerTest {
 
     @MockBean(name = "coreStudentService")
     private StudentService studentService;
+
+    @MockBean(name = "coreStudentInvoiceRepository")
+    private StudentInvoiceRepository invoiceRepository;
+
+    @MockBean
+    private RazorpayClient razorpayClient;
+
+    @MockBean(name = "coreRazorpayProperties")
+    private RazorpayProperties razorpayProperties;
 
     @Configuration
     @EnableWebSecurity
@@ -163,5 +179,102 @@ class StudentPortalControllerTest {
         mockMvc.perform(get("/api/v1/portal/dashboard/me")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/portal/fees/{invoiceId}/checkout generates Razorpay order for authenticated student")
+    @WithMockUser(username = "STU-2026-001", roles = {"STUDENT"})
+    void shouldCreateFeeCheckoutOrderSuccessfully() throws Exception {
+        StudentResponseDTO studentDTO = StudentResponseDTO.builder()
+                .id(100L)
+                .enrollmentNumber("STU-2026-001")
+                .firstName("Rohan")
+                .lastName("Verma")
+                .email("rohan.verma@edupulse.edu")
+                .tenantId("default")
+                .build();
+
+        Student student = new Student();
+        student.setId(100L);
+        student.setEnrollmentNumber("STU-2026-001");
+
+        StudentInvoice invoice = new StudentInvoice();
+        invoice.setId(501L);
+        invoice.setInvoiceNumber("INV-2026-0001");
+        invoice.setStudent(student);
+        invoice.setNetAmount(new BigDecimal("15000.00"));
+        invoice.setAmountPaid(BigDecimal.ZERO);
+        invoice.setStatus(InvoiceStatus.UNPAID);
+        invoice.setTenantId("default");
+
+        when(studentService.getStudentByEnrollmentNumber(eq("STU-2026-001"))).thenReturn(studentDTO);
+        when(invoiceRepository.findById(eq(501L))).thenReturn(Optional.of(invoice));
+        when(razorpayProperties.getKeyId()).thenReturn("rzp_test_mock_key");
+
+        mockMvc.perform(post("/api/v1/portal/fees/501/checkout")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.orderId").isNotEmpty())
+                .andExpect(jsonPath("$.amount").value(1500000))
+                .andExpect(jsonPath("$.currency").value("INR"))
+                .andExpect(jsonPath("$.keyId").value("rzp_test_mock_key"))
+                .andExpect(jsonPath("$.invoiceId").value(501))
+                .andExpect(jsonPath("$.invoiceNumber").value("INV-2026-0001"));
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/portal/fees/{invoiceId}/checkout returns 403 when invoice belongs to another student")
+    @WithMockUser(username = "STU-2026-001", roles = {"STUDENT"})
+    void shouldReturn403WhenStudentDoesNotOwnInvoice() throws Exception {
+        StudentResponseDTO studentDTO = StudentResponseDTO.builder()
+                .id(100L)
+                .enrollmentNumber("STU-2026-001")
+                .firstName("Rohan")
+                .lastName("Verma")
+                .email("rohan.verma@edupulse.edu")
+                .tenantId("default")
+                .build();
+
+        Student otherStudent = new Student();
+        otherStudent.setId(999L); // Different student
+
+        StudentInvoice invoice = new StudentInvoice();
+        invoice.setId(502L);
+        invoice.setStudent(otherStudent);
+        invoice.setNetAmount(new BigDecimal("15000.00"));
+        invoice.setStatus(InvoiceStatus.UNPAID);
+
+        when(studentService.getStudentByEnrollmentNumber(eq("STU-2026-001"))).thenReturn(studentDTO);
+        when(invoiceRepository.findById(eq(502L))).thenReturn(Optional.of(invoice));
+
+        mockMvc.perform(post("/api/v1/portal/fees/502/checkout")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("POST /api/v1/portal/fees/{invoiceId}/checkout returns 400 when invoice is already PAID")
+    @WithMockUser(username = "STU-2026-001", roles = {"STUDENT"})
+    void shouldReturn400WhenInvoiceAlreadyPaid() throws Exception {
+        StudentResponseDTO studentDTO = StudentResponseDTO.builder()
+                .id(100L)
+                .enrollmentNumber("STU-2026-001")
+                .build();
+
+        Student student = new Student();
+        student.setId(100L);
+
+        StudentInvoice invoice = new StudentInvoice();
+        invoice.setId(503L);
+        invoice.setStudent(student);
+        invoice.setNetAmount(new BigDecimal("15000.00"));
+        invoice.setStatus(InvoiceStatus.PAID);
+
+        when(studentService.getStudentByEnrollmentNumber(eq("STU-2026-001"))).thenReturn(studentDTO);
+        when(invoiceRepository.findById(eq(503L))).thenReturn(Optional.of(invoice));
+
+        mockMvc.perform(post("/api/v1/portal/fees/503/checkout")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }

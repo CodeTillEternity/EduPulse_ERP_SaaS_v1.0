@@ -1,6 +1,30 @@
 import axios from 'axios';
 
-const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+/**
+ * Resolves the backend API base URL dynamically based on environment configuration:
+ * 1. Uses explicit VITE_API_BASE_URL if configured.
+ * 2. In local development (Vite dev mode or localhost hostname), falls back to http://localhost:8081.
+ * 3. In cloud/production environments, falls back to the Render deployment URL (https://edupulse-backend.onrender.com).
+ */
+export const getBaseURL = () => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+
+  const isLocalhost =
+    typeof window !== 'undefined' &&
+    (window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1' ||
+      window.location.hostname.endsWith('.local'));
+
+  if (import.meta.env.DEV || isLocalhost) {
+    return 'http://localhost:8081';
+  }
+
+  return 'https://edupulse-backend.onrender.com';
+};
+
+const baseURL = getBaseURL();
 
 /**
  * Pre-configured Axios instance for multi-tenant SaaS requests.

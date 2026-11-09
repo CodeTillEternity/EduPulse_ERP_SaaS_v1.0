@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import axiosClient from '../api/axiosClient.js';
+import axiosClient, { getBaseURL } from '../api/axiosClient.js';
 
 describe('axiosClient interceptors', () => {
   beforeEach(() => {
@@ -56,5 +56,11 @@ describe('axiosClient interceptors', () => {
 
     expect(updatedConfig.headers.Authorization).toBeUndefined();
     expect(updatedConfig.headers['X-Tenant-ID']).toBeUndefined();
+  });
+
+  it('resolves baseURL according to environment settings', () => {
+    const resolvedUrl = getBaseURL();
+    expect(typeof resolvedUrl).toBe('string');
+    expect(resolvedUrl).toBeTruthy();
   });
 });

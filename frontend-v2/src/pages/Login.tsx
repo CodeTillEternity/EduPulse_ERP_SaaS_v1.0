@@ -19,8 +19,12 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../co
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { toast } from 'sonner';
+import { useTenantTheme } from '../hooks/useTenantTheme';
 
 export default function Login() {
+  const { branding, subdomain } = useTenantTheme();
+  const isBranded = Boolean(subdomain && branding);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const initialMode = searchParams.get('tab') === 'applicant' || searchParams.get('role')?.toLowerCase() === 'applicant'
     ? 'APPLICANT'
@@ -211,21 +215,43 @@ export default function Login() {
     <div className="min-h-screen bg-slate-50 flex flex-col justify-center items-center p-4 font-sans relative overflow-hidden">
       
       {/* Decorative Structural Background */}
-      <div className="absolute top-0 left-0 w-full h-96 bg-slate-900 transform -skew-y-6 -translate-y-24 z-0"></div>
+      <div 
+        className="absolute top-0 left-0 w-full h-96 transform -skew-y-6 -translate-y-24 z-0 transition-colors duration-500"
+        style={{ backgroundColor: isBranded && branding?.primaryColorHex ? branding.primaryColorHex : '#0f172a' }}
+      ></div>
 
       <Card className="w-full max-w-lg shadow-2xl border-0 rounded-2xl p-2 sm:p-4 z-10 bg-white">
         <CardHeader className="flex flex-col items-center mb-0 pb-3 text-center">
           <Link to="/" className="group flex flex-col items-center">
             <img 
-              src="/logo.jpg" 
-              alt="EduPulse Logo" 
-              className="w-16 h-16 rounded-xl object-cover mb-3 shadow-md border border-slate-100 group-hover:scale-105 transition-transform" 
+              src={isBranded && branding?.logoUrl ? branding.logoUrl : "/logo.jpg"} 
+              alt={isBranded && branding?.institutionName ? `${branding.institutionName} Logo` : "EduPulse Logo"} 
+              className="w-16 h-16 rounded-xl object-contain mb-3 shadow-md border border-slate-100 bg-white p-1 group-hover:scale-105 transition-transform" 
             />
-            <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">EduPulse ERP</CardTitle>
+            <CardTitle className="text-2xl font-black text-slate-900 tracking-tight">
+              {isBranded && branding?.institutionName ? branding.institutionName : "EduPulse ERP"}
+            </CardTitle>
           </Link>
           <CardDescription className="text-xs text-slate-500 font-medium mt-0.5">
-            Unified Institutional Management Platform
+            {isBranded && branding?.institutionName 
+              ? `${branding.institutionName} Institutional Portal` 
+              : "Unified Institutional Management Platform"}
           </CardDescription>
+
+          {/* White-Label Institutional Subdomain Badge */}
+          {isBranded && (
+            <div 
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold mt-2.5 border"
+              style={{ 
+                borderColor: branding?.primaryColorHex ? `${branding.primaryColorHex}40` : '#e2e8f0',
+                color: branding?.primaryColorHex || '#0f172a',
+                backgroundColor: branding?.primaryColorHex ? `${branding.primaryColorHex}12` : '#f8fafc'
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: branding?.primaryColorHex || '#0f172a' }}></span>
+              <span>{branding?.customSubdomain}.edupulse.com</span>
+            </div>
+          )}
 
           {/* Top-Level Mode Selector: Institutional ERP vs Applicant Portal */}
           <div className="w-full grid grid-cols-2 p-1 bg-slate-100 rounded-xl mt-4 border border-slate-200/80">
@@ -289,11 +315,15 @@ export default function Login() {
                     }}
                     className={`flex-1 flex flex-col items-center justify-center py-2 px-1 min-w-[55px] rounded-lg text-xs font-semibold transition-all duration-200 ${
                       activeTab === tab.id 
-                        ? 'bg-white text-slate-900 shadow-sm font-bold' 
+                        ? 'bg-white text-slate-900 shadow-sm font-bold ring-1 ring-slate-200' 
                         : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
                     }`}
+                    style={activeTab === tab.id && isBranded && branding?.primaryColorHex ? { borderBottom: `2.5px solid ${branding.primaryColorHex}` } : undefined}
                   >
-                    <tab.icon className={`w-4 h-4 mb-1 ${activeTab === tab.id ? 'text-slate-900' : 'text-slate-400'}`} />
+                    <tab.icon
+                      className={`w-4 h-4 mb-1 ${activeTab === tab.id ? 'text-slate-900' : 'text-slate-400'}`}
+                      style={activeTab === tab.id && isBranded && branding?.primaryColorHex ? { color: branding.primaryColorHex } : undefined}
+                    />
                     {tab.label}
                   </button>
                 ))}
@@ -349,7 +379,10 @@ export default function Login() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-11 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-sm shadow-md transition-all"
+                    className="w-full h-11 text-white font-bold rounded-xl text-sm shadow-md transition-all hover:opacity-95"
+                    style={{
+                      backgroundColor: isBranded && branding?.primaryColorHex ? branding.primaryColorHex : '#0f172a',
+                    }}
                   >
                     {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                     {loading ? 'Authenticating...' : `Sign In as ${activeTab.charAt(0) + activeTab.slice(1).toLowerCase()}`}
@@ -452,7 +485,10 @@ export default function Login() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-11 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-sm shadow-md transition-all"
+                      className="w-full h-11 text-white font-bold rounded-xl text-sm shadow-md transition-all hover:opacity-95"
+                      style={{
+                        backgroundColor: isBranded && branding?.primaryColorHex ? branding.primaryColorHex : '#d97706',
+                      }}
                     >
                       {loading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
                       {loading ? 'Signing In...' : 'Sign In to Applicant Portal'}

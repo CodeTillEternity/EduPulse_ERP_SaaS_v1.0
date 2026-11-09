@@ -56,6 +56,7 @@ public class SecurityConfig {
                 .requestMatchers(org.springframework.http.HttpMethod.POST, "/api/v1/admissions/public/register").permitAll()
                 .requestMatchers("/api/v1/admissions/public/**").authenticated()
                 .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/v1/students/*/photo").permitAll()
+                .requestMatchers("/api/v1/portal/**").hasAnyRole("STUDENT", "SUPER_ADMIN", "ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -102,6 +102,21 @@ public class StudentServiceImpl implements StudentService {
         return mapToDTO(student);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    @Cacheable(value = "students", key = "T(com.edupulse.core.domain.base.TenantContext).getTenantId() + ':email:' + #email")
+    public StudentResponseDTO getStudentByEmail(String email) {
+        String tenantId = resolveTenantId();
+        log.debug("Fetching student by email [email={}, tenant={}]", email, tenantId);
+
+        Student student = studentRepository.findByEmailAndTenantId(email, tenantId)
+                .or(() -> studentRepository.findByEmail(email))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Student not found with email: " + email + " for tenant: " + tenantId));
+
+        return mapToDTO(student);
+    }
+
     private String resolveTenantId() {
         String tenantId = TenantContext.getTenantId();
         return (tenantId != null && !tenantId.isBlank()) ? tenantId : "default";

@@ -31,5 +31,13 @@ public interface StudentService {
      * @return Student details
      */
     StudentResponseDTO getStudentByEnrollmentNumber(String enrollmentNumber);
+
+    /**
+     * Retrieves a student by their institutional email address.
+     *
+     * @param email Student email address
+     * @return Student details
+     */
+    StudentResponseDTO getStudentByEmail(String email);
 }
 

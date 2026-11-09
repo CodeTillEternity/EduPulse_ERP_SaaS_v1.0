@@ -1,39 +1,101 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
 spring:
+  application:
+    name: institutional-erp-backend
+
+  # Relational Database Configuration: Injected exclusively via Environment Variables
   datasource:
-    url: ${SPRING_DATASOURCE_URL:${DATABASE_URL}}
-    username: ${SPRING_DATASOURCE_USERNAME:${DATABASE_USERNAME}}
-    password: ${SPRING_DATASOURCE_PASSWORD:${DATABASE_PASSWORD:${DB_PASSWORD}}}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
-      maximum-pool-size: 10
-      minimum-idle: 2
-      idle-timeout: 600000
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
       max-lifetime: 1800000
-      data-source-properties:
-        sslmode: require
+      pool-name: EduPulseProdHikariCP
+
+  # Hibernate JPA: Enforce schema validation and disable SQL logging in production
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
     show-sql: false
     open-in-view: false
+    properties:
+      hibernate:
+        format_sql: false
+        generate_statistics: false
+        jdbc:
+          batch_size: 25
+          order_inserts: true
+          order_updates: true
+
+  # Redis Distributed Cache & Session Store
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 3000ms
+
+  # Automated Database Migration
   flyway:
     enabled: true
-    baseline-on-migrate: false
+    baseline-on-migrate: true
+    baseline-version: "0"
     locations: classpath:db/migration
 
+# Strict Production Logging: Suppress sensitive SQL statements and parameter bindings
 logging:
   level:
+    root: INFO
+    com.erp: INFO
+    com.edupulse: INFO
+    org.springframework.web: WARN
+    org.springframework.security: WARN
+    org.hibernate: ERROR
+    org.hibernate.SQL: ERROR
+    org.hibernate.type.descriptor.sql: ERROR
+    org.hibernate.type.descriptor.sql.BasicBinder: ERROR
     org.flywaydb: INFO
-    org.springframework.jdbc: INFO
 
+# JWT Authentication Secrets
 jwt:
   secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION:900000}
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION:604800000}
+  token-prefix: "Bearer "
+  header-string: "Authorization"
 
-bootstrap:
-  superadmin:
-    enabled: ${BOOTSTRAP_SUPERADMIN_ENABLED:false}
-    username: ${BOOTSTRAP_SUPERADMIN_USERNAME:}
-    email: ${BOOTSTRAP_SUPERADMIN_EMAIL:}
-    password: ${BOOTSTRAP_SUPERADMIN_PASSWORD:}
+# Razorpay Payment Gateway Production Keys
+razorpay:
+  key-id: ${RAZORPAY_KEY_ID}
+  key-secret: ${RAZORPAY_KEY_SECRET}
+  webhook-secret: ${RAZORPAY_WEBHOOK_SECRET}
+
+# Persistent File Storage Directory
+app:
+  storage:
+    document-dir: ${APP_STORAGE_DOCUMENT_DIR:/var/lib/edupulse/uploads}
+
+# Dedicated Database Routing Fallback for Multi-Tenancy
+multitenancy:
+  dedicated:
+    url: ${DEDICATED_DB_URL:${SPRING_DATASOURCE_URL}}
+    username: ${DEDICATED_DB_USERNAME:${DB_USER}}
+    password: ${DEDICATED_DB_PASSWORD:${DB_PASS}}
+    driver-class-name: org.postgresql.Driver
+
+# Disable Public Swagger API Docs in Production
+springdoc:
+  api-docs:
+    enabled: ${SWAGGER_ENABLED:false}
+  swagger-ui:
+    enabled: ${SWAGGER_ENABLED:false}

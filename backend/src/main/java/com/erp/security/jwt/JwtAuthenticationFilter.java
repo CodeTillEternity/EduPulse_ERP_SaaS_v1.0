@@ -27,15 +27,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtProperties jwtProperties;
     private final UserDetailsService userDetailsService;
     private final com.erp.auth.service.SessionService sessionService;
+    private final com.erp.multitenancy.resolver.SubdomainTenantResolver subdomainTenantResolver;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public JwtAuthenticationFilter(JwtService jwtService,
+                                   JwtProperties jwtProperties,
+                                   UserDetailsService userDetailsService,
+                                   com.erp.auth.service.SessionService sessionService,
+                                   @org.springframework.beans.factory.annotation.Autowired(required = false) com.erp.multitenancy.resolver.SubdomainTenantResolver subdomainTenantResolver) {
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
+        this.userDetailsService = userDetailsService;
+        this.sessionService = sessionService;
+        this.subdomainTenantResolver = subdomainTenantResolver;
+    }
 
     public JwtAuthenticationFilter(JwtService jwtService,
                                    JwtProperties jwtProperties,
                                    UserDetailsService userDetailsService,
                                    com.erp.auth.service.SessionService sessionService) {
-        this.jwtService = jwtService;
-        this.jwtProperties = jwtProperties;
-        this.userDetailsService = userDetailsService;
-        this.sessionService = sessionService;
+        this(jwtService, jwtProperties, userDetailsService, sessionService, null);
     }
 
     @Override
@@ -72,6 +83,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             final String username = jwtService.extractUsername(jwt);
             final String tokenId = jwtService.extractTokenId(jwt);
+            final String tokenTenantId = jwtService.extractTenantId(jwt);
+
+            // Subdomain Cryptographic Lock:
+            // Ensure token's tenant_id matches the request's resolved institution subdomain
+            if (subdomainTenantResolver != null) {
+                java.util.Optional<String> requestTenantIdOpt = subdomainTenantResolver.resolveTenantId(request);
+                if (requestTenantIdOpt.isPresent()) {
+                    String requestTenantId = requestTenantIdOpt.get();
+                    if (tokenTenantId != null && !tokenTenantId.equalsIgnoreCase(requestTenantId)) {
+                        log.warn("Cryptographic Tenant Lock violation: token issued for [{}] cannot access institution subdomain [{}]",
+                                tokenTenantId, requestTenantId);
+                        request.setAttribute("auth_error_code", "TENANT_MISMATCH");
+                        request.setAttribute("auth_error_message", "Session and token are cryptographically locked to another institution.");
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"success\":false,\"error\":\"TENANT_MISMATCH\",\"message\":\"Session and token are locked to another institution.\"}");
+                        return;
+                    }
+                }
+            }
 
             if (sessionService.isTokenRevoked(tokenId)) {
                 log.warn("JWT token has been revoked for token ID: {}", tokenId);
@@ -82,7 +113,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
 
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+                UserDetails userDetails;
+                if (this.userDetailsService instanceof com.erp.auth.service.CustomUserDetailsService customUds && tokenTenantId != null && !tokenTenantId.isBlank()) {
+                    userDetails = customUds.loadUserByUsernameAndTenantId(username, tokenTenantId.trim());
+                } else {
+                    userDetails = this.userDetailsService.loadUserByUsername(username);
+                }
 
                 if (jwtService.isTokenValid(jwt, userDetails.getUsername())) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
@@ -93,12 +129,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                    String tenantId = jwtService.extractTenantId(jwt);
-                    if (tenantId != null && !tenantId.isBlank()) {
-                        com.erp.multitenancy.TenantContext.setTenantId(tenantId.trim());
+                    if (tokenTenantId != null && !tokenTenantId.isBlank()) {
+                        com.erp.multitenancy.TenantContext.setTenantId(tokenTenantId.trim());
                     }
 
-                    log.debug("Authenticated user {} with authorities: {} for tenant: {}", username, userDetails.getAuthorities(), tenantId);
+                    log.debug("Authenticated user {} with authorities: {} for tenant: {}", username, userDetails.getAuthorities(), tokenTenantId);
                 }
             }
         } catch (ExpiredJwtException ex) {

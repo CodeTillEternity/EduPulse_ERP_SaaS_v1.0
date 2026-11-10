@@ -16,6 +16,8 @@ import com.erp.auth.service.AuthService;
 import com.erp.auth.service.PasswordResetService;
 import com.erp.auth.service.RefreshTokenService;
 import com.erp.common.exception.InvalidTokenException;
+import com.erp.multitenancy.TenantContext;
+import com.erp.multitenancy.resolver.SubdomainTenantResolver;
 import com.erp.security.jwt.JwtProperties;
 import com.erp.security.jwt.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +58,25 @@ public class AuthController {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
+    private final SubdomainTenantResolver subdomainTenantResolver;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    public AuthController(
+            AuthService authService,
+            RefreshTokenService refreshTokenService,
+            PasswordResetService passwordResetService,
+            UserRepository userRepository,
+            JwtService jwtService,
+            JwtProperties jwtProperties,
+            @org.springframework.beans.factory.annotation.Autowired(required = false) SubdomainTenantResolver subdomainTenantResolver) {
+        this.authService = authService;
+        this.refreshTokenService = refreshTokenService;
+        this.passwordResetService = passwordResetService;
+        this.userRepository = userRepository;
+        this.jwtService = jwtService;
+        this.jwtProperties = jwtProperties;
+        this.subdomainTenantResolver = subdomainTenantResolver;
+    }
 
     public AuthController(
             AuthService authService,
@@ -64,12 +85,7 @@ public class AuthController {
             UserRepository userRepository,
             JwtService jwtService,
             JwtProperties jwtProperties) {
-        this.authService = authService;
-        this.refreshTokenService = refreshTokenService;
-        this.passwordResetService = passwordResetService;
-        this.userRepository = userRepository;
-        this.jwtService = jwtService;
-        this.jwtProperties = jwtProperties;
+        this(authService, refreshTokenService, passwordResetService, userRepository, jwtService, jwtProperties, null);
     }
 
     @PostMapping("/login")
@@ -79,11 +95,21 @@ public class AuthController {
             @RequestHeader(value = "X-Tenant-ID", required = false) String tenantHeader,
             HttpServletRequest httpRequest) {
 
+        // Resolve tenantId from request subdomain, direct payload, or headers
+        String resolvedTenantId = null;
+        if (subdomainTenantResolver != null) {
+            resolvedTenantId = subdomainTenantResolver.resolveTenantId(httpRequest).orElse(null);
+        }
+
         String effectiveTenantId = (request.tenantId() != null && !request.tenantId().isBlank())
                 ? request.tenantId().trim()
-                : (tenantHeader != null && !tenantHeader.isBlank() ? tenantHeader.trim() : null);
+                : (resolvedTenantId != null ? resolvedTenantId : (tenantHeader != null && !tenantHeader.isBlank() ? tenantHeader.trim() : null));
 
-        LoginRequest scopedRequest = (effectiveTenantId != null && request.tenantId() == null)
+        if (effectiveTenantId != null) {
+            TenantContext.setTenantId(effectiveTenantId);
+        }
+
+        LoginRequest scopedRequest = (effectiveTenantId != null && (request.tenantId() == null || !request.tenantId().equals(effectiveTenantId)))
                 ? new LoginRequest(request.username(), request.password(), request.role(), effectiveTenantId)
                 : request;
 
@@ -92,7 +118,10 @@ public class AuthController {
 
         // Generate persistent UUID-based RefreshToken for HttpOnly cookie rotation
         String refreshTokenValue = response.refreshToken();
-        Optional<AppUser> userOpt = userRepository.findByUsernameIgnoreCase(response.username());
+        Optional<AppUser> userOpt = (effectiveTenantId != null)
+                ? userRepository.findByUsernameIgnoreCaseAndTenantId(response.username(), effectiveTenantId)
+                : userRepository.findByUsernameIgnoreCase(response.username());
+
         if (userOpt.isPresent()) {
             RefreshToken entityToken = refreshTokenService.createRefreshToken(userOpt.get().getId());
             refreshTokenValue = entityToken.getToken();

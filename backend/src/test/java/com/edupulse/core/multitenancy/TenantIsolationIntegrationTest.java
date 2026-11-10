@@ -26,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Ensures that entities persisted under Tenant A are strictly invisible to Tenant B
  * across all ORM and repository queries.
  */
-@SpringBootTest(properties = {
+@SpringBootTest(classes = com.erp.ERPApplication.class, properties = {
         "spring.jpa.show-sql=false",
         "logging.level.org.hibernate.SQL=WARN"
 })

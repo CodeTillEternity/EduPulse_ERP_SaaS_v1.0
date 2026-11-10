@@ -4,6 +4,7 @@ import com.erp.auth.dto.ForgotPasswordRequestDTO;
 import com.erp.auth.dto.ResetPasswordRequestDTO;
 import com.erp.auth.entity.AppUser;
 import com.erp.auth.entity.PasswordResetToken;
+import com.erp.auth.event.PasswordResetRequestedEvent;
 import com.erp.auth.repository.PasswordResetTokenRepository;
 import com.erp.auth.repository.UserRepository;
 import com.erp.common.exception.InvalidTokenException;
@@ -100,16 +101,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
         log.info("Generated password reset token for verified user ID {} (TTL: 15 mins)", user.getId());
 
         // Publish event for asynchronous notification delivery (Commit 167)
-        try {
-            Class<?> eventClass = Class.forName("com.erp.auth.event.PasswordResetRequestedEvent");
-            Object event = eventClass.getConstructor(Object.class, AppUser.class, String.class, String.class)
-                    .newInstance(this, user, tokenValue, effectiveTenantId);
-            eventPublisher.publishEvent(event);
-        } catch (ClassNotFoundException ignored) {
-            // Event class will be introduced in Task 2
-        } catch (Exception e) {
-            log.error("Failed to publish PasswordResetRequestedEvent: {}", e.getMessage());
-        }
+        eventPublisher.publishEvent(new PasswordResetRequestedEvent(this, user, tokenValue, effectiveTenantId));
     }
 
     @Override

@@ -1,11 +1,14 @@
 package com.erp.multitenancy.controller;
 
 import com.erp.common.response.ApiResponse;
+import com.erp.multitenancy.dto.MigrateTenantRequestDTO;
 import com.erp.multitenancy.dto.ProvisionInstitutionRequestDTO;
+import com.erp.multitenancy.dto.TenantMigrationResultDTO;
 import com.erp.multitenancy.dto.UpdateTenantStatusDTO;
 import com.erp.multitenancy.entity.TenantRegistry;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
 import com.erp.multitenancy.service.TenantDatabaseUpgradeService;
+import com.erp.multitenancy.service.TenantMigrationService;
 import com.erp.multitenancy.service.TenantProvisioningService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,14 +31,17 @@ public class SuperAdminController {
     private final TenantRegistryRepository tenantRegistryRepository;
     private final TenantDatabaseUpgradeService tenantDatabaseUpgradeService;
     private final TenantProvisioningService tenantProvisioningService;
+    private final TenantMigrationService tenantMigrationService;
 
     public SuperAdminController(
             TenantRegistryRepository tenantRegistryRepository,
             TenantDatabaseUpgradeService tenantDatabaseUpgradeService,
-            TenantProvisioningService tenantProvisioningService) {
+            TenantProvisioningService tenantProvisioningService,
+            TenantMigrationService tenantMigrationService) {
         this.tenantRegistryRepository = tenantRegistryRepository;
         this.tenantDatabaseUpgradeService = tenantDatabaseUpgradeService;
         this.tenantProvisioningService = tenantProvisioningService;
+        this.tenantMigrationService = tenantMigrationService;
     }
 
     /**
@@ -89,5 +95,26 @@ public class SuperAdminController {
     public ResponseEntity<ApiResponse<TenantRegistry>> upgradeTenantDatabase(@PathVariable("tenantId") String tenantId) {
         TenantRegistry updatedTenant = tenantDatabaseUpgradeService.upgradeToDedicatedDatabase(tenantId);
         return ResponseEntity.ok(ApiResponse.success("Tenant upgraded to dedicated database successfully", updatedTenant));
+    }
+
+    /**
+     * Executes automated migration of a tenant from shared pool to dedicated infrastructure.
+     * Halts writes, executes Flyway migrations, securely copies tenant rows, updates routing key, and restores status.
+     *
+     * @param tenantId Target tenant identifier
+     * @param request  Optional migration request containing target routing key
+     * @return Migration execution summary
+     */
+    @PostMapping("/tenants/{tenantId}/migrate")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @Operation(summary = "Migrate tenant to dedicated database", description = "Safely halts writes, runs Flyway migrations, copies tenant data, and updates routing key to dedicated pool")
+    public ResponseEntity<ApiResponse<TenantMigrationResultDTO>> migrateTenantToDedicated(
+            @PathVariable("tenantId") String tenantId,
+            @RequestBody(required = false) MigrateTenantRequestDTO request) {
+        String targetRoutingKey = (request != null && request.targetRoutingKey() != null && !request.targetRoutingKey().isBlank())
+                ? request.targetRoutingKey()
+                : "dedicated-vip-1";
+        TenantMigrationResultDTO result = tenantMigrationService.migrateTenantToDedicated(tenantId, targetRoutingKey);
+        return ResponseEntity.ok(ApiResponse.success("Tenant successfully migrated to dedicated database", result));
     }
 }

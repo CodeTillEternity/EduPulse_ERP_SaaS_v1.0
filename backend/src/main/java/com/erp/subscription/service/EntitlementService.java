@@ -1,10 +1,12 @@
 package com.erp.subscription.service;
 
 import com.erp.multitenancy.entity.TenantRegistry;
+import com.erp.multitenancy.model.AccountStatus;
 import com.erp.multitenancy.model.TenantStatus;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
 import com.erp.subscription.entity.SubscriptionPlan;
 import com.erp.subscription.entity.TenantSubscription;
+import com.erp.subscription.model.SaaSTier;
 import com.erp.subscription.repository.SubscriptionPlanRepository;
 import com.erp.subscription.repository.TenantSubscriptionRepository;
 import org.slf4j.Logger;
@@ -167,5 +169,57 @@ public class EntitlementService {
                 .findFirstByTenantIdAndIsActiveTrueOrderByCreatedAtDesc(tenantId)
                 .map(TenantSubscription::getPlan)
                 .or(() -> subscriptionPlanRepository.findByNameIgnoreCase("Trial"));
+    }
+
+    /**
+     * Checks if the specified tenant satisfies the required SaaS tier entitlement.
+     *
+     * @param tenantId     the tenant identifier
+     * @param requiredTier the minimum required SaaS tier
+     * @return true if the tenant's active tier meets or exceeds requiredTier
+     */
+    public boolean hasTierEntitlement(String tenantId, SaaSTier requiredTier) {
+        if (tenantId == null || tenantId.isBlank() || "default".equalsIgnoreCase(tenantId)) {
+            return false;
+        }
+
+        Optional<TenantRegistry> tenantOpt = tenantRegistryRepository.findById(tenantId);
+        if (tenantOpt.isEmpty()) {
+            log.warn("Entitlement tier check: Tenant [{}] not found", tenantId);
+            return false;
+        }
+
+        TenantRegistry tenant = tenantOpt.get();
+        if (tenant.getAccountStatus() == AccountStatus.SUSPENDED || tenant.getStatus() == TenantStatus.SUSPENDED) {
+            log.warn("Entitlement tier check: Tenant [{}] is SUSPENDED", tenantId);
+            return false;
+        }
+
+        SaaSTier currentTier = SaaSTier.fromString(tenant.getSubscriptionTier());
+        boolean satisfied = currentTier.satisfies(requiredTier);
+        log.debug("Tier entitlement check for tenant [{}]: current={}, required={}, satisfied={}",
+                tenantId, currentTier, requiredTier, satisfied);
+        return satisfied;
+    }
+
+    /**
+     * Resolves the current active SaaSTier for the given tenant from the TenantRegistry.
+     *
+     * @param tenantId the tenant identifier
+     * @return the SaaSTier (defaults to TRIAL if not found)
+     */
+    public SaaSTier getTenantTier(String tenantId) {
+        if (tenantId == null || tenantId.isBlank() || "default".equalsIgnoreCase(tenantId)) {
+            return SaaSTier.TRIAL;
+        }
+
+        return tenantRegistryRepository.findById(tenantId)
+                .map(tenant -> {
+                    if (tenant.getAccountStatus() == AccountStatus.SUSPENDED || tenant.getStatus() == TenantStatus.SUSPENDED) {
+                        return SaaSTier.FREE;
+                    }
+                    return SaaSTier.fromString(tenant.getSubscriptionTier());
+                })
+                .orElse(SaaSTier.TRIAL);
     }
 }

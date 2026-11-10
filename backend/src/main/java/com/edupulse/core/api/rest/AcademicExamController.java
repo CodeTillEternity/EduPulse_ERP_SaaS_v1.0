@@ -9,6 +9,8 @@ import com.edupulse.core.domain.academic.dto.ExamSubmissionResponseDTO;
 import com.edupulse.core.domain.academic.service.AcademicService;
 import com.edupulse.core.domain.academic.service.ExamSecurityService;
 import com.edupulse.core.domain.academic.service.SebConfigurationService;
+import com.erp.subscription.annotation.RequiresSaaSTier;
+import com.erp.subscription.model.SaaSTier;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -100,7 +102,8 @@ public class AcademicExamController {
     }
 
     @GetMapping(value = "/{id}/seb-config", produces = "application/x-seb")
-    @Operation(summary = "Download Safe Exam Browser (.seb) Configuration", description = "Generates and downloads locked-down SEB XML configuration on the fly")
+    @RequiresSaaSTier(SaaSTier.ENTERPRISE)
+    @Operation(summary = "Download Safe Exam Browser (.seb) Configuration", description = "Generates and downloads locked-down SEB XML configuration on the fly (Requires ENTERPRISE Tier)")
     public ResponseEntity<byte[]> getSebConfiguration(@PathVariable Long id, HttpServletRequest servletRequest) {
         String scheme = servletRequest.getScheme();
         String host = servletRequest.getHeader("Host");
@@ -113,7 +116,8 @@ public class AcademicExamController {
     }
 
     @PostMapping("/{id}/submit")
-    @Operation(summary = "Submit Examination Answers", description = "Cryptographically verifies X-SafeExamBrowser-RequestHash from locked SEB environment and evaluates score")
+    @RequiresSaaSTier(SaaSTier.ENTERPRISE)
+    @Operation(summary = "Submit Examination Answers", description = "Cryptographically verifies X-SafeExamBrowser-RequestHash from locked SEB environment and evaluates score (Requires ENTERPRISE Tier)")
     public ResponseEntity<ExamSubmissionResponseDTO> submitExam(
             @PathVariable Long id,
             @Valid @RequestBody ExamSubmissionRequestDTO request,

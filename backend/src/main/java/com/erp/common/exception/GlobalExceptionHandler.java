@@ -113,6 +113,26 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Intercepts PaymentRequiredException when feature entitlements are unsatisfied.
+     * RFC 7807: 402 PAYMENT_REQUIRED.
+     */
+    @ExceptionHandler(PaymentRequiredException.class)
+    public ResponseEntity<ProblemDetail> handlePaymentRequiredException(PaymentRequiredException ex, HttpServletRequest request) {
+        log.warn("Payment required [402] at [{}]: {}", request.getRequestURI(), ex.getMessage());
+        ProblemDetail problem = buildProblemDetail(
+                HttpStatus.PAYMENT_REQUIRED,
+                "Payment Required",
+                ex.getMessage(),
+                request.getRequestURI(),
+                "PAYMENT_REQUIRED"
+        );
+        problem.setProperty("requiredTier", ex.getRequiredTier().name());
+        problem.setProperty("currentTier", ex.getCurrentTier() != null ? ex.getCurrentTier().name() : "FREE");
+        problem.setProperty("upgradeUrl", "/dashboard/billing/settings");
+        return ResponseEntity.status(HttpStatus.PAYMENT_REQUIRED).body(problem);
+    }
+
+    /**
      * Intercepts custom EduPulse business rule violations.
      * RFC 7807: 422 UNPROCESSABLE_ENTITY or configured status.
      */

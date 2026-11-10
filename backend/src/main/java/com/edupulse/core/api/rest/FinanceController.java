@@ -15,6 +15,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
+import com.erp.common.response.ApiResponse;
+import com.erp.subscription.annotation.RequiresSaaSTier;
+import com.erp.subscription.model.SaaSTier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -154,5 +157,15 @@ public class FinanceController {
     public ResponseEntity<String> getPaymentReceiptHtml(@PathVariable Long paymentId) {
         String html = financeService.generatePaymentReceiptHtml(paymentId);
         return ResponseEntity.ok(html);
+    }
+
+    @PostMapping("/documents/watermark/remove")
+    @RequiresSaaSTier(SaaSTier.ENTERPRISE)
+    @Operation(summary = "Remove Watermark from Branded Documents", description = "Enterprise-only endpoint to disable EduPulse footer branding and watermarks across invoices and receipts")
+    public ResponseEntity<ApiResponse<java.util.Map<String, Object>>> removeDocumentWatermark() {
+        return ResponseEntity.ok(ApiResponse.success(
+                "Document watermark removal active for ENTERPRISE tier",
+                java.util.Map.of("watermarkRemoved", true, "entitledTier", SaaSTier.ENTERPRISE.name())
+        ));
     }
 }

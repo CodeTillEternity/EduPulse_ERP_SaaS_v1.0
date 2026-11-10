@@ -8,6 +8,7 @@ import { useMyStudentId } from '../hooks/useMyStudentId';
 import type { AttendanceResponse } from '../types/attendance';
 import FacultyAttendance from './FacultyAttendance';
 import { AdminAttendanceWorkspace } from '../components/attendance/AdminAttendanceWorkspace';
+import { TableSkeleton } from '../components/ui/SkeletonLoader';
 import {
   Table,
   TableBody,
@@ -55,8 +56,8 @@ function StandardAttendance() {
 
   if (isLoading || (isPersonalView && isLoadingId)) {
     return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-slate-400" />
+      <div className="p-4 md:p-8 space-y-4">
+        <TableSkeleton rows={6} cols={5} />
       </div>
     );
   }

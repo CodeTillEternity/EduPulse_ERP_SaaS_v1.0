@@ -21,6 +21,7 @@ import {
   getAttendanceByTimetableAndDate,
   markAttendance,
 } from '../../api/operationsService';
+import { TableSkeleton, Skeleton } from '../../components/ui/SkeletonLoader';
 
 const EMPTY_ARRAY = [];
 
@@ -331,7 +332,11 @@ export default function AttendanceTracker() {
               <span>Total Roster</span>
               <Users className="w-4 h-4 text-slate-400" />
             </div>
-            <div className="mt-1 text-2xl font-bold text-slate-900">{stats.total}</div>
+            {studentsQuery.isLoading ? (
+              <Skeleton className="mt-1 h-7 w-12" />
+            ) : (
+              <div className="mt-1 text-2xl font-bold text-slate-900">{stats.total}</div>
+            )}
             <div className="text-[11px] text-slate-400 mt-0.5">Enrolled students</div>
           </div>
 
@@ -340,12 +345,16 @@ export default function AttendanceTracker() {
               <span>Present</span>
               <UserCheck className="w-4 h-4 text-emerald-600" />
             </div>
-            <div className="mt-1 text-2xl font-bold text-emerald-700">
-              {stats.present}{' '}
-              <span className="text-xs font-normal text-emerald-600/80">
-                ({stats.presentPercentage}%)
-              </span>
-            </div>
+            {studentsQuery.isLoading ? (
+              <Skeleton className="mt-1 h-7 w-16" />
+            ) : (
+              <div className="mt-1 text-2xl font-bold text-emerald-700">
+                {stats.present}{' '}
+                <span className="text-xs font-normal text-emerald-600/80">
+                  ({stats.presentPercentage}%)
+                </span>
+              </div>
+            )}
             <div className="text-[11px] text-emerald-600/70 mt-0.5">In attendance</div>
           </div>
 
@@ -354,7 +363,11 @@ export default function AttendanceTracker() {
               <span>Absent</span>
               <UserX className="w-4 h-4 text-rose-600" />
             </div>
-            <div className="mt-1 text-2xl font-bold text-rose-700">{stats.absent}</div>
+            {studentsQuery.isLoading ? (
+              <Skeleton className="mt-1 h-7 w-12" />
+            ) : (
+              <div className="mt-1 text-2xl font-bold text-rose-700">{stats.absent}</div>
+            )}
             <div className="text-[11px] text-rose-600/70 mt-0.5">Not present</div>
           </div>
 
@@ -363,7 +376,11 @@ export default function AttendanceTracker() {
               <span>Late</span>
               <Clock3 className="w-4 h-4 text-amber-600" />
             </div>
-            <div className="mt-1 text-2xl font-bold text-amber-700">{stats.late}</div>
+            {studentsQuery.isLoading ? (
+              <Skeleton className="mt-1 h-7 w-12" />
+            ) : (
+              <div className="mt-1 text-2xl font-bold text-amber-700">{stats.late}</div>
+            )}
             <div className="text-[11px] text-amber-600/70 mt-0.5">Tardy arrival</div>
           </div>
 
@@ -372,7 +389,11 @@ export default function AttendanceTracker() {
               <span>Excused</span>
               <HelpCircle className="w-4 h-4 text-blue-600" />
             </div>
-            <div className="mt-1 text-2xl font-bold text-blue-700">{stats.excused}</div>
+            {studentsQuery.isLoading ? (
+              <Skeleton className="mt-1 h-7 w-12" />
+            ) : (
+              <div className="mt-1 text-2xl font-bold text-blue-700">{stats.excused}</div>
+            )}
             <div className="text-[11px] text-blue-600/70 mt-0.5">Approved leave</div>
           </div>
         </div>
@@ -422,9 +443,8 @@ export default function AttendanceTracker() {
 
           {/* Table Body */}
           {studentsQuery.isLoading || attendanceQuery.isLoading ? (
-            <div className="py-12 flex flex-col items-center justify-center text-slate-500">
-              <Clock className="w-8 h-8 animate-spin text-indigo-500 mb-2" />
-              <p className="text-xs font-medium">Loading student roster and attendance...</p>
+            <div className="p-4">
+              <TableSkeleton rows={5} cols={4} />
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="py-12 flex flex-col items-center justify-center text-slate-400 text-center px-4">

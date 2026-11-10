@@ -48,6 +48,7 @@ import Layout from './components/Layout';
 import { GlobalSearch } from './components/GlobalSearch';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/sonner';
+import { Toaster as HotToaster } from 'react-hot-toast';
 import { Button } from './components/ui/button';
 import { useTenantTheme } from './hooks/useTenantTheme';
 
@@ -240,6 +241,31 @@ function App() {
           </Routes>
         </Router>
         <Toaster position="top-right" richColors />
+        <HotToaster
+          position="bottom-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#0f172a',
+              color: '#f8fafc',
+              fontSize: '12px',
+              borderRadius: '8px',
+              border: '1px solid #334155',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#ffffff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#ffffff',
+              },
+            },
+          }}
+        />
       </QueryClientProvider>
     </ErrorBoundary>
   );

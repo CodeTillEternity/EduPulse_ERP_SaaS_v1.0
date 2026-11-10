@@ -17,6 +17,7 @@ import { PageFrame } from '../components/ui/PageFrame';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { ProfileSkeleton } from '../components/ui/SkeletonLoader';
 import { toast } from 'sonner';
 import {
   DropdownMenu,
@@ -302,8 +303,8 @@ export default function StudentProfile() {
 
   if (isLoading) {
     return (
-      <PageFrame title="Student Profile" breadcrumbs={[{ label: 'Students', href: '/dashboard/students' }, { label: 'Loading...' }]}>
-        <div className="flex justify-center p-12 border border-slate-200 bg-white"><Loader2 className="h-8 w-8 animate-spin text-slate-400" /></div>
+      <PageFrame title="Student Profile" breadcrumbs={[{ label: 'Students', href: '/dashboard/students' }, { label: 'Loading Profile...' }]}>
+        <ProfileSkeleton />
       </PageFrame>
     );
   }

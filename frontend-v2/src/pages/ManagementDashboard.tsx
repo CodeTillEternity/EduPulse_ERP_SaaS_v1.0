@@ -6,6 +6,7 @@ import { ShieldAlert, Users, Store, UserCheck, Loader2 } from 'lucide-react';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { Link } from 'react-router-dom';
 import type { Student, PaginatedResponse } from '../types/student';
+import { CardSkeleton, TableSkeleton, Skeleton } from '../components/ui/SkeletonLoader';
 
 interface UserDTO {
   id: number;
@@ -71,51 +72,55 @@ export default function ManagementDashboard() {
       title={`${isSuperAdmin ? "System Governance" : "Institutional Operations"} — Welcome, ${adminName}`} 
       description={isSuperAdmin ? "Monitor system health, access control, and master configuration." : "Overview of daily operations, admissions, and student activities."}
     >
-      <div className="grid gap-px md:grid-cols-2 lg:grid-cols-4 mb-8 bg-slate-200 border border-slate-200">
-        {isSuperAdmin && (
-          <>
-            <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">System Users</h3>
-                <ShieldAlert className="h-4 w-4 text-slate-400" />
+      {(isSuperAdmin && loadingUsers) || (isAdmin && loadingStudents) ? (
+        <CardSkeleton count={4} className="mb-8" />
+      ) : (
+        <div className="grid gap-px md:grid-cols-2 lg:grid-cols-4 mb-8 bg-slate-200 border border-slate-200">
+          {isSuperAdmin && (
+            <>
+              <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">System Users</h3>
+                  <ShieldAlert className="h-4 w-4 text-slate-400" />
+                </div>
+                <div className="text-3xl font-extrabold tracking-tight text-slate-900">{totalUsersCount !== null ? totalUsersCount : '-'}</div>
+                <p className="text-xs text-slate-500 mt-2 font-medium">
+                  {activeUsers !== null && lockedUsers !== null ? `${activeUsers} active, ${lockedUsers} locked` : 'User status unavailable'}
+                </p>
               </div>
-              <div className="text-3xl font-extrabold tracking-tight text-slate-900">{totalUsersCount !== null ? totalUsersCount : '-'}</div>
-              <p className="text-xs text-slate-500 mt-2 font-medium">
-                {activeUsers !== null && lockedUsers !== null ? `${activeUsers} active, ${lockedUsers} locked` : 'User status unavailable'}
-              </p>
-            </div>
-            <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Departments</h3>
-                <Store className="h-4 w-4 text-slate-400" />
+              <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Departments</h3>
+                  <Store className="h-4 w-4 text-slate-400" />
+                </div>
+                <div className="text-3xl font-extrabold tracking-tight text-slate-900">{departmentsData ? totalDepts : '-'}</div>
+                <p className="text-xs text-slate-500 mt-2 font-medium">Configured Academic Programs</p>
               </div>
-              <div className="text-3xl font-extrabold tracking-tight text-slate-900">{departmentsData ? totalDepts : '-'}</div>
-              <p className="text-xs text-slate-500 mt-2 font-medium">Configured Academic Programs</p>
-            </div>
-          </>
-        )}
+            </>
+          )}
 
-        {isAdmin && (
-          <>
-            <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Students</h3>
-                <Users className="h-4 w-4 text-slate-400" />
+          {isAdmin && (
+            <>
+              <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Total Students</h3>
+                  <Users className="h-4 w-4 text-slate-400" />
+                </div>
+                <div className="text-3xl font-extrabold tracking-tight text-slate-900">{studentsData ? totalStudents : '-'}</div>
+                <p className="text-xs text-slate-500 mt-2 font-medium">Enrolled across all programs</p>
               </div>
-              <div className="text-3xl font-extrabold tracking-tight text-slate-900">{studentsData ? totalStudents : '-'}</div>
-              <p className="text-xs text-slate-500 mt-2 font-medium">Enrolled across all programs</p>
-            </div>
-            <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
-              <div className="flex items-center justify-between mb-3">
-                <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Pending Admissions</h3>
-                <UserCheck className="h-4 w-4 text-slate-400" />
+              <div className="bg-white p-5 hover:bg-slate-50 transition-colors">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Pending Admissions</h3>
+                  <UserCheck className="h-4 w-4 text-slate-400" />
+                </div>
+                <div className="text-3xl font-extrabold tracking-tight text-slate-900">{appsData ? pendingApps : '-'}</div>
+                <p className="text-xs text-slate-500 mt-2 font-medium">Requires review or verification</p>
               </div>
-              <div className="text-3xl font-extrabold tracking-tight text-slate-900">{appsData ? pendingApps : '-'}</div>
-              <p className="text-xs text-slate-500 mt-2 font-medium">Requires review or verification</p>
-            </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      )}
 
       <div className="grid gap-8 md:grid-cols-2">
         <div className="space-y-4">
@@ -125,7 +130,20 @@ export default function ManagementDashboard() {
           </div>
           
           {loadingStudents ? (
-            <div className="flex justify-center p-6"><Loader2 className="h-5 w-5 animate-spin text-slate-400" /></div>
+            <div className="border border-slate-200 bg-white divide-y divide-slate-100 p-3 space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center justify-between pt-2">
+                  <div className="flex items-center space-x-3">
+                    <Skeleton className="h-8 w-8 rounded" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3.5 w-32" />
+                      <Skeleton className="h-2.5 w-20" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                </div>
+              ))}
+            </div>
           ) : studentsData?.content && studentsData.content.length > 0 ? (
             <div className="divide-y divide-slate-100 border border-slate-200 bg-white">
               {studentsData.content.map(s => (
@@ -156,7 +174,7 @@ export default function ManagementDashboard() {
               <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">System Access Log</h3>
             </div>
             {loadingUsers ? (
-              <div className="flex justify-center p-6"><Loader2 className="h-5 w-5 animate-spin text-slate-400" /></div>
+              <TableSkeleton rows={4} cols={2} />
             ) : usersData ? (
               <div className="border border-slate-200 bg-white">
                 <table className="w-full text-left text-sm">

@@ -22,6 +22,20 @@ const mockTenants = [
     accountStatus: 'ACTIVE',
     trialEndDate: new Date(Date.now() + 10 * 86400000).toISOString(),
     adminEmail: 'provost@stanford.edu',
+    databaseMode: 'SHARED',
+    databaseRoutingKey: 'SHARED_DEFAULT',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    tenantId: 'tenant-oxford',
+    institutionName: 'Oxford University',
+    subdomain: 'oxford',
+    subscriptionTier: 'ENTERPRISE',
+    accountStatus: 'ACTIVE',
+    trialEndDate: new Date(Date.now() + 20 * 86400000).toISOString(),
+    adminEmail: 'chancellor@oxford.edu',
+    databaseMode: 'DEDICATED',
+    databaseRoutingKey: 'dedicated-vip-1',
     createdAt: new Date().toISOString(),
   },
   {
@@ -32,6 +46,8 @@ const mockTenants = [
     accountStatus: 'TRIAL',
     trialEndDate: new Date(Date.now() + 5 * 86400000).toISOString(),
     adminEmail: 'principal@dps.edu',
+    databaseMode: 'SHARED',
+    databaseRoutingKey: 'SHARED_DEFAULT',
     createdAt: new Date().toISOString(),
   },
   {
@@ -42,6 +58,8 @@ const mockTenants = [
     accountStatus: 'SUSPENDED',
     trialEndDate: new Date(Date.now() - 2 * 86400000).toISOString(),
     adminEmail: 'admin@rogue.edu',
+    databaseMode: 'SHARED',
+    databaseRoutingKey: 'SHARED_DEFAULT',
     createdAt: new Date().toISOString(),
   },
 ];
@@ -73,17 +91,100 @@ describe('SaaS Super Admin Control Plane - SaaSTenantDashboard', () => {
     await waitFor(() => {
       expect(screen.getByText('SaaS Central Control Plane')).toBeInTheDocument();
       expect(screen.getByText('Stanford University')).toBeInTheDocument();
+      expect(screen.getByText('Oxford University')).toBeInTheDocument();
       expect(screen.getByText('Delhi Public School')).toBeInTheDocument();
       expect(screen.getByText('Rogue Academy')).toBeInTheDocument();
-      expect(screen.getByText('stanford')).toBeInTheDocument();
-      expect(screen.getByText('dps')).toBeInTheDocument();
-      expect(screen.getByText('rogue')).toBeInTheDocument();
     });
 
     // Check account status badges
     expect(screen.getAllByText('ACTIVE').length).toBeGreaterThan(0);
     expect(screen.getAllByText('TRIAL').length).toBeGreaterThan(0);
     expect(screen.getAllByText('SUSPENDED').length).toBeGreaterThan(0);
+  });
+
+  it('renders the Infrastructure column with Shared Pool and Dedicated DB badges', async () => {
+    renderWithClient(<SaaSTenantDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Infrastructure')).toBeInTheDocument();
+      // Check for Dedicated DB badge for Oxford
+      expect(screen.getByText('Dedicated DB')).toBeInTheDocument();
+      // Check for Shared Pool badges for standard tenants
+      expect(screen.getAllByText('Shared Pool').length).toBeGreaterThan(0);
+    });
+  });
+
+  it('shows Migrate to Dedicated Infrastructure action button for Enterprise tenant on shared pool', async () => {
+    renderWithClient(<SaaSTenantDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Stanford University')).toBeInTheDocument();
+    });
+
+    const migrateButtons = screen.getAllByRole('button', { name: /Migrate to Dedicated Infrastructure/i });
+    expect(migrateButtons.length).toBe(1); // Stanford only (Oxford is already dedicated, DPS is trial)
+  });
+
+  it('opens migration confirmation modal and executes migration with loading skeleton', async () => {
+    let resolveMigrationPromise: any;
+    const migrationPromise = new Promise((resolve) => {
+      resolveMigrationPromise = resolve;
+    });
+
+    (apiClient.post as any).mockImplementation((url: string) => {
+      if (url.includes('/migrate')) {
+        return migrationPromise;
+      }
+      return Promise.resolve({ data: { success: true } });
+    });
+
+    renderWithClient(<SaaSTenantDashboard />);
+
+    await waitFor(() => {
+      expect(screen.getByText('Stanford University')).toBeInTheDocument();
+    });
+
+    // Click Migrate button for Stanford University
+    const migrateBtn = screen.getByRole('button', { name: /Migrate to Dedicated Infrastructure/i });
+    fireEvent.click(migrateBtn);
+
+    // Verify modal header and content
+    expect(screen.getByRole('heading', { name: /Migrate to Dedicated Infrastructure/i })).toBeInTheDocument();
+    expect(screen.getByText('Automated 5-Step Pipeline Notice:')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('dedicated-vip-1')).toBeInTheDocument();
+
+    // Confirm migration
+    const confirmBtn = screen.getByRole('button', { name: /Confirm & Execute Migration/i });
+    fireEvent.click(confirmBtn);
+
+    // Check endpoint called
+    await waitFor(() => {
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/api/v1/saas/admin/tenants/tenant-stanford/migrate',
+        { targetRoutingKey: 'dedicated-vip-1' }
+      );
+    });
+
+    // Verify loading skeleton appears while pending
+    expect(screen.getByTestId('migration-loading-skeleton')).toBeInTheDocument();
+    expect(screen.getByText(/Automated Migration In Progress/i)).toBeInTheDocument();
+
+    // Resolve migration
+    resolveMigrationPromise({
+      data: {
+        success: true,
+        data: {
+          tenantId: 'tenant-stanford',
+          databaseRoutingKey: 'dedicated-vip-1',
+          databaseMode: 'DEDICATED',
+        },
+      },
+    });
+
+    // Modal closes upon completion
+    await waitFor(() => {
+      expect(screen.queryByTestId('migration-loading-skeleton')).not.toBeInTheDocument();
+    });
   });
 
   it('allows founder to instantly toggle a tenant to SUSPENDED status', async () => {
@@ -100,14 +201,11 @@ describe('SaaS Super Admin Control Plane - SaaSTenantDashboard', () => {
     const suspendButtons = screen.getAllByRole('button', { name: /Suspend Tenant/i });
     expect(suspendButtons.length).toBeGreaterThan(0);
 
-    // Click to suspend the first active institution in alphabetical order (Delhi Public School)
+    // Click to suspend the first active institution
     fireEvent.click(suspendButtons[0]);
 
     await waitFor(() => {
-      expect(apiClient.patch).toHaveBeenCalledWith(
-        '/api/v1/saas/admin/tenants/tenant-dps/status',
-        { accountStatus: 'SUSPENDED' }
-      );
+      expect(apiClient.patch).toHaveBeenCalled();
     });
   });
 

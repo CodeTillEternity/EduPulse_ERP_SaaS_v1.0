@@ -269,6 +269,7 @@ function App() {
               <Route index element={<SaaSTenantDashboard />} />
             </Route>
             <Route path="/" element={<LandingPage />} />
+            <Route path="/www" element={<LandingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

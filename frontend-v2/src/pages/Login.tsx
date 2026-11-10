@@ -354,6 +354,15 @@ export default function Login() {
                 <div className="space-y-1.5">
                   <div className="flex justify-between items-center">
                     <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">Password</label>
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs font-semibold hover:underline transition-colors"
+                      style={{
+                        color: isBranded && branding?.primaryColorHex ? branding.primaryColorHex : '#4f46e5',
+                      }}
+                    >
+                      Forgot Password?
+                    </Link>
                   </div>
                   <div className="relative">
                     <Input

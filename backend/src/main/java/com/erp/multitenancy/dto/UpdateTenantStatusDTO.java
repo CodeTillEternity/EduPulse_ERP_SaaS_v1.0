@@ -7,3 +7,4 @@ public record UpdateTenantStatusDTO(
         @NotNull(message = "accountStatus is required")
         AccountStatus accountStatus
 ) {}
+

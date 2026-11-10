@@ -16,6 +16,7 @@ import com.erp.subscription.entity.SubscriptionPlan;
 import com.erp.subscription.entity.TenantSubscription;
 import com.erp.subscription.repository.SubscriptionPlanRepository;
 import com.erp.subscription.repository.TenantSubscriptionRepository;
+import com.erp.subscription.service.SaaSBillingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,18 +44,28 @@ public class TenantProvisioningService {
     private final PasswordEncoder passwordEncoder;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final TenantSubscriptionRepository tenantSubscriptionRepository;
+    private final SaaSBillingService saaSBillingService;
 
     public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository,
                                      UserRepository userRepository,
                                      PasswordEncoder passwordEncoder) {
-        this(tenantRegistryRepository, null, userRepository, passwordEncoder, null, null);
+        this(tenantRegistryRepository, null, userRepository, passwordEncoder, null, null, null);
     }
 
     public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository,
                                      TenantBrandingRepository tenantBrandingRepository,
                                      UserRepository userRepository,
                                      PasswordEncoder passwordEncoder) {
-        this(tenantRegistryRepository, tenantBrandingRepository, userRepository, passwordEncoder, null, null);
+        this(tenantRegistryRepository, tenantBrandingRepository, userRepository, passwordEncoder, null, null, null);
+    }
+
+    public TenantProvisioningService(TenantRegistryRepository tenantRegistryRepository,
+                                     TenantBrandingRepository tenantBrandingRepository,
+                                     UserRepository userRepository,
+                                     PasswordEncoder passwordEncoder,
+                                     SubscriptionPlanRepository subscriptionPlanRepository,
+                                     TenantSubscriptionRepository tenantSubscriptionRepository) {
+        this(tenantRegistryRepository, tenantBrandingRepository, userRepository, passwordEncoder, subscriptionPlanRepository, tenantSubscriptionRepository, null);
     }
 
     @Autowired
@@ -63,13 +74,15 @@ public class TenantProvisioningService {
                                      UserRepository userRepository,
                                      PasswordEncoder passwordEncoder,
                                      @Autowired(required = false) SubscriptionPlanRepository subscriptionPlanRepository,
-                                     @Autowired(required = false) TenantSubscriptionRepository tenantSubscriptionRepository) {
+                                     @Autowired(required = false) TenantSubscriptionRepository tenantSubscriptionRepository,
+                                     @Autowired(required = false) @org.springframework.context.annotation.Lazy SaaSBillingService saaSBillingService) {
         this.tenantRegistryRepository = tenantRegistryRepository;
         this.tenantBrandingRepository = tenantBrandingRepository;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.subscriptionPlanRepository = subscriptionPlanRepository;
         this.tenantSubscriptionRepository = tenantSubscriptionRepository;
+        this.saaSBillingService = saaSBillingService;
     }
 
     /**
@@ -117,7 +130,9 @@ public class TenantProvisioningService {
         registry.setAdminEmail(normalizedEmail);
         registry.setSubscriptionTier("TRIAL");
         registry.setAccountStatus(AccountStatus.TRIAL);
-        registry.setTrialEndDate(LocalDateTime.now().plusDays(DEFAULT_TRIAL_PERIOD_DAYS));
+        LocalDateTime trialEnd = LocalDateTime.now().plusDays(DEFAULT_TRIAL_PERIOD_DAYS);
+        registry.setTrialEndDate(trialEnd);
+        registry.setCurrentPeriodEnd(trialEnd);
         registry.setDatabaseRoutingKey("SHARED_DEFAULT");
         registry.setDatabaseMode("SHARED");
         registry.setStatus(TenantStatus.TRIAL_ACTIVE);
@@ -125,6 +140,15 @@ public class TenantProvisioningService {
         TenantRegistry savedRegistry = tenantRegistryRepository.save(registry);
         log.info("Central Tenant Registry created: [{}] ({}) in TRIAL status until {}",
                 tenantId, subdomainSlug, registry.getTrialEndDate());
+
+        // Stripe Customer creation during trial provisioning
+        if (saaSBillingService != null) {
+            try {
+                saaSBillingService.createStripeCustomer(savedRegistry, normalizedEmail, normalizedName);
+            } catch (Exception ex) {
+                log.warn("Could not create Stripe customer for tenant [{}]: {}", tenantId, ex.getMessage());
+            }
+        }
 
         // 2. Initialize the tenant_id namespace with default branding
         if (tenantBrandingRepository != null) {

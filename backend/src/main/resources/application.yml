@@ -21,6 +21,13 @@ spring:
     serialization:
       write-dates-as-timestamps: false
 
+# Stripe B2B Subscription Billing Configuration
+stripe:
+  api-key: ${STRIPE_API_KEY:sk_test_placeholder}
+  webhook-secret: ${STRIPE_WEBHOOK_SECRET:whsec_test_placeholder}
+  pro-price-id: ${STRIPE_PRO_PRICE_ID:price_pro_placeholder}
+  enterprise-price-id: ${STRIPE_ENTERPRISE_PRICE_ID:price_enterprise_placeholder}
+
 # Razorpay SaaS Billing Configuration (RBI Compliant)
 razorpay:
   key-id: ${RAZORPAY_KEY_ID:rzp_test_placeholder}

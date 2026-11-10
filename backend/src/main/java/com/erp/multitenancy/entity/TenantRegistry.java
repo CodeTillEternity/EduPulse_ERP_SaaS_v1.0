@@ -17,7 +17,8 @@ import java.time.LocalDateTime;
     name = "tenant_registry",
     indexes = {
         @Index(name = "idx_tenant_registry_subdomain", columnList = "subdomain"),
-        @Index(name = "idx_tenant_registry_account_status", columnList = "account_status")
+        @Index(name = "idx_tenant_registry_account_status", columnList = "account_status"),
+        @Index(name = "idx_tenant_registry_stripe_customer", columnList = "stripe_customer_id")
     }
 )
 public class TenantRegistry {
@@ -41,6 +42,15 @@ public class TenantRegistry {
 
     @Column(name = "trial_end_date")
     private LocalDateTime trialEndDate;
+
+    @Column(name = "current_period_end")
+    private LocalDateTime currentPeriodEnd;
+
+    @Column(name = "stripe_customer_id", length = 64)
+    private String stripeCustomerId;
+
+    @Column(name = "stripe_subscription_id", length = 64)
+    private String stripeSubscriptionId;
 
     @Column(name = "database_routing_key", length = 64)
     private String databaseRoutingKey = "SHARED_DEFAULT";
@@ -185,6 +195,30 @@ public class TenantRegistry {
 
     public void setTrialEndDate(LocalDateTime trialEndDate) {
         this.trialEndDate = trialEndDate;
+    }
+
+    public LocalDateTime getCurrentPeriodEnd() {
+        return currentPeriodEnd;
+    }
+
+    public void setCurrentPeriodEnd(LocalDateTime currentPeriodEnd) {
+        this.currentPeriodEnd = currentPeriodEnd;
+    }
+
+    public String getStripeCustomerId() {
+        return stripeCustomerId;
+    }
+
+    public void setStripeCustomerId(String stripeCustomerId) {
+        this.stripeCustomerId = stripeCustomerId;
+    }
+
+    public String getStripeSubscriptionId() {
+        return stripeSubscriptionId;
+    }
+
+    public void setStripeSubscriptionId(String stripeSubscriptionId) {
+        this.stripeSubscriptionId = stripeSubscriptionId;
     }
 
     public String getDatabaseRoutingKey() {

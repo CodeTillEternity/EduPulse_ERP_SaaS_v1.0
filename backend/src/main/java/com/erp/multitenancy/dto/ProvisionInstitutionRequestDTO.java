@@ -11,3 +11,4 @@ public record ProvisionInstitutionRequestDTO(
         @Email(message = "Valid email format required")
         String email
 ) {}
+

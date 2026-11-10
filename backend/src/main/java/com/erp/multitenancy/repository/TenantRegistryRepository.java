@@ -21,6 +21,9 @@ public interface TenantRegistryRepository extends JpaRepository<TenantRegistry, 
     boolean existsByInstitutionNameIgnoreCase(String institutionName);
     boolean existsByAdminEmailIgnoreCase(String adminEmail);
 
+    Optional<TenantRegistry> findByStripeCustomerId(String stripeCustomerId);
+    Optional<TenantRegistry> findByStripeSubscriptionId(String stripeSubscriptionId);
+
     List<TenantRegistry> findByAccountStatus(AccountStatus accountStatus);
     List<TenantRegistry> findByStatusAndTrialEndDateBefore(TenantStatus status, LocalDateTime dateTime);
 

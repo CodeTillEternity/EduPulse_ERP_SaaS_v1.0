@@ -34,8 +34,31 @@ razorpay:
   key-secret: ${RAZORPAY_KEY_SECRET:rzp_secret_placeholder}
   webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:rzp_webhook_secret_placeholder}
 
-# Dedicated Database Routing Configuration (Hybrid Multi-Tenancy)
+# Dedicated Database Routing Configuration (Hybrid Multi-Tenancy & HikariCP Pools)
 multitenancy:
+  datasources:
+    primary:
+      jdbc-url: ${PRIMARY_DB_URL:${SPRING_DATASOURCE_URL:jdbc:h2:mem:erp_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=VALUE}}
+      username: ${PRIMARY_DB_USERNAME:${SPRING_DATASOURCE_USERNAME:sa}}
+      password: ${PRIMARY_DB_PASSWORD:${SPRING_DATASOURCE_PASSWORD:}}
+      driver-class-name: ${PRIMARY_DB_DRIVER:${SPRING_DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}}
+      hikari:
+        pool-name: EduPulse-Primary-HikariPool
+        maximum-pool-size: 20
+        minimum-idle: 5
+        idle-timeout: 300000
+        connection-timeout: 20000
+    dedicated-vip-1:
+      jdbc-url: ${DEDICATED_VIP_1_DB_URL:jdbc:h2:mem:dedicated_vip_1_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=VALUE}
+      username: ${DEDICATED_VIP_1_USERNAME:sa}
+      password: ${DEDICATED_VIP_1_PASSWORD:}
+      driver-class-name: ${DEDICATED_VIP_1_DRIVER:org.h2.Driver}
+      hikari:
+        pool-name: EduPulse-Dedicated-VIP-1-HikariPool
+        maximum-pool-size: 15
+        minimum-idle: 3
+        idle-timeout: 300000
+        connection-timeout: 20000
   dedicated:
     url: ${DEDICATED_DB_URL:jdbc:h2:mem:dedicated_secondary_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;NON_KEYWORDS=VALUE}
     username: ${DEDICATED_DB_USERNAME:sa}

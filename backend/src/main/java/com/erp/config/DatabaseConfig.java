@@ -2,10 +2,14 @@ package com.erp.config;
 
 import com.erp.multitenancy.datasource.TenantDataSourceProvider;
 import com.erp.multitenancy.datasource.TenantRoutingDataSource;
+import com.erp.multitenancy.datasource.TenantRoutingKeyResolver;
 import com.erp.multitenancy.entity.TenantRegistry;
 import com.erp.multitenancy.repository.TenantRegistryRepository;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -33,6 +37,18 @@ public class DatabaseConfig {
     @Value("${multitenancy.dedicated.mock-tenant-id:mock-dedicated-tenant}")
     private String mockTenantId;
 
+    @Value("${multitenancy.datasources.dedicated-vip-1.jdbc-url:#{null}}")
+    private String dedicatedVip1Url;
+
+    @Value("${multitenancy.datasources.dedicated-vip-1.username:sa}")
+    private String dedicatedVip1Username;
+
+    @Value("${multitenancy.datasources.dedicated-vip-1.password:}")
+    private String dedicatedVip1Password;
+
+    @Value("${multitenancy.datasources.dedicated-vip-1.driver-class-name:org.h2.Driver}")
+    private String dedicatedVip1Driver;
+
     /**
      * Primary DataSource bean replacing the default single datasource with a multi-tenant dynamic router.
      * The shared platform database serves as defaultTargetDataSource for common and unpartitioned requests.
@@ -41,15 +57,41 @@ public class DatabaseConfig {
     @Primary
     public TenantRoutingDataSource dataSource(
             DataSourceProperties properties,
-            TenantDataSourceProvider tenantDataSourceProvider) {
+            TenantDataSourceProvider tenantDataSourceProvider,
+            @Autowired(required = false) TenantRoutingKeyResolver routingKeyResolver) {
 
         DataSource sharedDataSource = properties.initializeDataSourceBuilder().build();
 
         TenantRoutingDataSource routingDataSource = new TenantRoutingDataSource();
         routingDataSource.setDefaultTargetDataSource(sharedDataSource);
+        if (routingKeyResolver != null) {
+            routingDataSource.setRoutingKeyResolver(routingKeyResolver);
+        }
 
         Map<Object, Object> targetDataSources = new HashMap<>();
         targetDataSources.put("SHARED", sharedDataSource);
+        targetDataSources.put("SHARED_DEFAULT", sharedDataSource);
+
+        // Pre-register dedicated-vip-1 HikariCP pool if configured
+        if (dedicatedVip1Url != null && !dedicatedVip1Url.isBlank()) {
+            try {
+                HikariConfig hikariConfig = new HikariConfig();
+                hikariConfig.setPoolName("EduPulse-Dedicated-VIP-1-HikariPool");
+                hikariConfig.setJdbcUrl(dedicatedVip1Url);
+                hikariConfig.setUsername(dedicatedVip1Username);
+                hikariConfig.setPassword(dedicatedVip1Password);
+                hikariConfig.setDriverClassName(dedicatedVip1Driver);
+                hikariConfig.setMaximumPoolSize(15);
+                hikariConfig.setMinimumIdle(3);
+                HikariDataSource vip1Ds = new HikariDataSource(hikariConfig);
+
+                targetDataSources.put("dedicated-vip-1", vip1Ds);
+                targetDataSources.put("DEDICATED_VIP_1", vip1Ds);
+                log.info("Initialized dedicated HikariCP pool for [dedicated-vip-1]");
+            } catch (Exception ex) {
+                log.warn("Could not initialize dedicated-vip-1 pool: {}", ex.getMessage());
+            }
+        }
 
         // Pre-register mocked dedicated database for testing
         if (tenantDataSourceProvider != null && tenantDataSourceProvider.hasDedicatedConfiguration(mockTenantId)) {

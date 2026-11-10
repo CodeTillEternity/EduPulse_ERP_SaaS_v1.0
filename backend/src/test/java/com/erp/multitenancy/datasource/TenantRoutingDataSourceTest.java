@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
 
 class TenantRoutingDataSourceTest {
 
@@ -41,7 +42,9 @@ class TenantRoutingDataSourceTest {
 
     private StubDataSource defaultSharedDataSource;
     private StubDataSource dedicatedDataSource;
+    private StubDataSource dedicatedVipDataSource;
     private TenantRoutingDataSource routingDataSource;
+    private TenantRoutingKeyResolver mockKeyResolver;
 
     @BeforeEach
     void setUp() {
@@ -49,13 +52,18 @@ class TenantRoutingDataSourceTest {
 
         defaultSharedDataSource = new StubDataSource("shared-db");
         dedicatedDataSource = new StubDataSource("dedicated-alpha-db");
+        dedicatedVipDataSource = new StubDataSource("dedicated-vip-1-db");
 
         routingDataSource = new TenantRoutingDataSource();
         routingDataSource.setDefaultTargetDataSource(defaultSharedDataSource);
 
+        mockKeyResolver = mock(TenantRoutingKeyResolver.class);
+        routingDataSource.setRoutingKeyResolver(mockKeyResolver);
+
         Map<Object, Object> targets = new HashMap<>();
         targets.put("SHARED", defaultSharedDataSource);
         targets.put("tenant-dedicated-alpha", dedicatedDataSource);
+        targets.put("dedicated-vip-1", dedicatedVipDataSource);
 
         routingDataSource.setTargetDataSources(targets);
         routingDataSource.afterPropertiesSet();
@@ -67,7 +75,7 @@ class TenantRoutingDataSourceTest {
     }
 
     @Test
-    @DisplayName("Should resolve to isolated dedicated DataSource when tenant ID is mapped")
+    @DisplayName("Should resolve to isolated dedicated DataSource when tenant ID is mapped directly")
     void shouldResolveToDedicatedDataSource() {
         TenantContext.setTenantId("tenant-dedicated-alpha");
 
@@ -78,9 +86,44 @@ class TenantRoutingDataSourceTest {
     }
 
     @Test
+    @DisplayName("Should route to dedicated-vip-1 database pool when routing key resolver returns dedicated-vip-1")
+    void shouldRouteToDedicatedVipPoolViaResolver() {
+        String enterpriseTenantId = "tenant-enterprise-apex";
+        when(mockKeyResolver.resolveRoutingKey(enterpriseTenantId)).thenReturn("dedicated-vip-1");
+
+        TenantContext.setTenantId(enterpriseTenantId);
+
+        Object lookupKey = routingDataSource.determineCurrentLookupKey();
+        assertThat(lookupKey).isEqualTo("dedicated-vip-1");
+
+        DataSource resolved = routingDataSource.determineTargetDataSource();
+        assertThat(resolved).isSameAs(dedicatedVipDataSource);
+        assertThat(((StubDataSource) resolved).getName()).isEqualTo("dedicated-vip-1-db");
+    }
+
+    @Test
+    @DisplayName("Should fall back to default shared DataSource when routing key is null or SHARED")
+    void shouldFallbackToSharedDataSourceWhenRoutingKeyNullOrShared() {
+        String tenantA = "tenant-shared-a";
+        String tenantB = "tenant-shared-b";
+
+        when(mockKeyResolver.resolveRoutingKey(tenantA)).thenReturn(null);
+        when(mockKeyResolver.resolveRoutingKey(tenantB)).thenReturn("SHARED");
+
+        TenantContext.setTenantId(tenantA);
+        assertThat(routingDataSource.determineCurrentLookupKey()).isEqualTo("SHARED");
+        assertThat(routingDataSource.determineTargetDataSource()).isSameAs(defaultSharedDataSource);
+
+        TenantContext.setTenantId(tenantB);
+        assertThat(routingDataSource.determineCurrentLookupKey()).isEqualTo("SHARED");
+        assertThat(routingDataSource.determineTargetDataSource()).isSameAs(defaultSharedDataSource);
+    }
+
+    @Test
     @DisplayName("Should fall back to default shared DataSource when tenant is not in dedicated targets")
     void shouldFallbackToSharedDataSourceForUnmappedTenant() {
         TenantContext.setTenantId("tenant-shared-beta");
+        when(mockKeyResolver.resolveRoutingKey("tenant-shared-beta")).thenReturn("SHARED_DEFAULT");
 
         DataSource resolved = routingDataSource.determineTargetDataSource();
 
@@ -93,8 +136,9 @@ class TenantRoutingDataSourceTest {
     void shouldFallbackToSharedDataSourceWhenNoTenantContext() {
         TenantContext.clear();
 
-        DataSource resolved = routingDataSource.determineTargetDataSource();
+        assertThat(routingDataSource.determineCurrentLookupKey()).isEqualTo("SHARED");
 
+        DataSource resolved = routingDataSource.determineTargetDataSource();
         assertThat(resolved).isSameAs(defaultSharedDataSource);
         assertThat(((StubDataSource) resolved).getName()).isEqualTo("shared-db");
     }
@@ -119,15 +163,5 @@ class TenantRoutingDataSourceTest {
 
         assertThat(resolved).isSameAs(newDedicatedDs);
         assertThat(((StubDataSource) resolved).getName()).isEqualTo("hotloaded-enterprise-db");
-    }
-
-    @Test
-    @DisplayName("Should determine lookup key matching TenantContext directly")
-    void shouldDetermineCurrentLookupKey() {
-        TenantContext.setTenantId("tenant-lookup-check");
-        assertThat(routingDataSource.determineCurrentLookupKey()).isEqualTo("tenant-lookup-check");
-
-        TenantContext.clear();
-        assertThat(routingDataSource.determineCurrentLookupKey()).isNull();
     }
 }

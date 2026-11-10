@@ -141,12 +141,12 @@ public class TenantProvisioningService {
         log.info("Central Tenant Registry created: [{}] ({}) in TRIAL status until {}",
                 tenantId, subdomainSlug, registry.getTrialEndDate());
 
-        // Stripe Customer creation during trial provisioning
+        // Razorpay Customer creation during trial provisioning
         if (saaSBillingService != null) {
             try {
-                saaSBillingService.createStripeCustomer(savedRegistry, normalizedEmail, normalizedName);
+                saaSBillingService.createRazorpayCustomer(savedRegistry, normalizedEmail, normalizedName);
             } catch (Exception ex) {
-                log.warn("Could not create Stripe customer for tenant [{}]: {}", tenantId, ex.getMessage());
+                log.warn("Could not create Razorpay customer for tenant [{}]: {}", tenantId, ex.getMessage());
             }
         }
 

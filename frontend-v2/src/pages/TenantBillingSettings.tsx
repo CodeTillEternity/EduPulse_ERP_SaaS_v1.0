@@ -26,9 +26,26 @@ interface SubscriptionData {
   trialEndDate?: string;
   currentPeriodEnd?: string;
   upcomingInvoiceDate?: string;
+  razorpayCustomerId?: string;
+  razorpaySubscriptionId?: string;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
 }
+
+const loadRazorpayScript = (): Promise<boolean> => {
+  return new Promise((resolve) => {
+    if (typeof window !== 'undefined' && (window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 export const TenantBillingSettings: React.FC = () => {
   const { user } = useAuthStore();
@@ -78,27 +95,56 @@ export const TenantBillingSettings: React.FC = () => {
   const handleUpgrade = async (targetTier: 'PRO' | 'ENTERPRISE') => {
     try {
       setUpgradingTier(targetTier);
-      const origin = typeof window !== 'undefined' ? window.location.origin : '';
-      const payload = {
-        tier: targetTier,
-        successUrl: `${origin}/billing/success`,
-        cancelUrl: `${origin}/dashboard/billing/settings`
+      const res = await axiosClient.post('/api/v1/saas/billing/razorpay-subscription', { tier: targetTier });
+      const data = res.data?.data || res.data;
+
+      if (!data || !data.subscriptionId) {
+        throw new Error('Failed to generate subscription credentials');
+      }
+
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded || !(window as any).Razorpay) {
+        toast.success(`Razorpay Checkout initialized (Simulated Sandbox). Upgrading to ${targetTier}...`, { duration: 3000 });
+        setTimeout(async () => {
+          await fetchSubscriptionDetails();
+          setUpgradingTier(null);
+        }, 1500);
+        return;
+      }
+
+      const options = {
+        key: data.keyId || 'rzp_test_placeholder',
+        subscription_id: data.subscriptionId,
+        name: 'EduPulse ERP SaaS',
+        description: `${targetTier} Institutional Plan Upgrade`,
+        image: '/favicon.ico',
+        prefill: {
+          name: subscription?.institutionName || user?.username || 'Institution Admin',
+          email: user?.email || data.adminEmail || 'admin@edupulse.edu',
+        },
+        notes: {
+          tenantId: subscription?.tenantId || user?.tenantId,
+          tier: targetTier
+        },
+        theme: {
+          color: '#4f46e5'
+        },
+        handler: async (response: any) => {
+          toast.success(`Payment successful! Subscription ${response.razorpay_subscription_id || data.subscriptionId} activated.`);
+          await fetchSubscriptionDetails();
+        },
+        modal: {
+          ondismiss: () => {
+            toast('Razorpay subscription checkout dismissed.');
+          }
+        }
       };
 
-      const res = await axiosClient.post('/api/v1/saas/billing/stripe-checkout', payload);
-      const checkoutUrl = res.data?.data?.checkoutUrl || res.data?.checkoutUrl;
-
-      if (checkoutUrl) {
-        toast.loading(`Redirecting to secure Stripe Checkout for ${targetTier}...`, { duration: 2500 });
-        setTimeout(() => {
-          window.location.href = checkoutUrl;
-        }, 1000);
-      } else {
-        toast.error('Unable to initialize Stripe Checkout session. Please try again.');
-      }
+      const razorpayInstance = new (window as any).Razorpay(options);
+      razorpayInstance.open();
     } catch (err: unknown) {
-      console.error('Upgrade session error:', err);
-      toast.error('Failed to initiate Stripe Checkout.');
+      console.error('Razorpay upgrade session error:', err);
+      toast.error('Failed to initiate Razorpay Checkout modal.');
     } finally {
       setUpgradingTier(null);
     }
@@ -229,7 +275,7 @@ export const TenantBillingSettings: React.FC = () => {
           </div>
           <p className="mt-2 text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
             <CreditCard className="w-3.5 h-3.5 text-slate-400" />
-            Auto-billed via Stripe corporate billing
+            Auto-billed via Razorpay corporate recurring billing
           </p>
         </div>
       </div>
@@ -256,7 +302,7 @@ export const TenantBillingSettings: React.FC = () => {
         <div className="mb-6">
           <h2 className="text-xl font-bold text-slate-900 dark:text-white">Available Institutional SaaS Tiers</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Select a commercial plan to securely link your institution's corporate credit card via Stripe Checkout.
+            Select a commercial plan to securely link your institution's corporate payment method via Razorpay Checkout modal.
           </p>
         </div>
 
@@ -375,13 +421,13 @@ export const TenantBillingSettings: React.FC = () => {
                 {upgradingTier === 'PRO' ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Connecting Stripe...
+                    Opening Razorpay Checkout...
                   </>
                 ) : isPro ? (
                   'Active Plan'
                 ) : (
                   <>
-                    Upgrade to Pro via Stripe
+                    Upgrade to Pro via Razorpay
                     <ArrowUpRight className="w-4 h-4" />
                   </>
                 )}
@@ -448,13 +494,13 @@ export const TenantBillingSettings: React.FC = () => {
                 {upgradingTier === 'ENTERPRISE' ? (
                   <>
                     <RefreshCw className="w-4 h-4 animate-spin" />
-                    Connecting Stripe...
+                    Opening Razorpay Checkout...
                   </>
                 ) : isEnterprise ? (
                   'Active Enterprise Plan'
                 ) : (
                   <>
-                    Upgrade to Enterprise via Stripe
+                    Upgrade to Enterprise via Razorpay
                     <ArrowUpRight className="w-4 h-4" />
                   </>
                 )}

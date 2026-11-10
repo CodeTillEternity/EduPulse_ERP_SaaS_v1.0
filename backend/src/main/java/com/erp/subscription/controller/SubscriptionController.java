@@ -125,6 +125,8 @@ public class SubscriptionController {
             data.put("accountStatus", tenant.getAccountStatus() != null ? tenant.getAccountStatus().name() : "TRIAL");
             data.put("trialEndDate", tenant.getTrialEndDate());
             data.put("currentPeriodEnd", tenant.getCurrentPeriodEnd());
+            data.put("razorpayCustomerId", tenant.getRazorpayCustomerId());
+            data.put("razorpaySubscriptionId", tenant.getRazorpaySubscriptionId());
             data.put("stripeCustomerId", tenant.getStripeCustomerId());
             data.put("stripeSubscriptionId", tenant.getStripeSubscriptionId());
 
@@ -143,6 +145,36 @@ public class SubscriptionController {
         }
 
         return ResponseEntity.ok(ApiResponse.success("Subscription details retrieved successfully", data));
+    }
+
+    /**
+     * Initializes a Razorpay Subscription order and checkout modal parameters for upgrading tenant to PRO or ENTERPRISE.
+     */
+    @PostMapping("/razorpay-subscription")
+    @Operation(summary = "Create Razorpay B2B Subscription", description = "Generates a Razorpay Subscription and returns checkout modal credentials (keyId, subscriptionId)")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> createRazorpaySubscription(
+            @RequestBody(required = false) Map<String, String> request) {
+        String tenantId = TenantContext.getTenantId();
+        if (tenantId == null || tenantId.isBlank() || "default".equalsIgnoreCase(tenantId)) {
+            return ResponseEntity.badRequest().body(ApiResponse.error("Active tenant session context is required"));
+        }
+
+        Map<String, String> body = request != null ? request : Map.of();
+        String tier = body.getOrDefault("tier", "PRO");
+
+        if (saaSBillingService == null) {
+            Map<String, Object> mockData = Map.of(
+                    "subscriptionId", "sub_rzp_mock_" + UUID.randomUUID().toString().substring(0, 8),
+                    "keyId", "rzp_test_placeholder",
+                    "amount", "ENTERPRISE".equalsIgnoreCase(tier) ? 4999900L : 1999900L,
+                    "currency", "INR",
+                    "tier", tier
+            );
+            return ResponseEntity.ok(ApiResponse.success("Mock Razorpay subscription initialized", mockData));
+        }
+
+        Map<String, Object> subscriptionData = saaSBillingService.createSubscriptionForUpgrade(tenantId, tier);
+        return ResponseEntity.ok(ApiResponse.success("Razorpay subscription initialized successfully", subscriptionData));
     }
 
     /**
@@ -170,9 +202,9 @@ public class SubscriptionController {
         }
 
         String checkoutUrl = saaSBillingService.createCheckoutSession(tenantId, tier, successUrl, cancelUrl);
-        return ResponseEntity.ok(ApiResponse.success("Stripe checkout session initialized", Map.of(
-                "checkoutUrl", checkoutUrl,
-                "tier", tier
-        )));
+        Map<String, Object> subData = saaSBillingService.createSubscriptionForUpgrade(tenantId, tier);
+        Map<String, Object> responseData = new LinkedHashMap<>(subData);
+        responseData.put("checkoutUrl", checkoutUrl);
+        return ResponseEntity.ok(ApiResponse.success("Checkout session initialized", responseData));
     }
 }

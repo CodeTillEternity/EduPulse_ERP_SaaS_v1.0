@@ -7,6 +7,7 @@ export interface User {
   permissions: string[];
   tenantId?: string;
   tenantStatus?: string;
+  email?: string;
 }
 
 export interface AuthState {

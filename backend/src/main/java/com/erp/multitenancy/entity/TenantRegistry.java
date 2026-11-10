@@ -18,7 +18,9 @@ import java.time.LocalDateTime;
     indexes = {
         @Index(name = "idx_tenant_registry_subdomain", columnList = "subdomain"),
         @Index(name = "idx_tenant_registry_account_status", columnList = "account_status"),
-        @Index(name = "idx_tenant_registry_stripe_customer", columnList = "stripe_customer_id")
+        @Index(name = "idx_tenant_registry_stripe_customer", columnList = "stripe_customer_id"),
+        @Index(name = "idx_tenant_registry_razorpay_customer", columnList = "razorpay_customer_id"),
+        @Index(name = "idx_tenant_registry_razorpay_subscription", columnList = "razorpay_subscription_id")
     }
 )
 public class TenantRegistry {
@@ -45,6 +47,12 @@ public class TenantRegistry {
 
     @Column(name = "current_period_end")
     private LocalDateTime currentPeriodEnd;
+
+    @Column(name = "razorpay_customer_id", length = 64)
+    private String razorpayCustomerId;
+
+    @Column(name = "razorpay_subscription_id", length = 64)
+    private String razorpaySubscriptionId;
 
     @Column(name = "stripe_customer_id", length = 64)
     private String stripeCustomerId;
@@ -203,6 +211,28 @@ public class TenantRegistry {
 
     public void setCurrentPeriodEnd(LocalDateTime currentPeriodEnd) {
         this.currentPeriodEnd = currentPeriodEnd;
+    }
+
+    public String getRazorpayCustomerId() {
+        return razorpayCustomerId != null ? razorpayCustomerId : stripeCustomerId;
+    }
+
+    public void setRazorpayCustomerId(String razorpayCustomerId) {
+        this.razorpayCustomerId = razorpayCustomerId;
+        if (this.stripeCustomerId == null) {
+            this.stripeCustomerId = razorpayCustomerId;
+        }
+    }
+
+    public String getRazorpaySubscriptionId() {
+        return razorpaySubscriptionId != null ? razorpaySubscriptionId : stripeSubscriptionId;
+    }
+
+    public void setRazorpaySubscriptionId(String razorpaySubscriptionId) {
+        this.razorpaySubscriptionId = razorpaySubscriptionId;
+        if (this.stripeSubscriptionId == null) {
+            this.stripeSubscriptionId = razorpaySubscriptionId;
+        }
     }
 
     public String getStripeCustomerId() {

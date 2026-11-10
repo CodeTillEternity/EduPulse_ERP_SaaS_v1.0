@@ -24,6 +24,9 @@ public interface TenantRegistryRepository extends JpaRepository<TenantRegistry, 
     Optional<TenantRegistry> findByStripeCustomerId(String stripeCustomerId);
     Optional<TenantRegistry> findByStripeSubscriptionId(String stripeSubscriptionId);
 
+    Optional<TenantRegistry> findByRazorpayCustomerId(String razorpayCustomerId);
+    Optional<TenantRegistry> findByRazorpaySubscriptionId(String razorpaySubscriptionId);
+
     List<TenantRegistry> findByAccountStatus(AccountStatus accountStatus);
     List<TenantRegistry> findByStatusAndTrialEndDateBefore(TenantStatus status, LocalDateTime dateTime);
 

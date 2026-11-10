@@ -2,8 +2,10 @@ package com.erp.auth.controller;
 
 import com.erp.auth.dto.AuthResponse;
 import com.erp.auth.dto.ChangePasswordRequest;
+import com.erp.auth.dto.ForgotPasswordRequestDTO;
 import com.erp.auth.dto.LoginRequest;
 import com.erp.auth.dto.RefreshTokenRequest;
+import com.erp.auth.dto.ResetPasswordRequestDTO;
 import com.erp.auth.dto.SessionResponse;
 import com.erp.auth.entity.AppUser;
 import com.erp.auth.entity.RefreshToken;
@@ -11,6 +13,7 @@ import com.erp.auth.model.Permission;
 import com.erp.auth.model.UserPrincipal;
 import com.erp.auth.repository.UserRepository;
 import com.erp.auth.service.AuthService;
+import com.erp.auth.service.PasswordResetService;
 import com.erp.auth.service.RefreshTokenService;
 import com.erp.common.exception.InvalidTokenException;
 import com.erp.security.jwt.JwtProperties;
@@ -49,6 +52,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final RefreshTokenService refreshTokenService;
+    private final PasswordResetService passwordResetService;
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final JwtProperties jwtProperties;
@@ -56,11 +60,13 @@ public class AuthController {
     public AuthController(
             AuthService authService,
             RefreshTokenService refreshTokenService,
+            PasswordResetService passwordResetService,
             UserRepository userRepository,
             JwtService jwtService,
             JwtProperties jwtProperties) {
         this.authService = authService;
         this.refreshTokenService = refreshTokenService;
+        this.passwordResetService = passwordResetService;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.jwtProperties = jwtProperties;
@@ -217,6 +223,29 @@ public class AuthController {
         }
         authService.changePassword(authentication.getName(), request);
         return ResponseEntity.ok(Map.of("message", "Password changed successfully. Please use your new password on next login."));
+    }
+
+    @PostMapping({"/forgot-password", "/api/v1/auth/forgot-password"})
+    @Operation(summary = "Initiate password reset with dual-factor identity verification",
+               description = "Validates registered email and institutional ID before issuing a cryptographic reset token")
+    public ResponseEntity<Map<String, String>> forgotPassword(
+            @Valid @RequestBody ForgotPasswordRequestDTO request,
+            @RequestHeader(value = "X-Tenant-ID", required = false) String tenantHeader) {
+        passwordResetService.processForgotPassword(request, tenantHeader);
+        return ResponseEntity.ok(Map.of(
+                "message", "If those details match our records, a secure password recovery link has been sent to your email."
+        ));
+    }
+
+    @PostMapping({"/reset-password", "/api/v1/auth/reset-password"})
+    @Operation(summary = "Complete password reset using valid cryptographic token",
+               description = "Validates token validity and TTL window before updating user password hash")
+    public ResponseEntity<Map<String, String>> resetPassword(
+            @Valid @RequestBody ResetPasswordRequestDTO request) {
+        passwordResetService.resetPassword(request);
+        return ResponseEntity.ok(Map.of(
+                "message", "Password has been reset successfully. Please log in with your new password."
+        ));
     }
 
     private ResponseCookie createHttpOnlyRefreshCookie(String token, Duration maxAge) {

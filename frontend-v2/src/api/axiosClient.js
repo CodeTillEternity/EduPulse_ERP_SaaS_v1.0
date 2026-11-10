@@ -1,4 +1,5 @@
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 /**
  * Resolves the backend API base URL dynamically based on environment configuration:
@@ -96,6 +97,29 @@ axiosClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    // Handle 402 Payment Required errors with react-hot-toast upgrade prompt
+    if (error.response && error.response.status === 402) {
+      const data = error.response.data || {};
+      const detail = data.detail || data.message || 'Access to this feature requires a higher subscription tier.';
+      const requiredTier = data.requiredTier || 'ENTERPRISE';
+
+      toast.error(
+        `Feature Locked (${requiredTier} Required): ${detail} Click to upgrade in Billing Portal.`,
+        {
+          id: 'entitlement-402-toast',
+          duration: 7000,
+          icon: '💳',
+          style: {
+            background: '#0f172a',
+            border: '1px solid #f43f5e',
+            color: '#f8fafc',
+            cursor: 'pointer',
+          },
+        }
+      );
+      return Promise.reject(error);
+    }
 
     // Check if error is a 401 Unauthorized on a valid config
     if (!error.response || error.response.status !== 401 || !originalRequest) {

@@ -160,6 +160,13 @@ const STATIC_MODULES = [
     keywords: ['subscription', 'plan', 'upgrade', 'saas', 'invoices'],
   },
   {
+    name: 'Institutional Billing & Plan Settings',
+    path: '/dashboard/billing/settings',
+    category: 'System Setup',
+    icon: CreditCard,
+    keywords: ['billing', 'settings', 'stripe', 'upgrade', 'enterprise', 'pro', 'tier', 'subscription'],
+  },
+  {
     name: 'SaaS Central Control Plane',
     path: '/saas-admin',
     category: 'System Setup',

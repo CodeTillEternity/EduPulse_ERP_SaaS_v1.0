@@ -160,6 +160,9 @@ export default function Layout() {
 
             <NavGroup title="System Setup">
               <NavItem path="/dashboard/billing" icon={CreditCard} label="Billing & Plans" />
+              {role === 'SUPER_ADMIN' && (
+                <NavItem path="/dashboard/billing/settings" icon={CreditCard} label="Billing Settings" />
+              )}
               <NavItem path="/dashboard/admin/users" icon={ShieldAlert} label="Access Control" />
               {role === 'SUPER_ADMIN' && (
                 <NavItem path="/super-admin" icon={ShieldAlert} label="SaaS Tenant Registry" />

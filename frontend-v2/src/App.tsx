@@ -24,6 +24,7 @@ import RegistrationSuccess from './pages/RegistrationSuccess';
 import SubscriptionLockout from './pages/SubscriptionLockout';
 import SuperAdminDashboard from './pages/SuperAdminDashboard';
 import SaaSTenantDashboard from './pages/SaaSTenantDashboard';
+import TenantBillingSettings from './pages/TenantBillingSettings';
 import PaymentSuccess from './pages/PaymentSuccess';
 import PaymentCancelled from './pages/PaymentCancelled';
 import BillingDashboard from './pages/BillingDashboard';
@@ -212,8 +213,21 @@ function App() {
               <Route path="guardians" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><GuardiansList /></RoleProtectedRoute>} />
               <Route path="admin/users" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><AdminUsersList /></RoleProtectedRoute>} />
               <Route path="billing" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><BillingDashboard /></RoleProtectedRoute>} />
+              <Route path="billing/settings" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><TenantBillingSettings /></RoleProtectedRoute>} />
               <Route path="super-admin" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><SuperAdminDashboard /></RoleProtectedRoute>} />
               <Route path="saas-admin" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}><SaaSTenantDashboard /></RoleProtectedRoute>} />
+            </Route>
+            <Route
+              path="/billing/settings"
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={['SUPER_ADMIN']}>
+                    <Layout />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<TenantBillingSettings />} />
             </Route>
             <Route
               path="/portal"

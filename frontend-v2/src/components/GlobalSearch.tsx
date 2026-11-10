@@ -159,6 +159,13 @@ const STATIC_MODULES = [
     icon: CreditCard,
     keywords: ['subscription', 'plan', 'upgrade', 'saas', 'invoices'],
   },
+  {
+    name: 'SaaS Central Control Plane',
+    path: '/saas-admin',
+    category: 'System Setup',
+    icon: Building2,
+    keywords: ['saas', 'control plane', 'tenants', 'subdomains', 'suspension', 'registry', 'founder'],
+  },
 ];
 
 export function GlobalSearch() {

@@ -127,6 +127,7 @@ public class TenantFilter extends OncePerRequestFilter {
                path.equals("/api/health") ||
                path.equals("/api/v1/health") ||
                path.equals("/actuator/health") ||
+               path.startsWith("/actuator/") ||
                path.startsWith("/v3/api-docs") ||
                path.startsWith("/swagger-ui") ||
                path.startsWith("/api/v1/admissions/public/") ||

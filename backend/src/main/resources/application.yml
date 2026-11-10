@@ -12,6 +12,23 @@ spring:
     active: dev
   flyway:
     enabled: false
+  datasource:
+    hikari:
+      pool-name: EduPulseHikariCP
+      register-mbeans: true
+      maximum-pool-size: 20
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+  jpa:
+    properties:
+      hibernate:
+        session_factory:
+          statement_inspector: com.erp.config.SlowQueryInterceptor
+        session:
+          events:
+            log:
+              LOG_QUERIES_SLOWER_THAN_MS: 500
   servlet:
     multipart:
       enabled: true
@@ -78,4 +95,24 @@ springdoc:
     enabled: true
     operationsSorter: method
     tagsSorter: alpha
+
+# Spring Boot Actuator & Micrometer Prometheus APM Telemetry
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: when_authorized
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name:institutional-erp-backend}
+    export:
+      prometheus:
+        enabled: true
+
 

@@ -43,7 +43,7 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                .requestMatchers("/api/health", "/api/v1/health", "/actuator/health").permitAll()
+                .requestMatchers("/api/health", "/api/v1/health", "/actuator/health", "/actuator/prometheus", "/actuator/**").permitAll()
                 .requestMatchers("/auth/**", "/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**", "/api/v1/public/**").permitAll()
                 .requestMatchers("/api/v1/saas/webhooks/**").permitAll()

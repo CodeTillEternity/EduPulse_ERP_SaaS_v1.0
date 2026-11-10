@@ -61,6 +61,9 @@ public class DatabaseConfig {
             @Autowired(required = false) TenantRoutingKeyResolver routingKeyResolver) {
 
         DataSource sharedDataSource = properties.initializeDataSourceBuilder().build();
+        if (sharedDataSource instanceof HikariDataSource hikariDs) {
+            hikariDs.setPoolName("EduPulseHikariCP");
+        }
 
         TenantRoutingDataSource routingDataSource = new TenantRoutingDataSource();
         routingDataSource.setDefaultTargetDataSource(sharedDataSource);

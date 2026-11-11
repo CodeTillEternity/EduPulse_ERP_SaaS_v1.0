@@ -8,7 +8,7 @@ import {
   LayoutDashboard, Users, GraduationCap, CalendarCheck, Wallet, 
   Store, ShieldAlert, UserCheck, 
   Menu, X, LogOut, ChevronDown, UserCircle, Bell,
-  Check, KeyRound, CreditCard, Search
+  Check, KeyRound, CreditCard, Search, Video, BookOpen, Receipt
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ChangePasswordModal } from './ChangePasswordModal';
@@ -152,10 +152,13 @@ export default function Layout() {
             <NavGroup title="Academics">
               <NavItem path="/dashboard/departments" icon={Store} label="Programs & Departments" />
               <NavItem path="/dashboard/academics" icon={GraduationCap} label="Course Catalog" />
+              <NavItem path="/dashboard/classroom" icon={Video} label="Virtual Classroom" />
+              <NavItem path="/dashboard/materials" icon={BookOpen} label="Faculty Notes (Notion)" />
             </NavGroup>
 
             <NavGroup title="Finance">
               <NavItem path="/dashboard/finance" icon={Wallet} label="Fee Management" />
+              <NavItem path="/dashboard/tuition-collection" icon={Receipt} label="Tuition Ledger (B2C)" />
             </NavGroup>
 
             <NavGroup title="System Setup">
@@ -181,9 +184,11 @@ export default function Layout() {
             <NavGroup title="Academics">
               <NavItem path="/dashboard/academics" icon={GraduationCap} label="My Timetable" />
               <NavItem path="/dashboard/sections" icon={Users} label="My Sections" />
+              <NavItem path="/dashboard/materials" icon={BookOpen} label="Faculty Notes (Notion)" />
             </NavGroup>
             
             <NavGroup title="Classroom">
+              <NavItem path="/dashboard/classroom" icon={Video} label="Live Virtual Classroom" />
               <NavItem path="/dashboard/attendance" icon={CalendarCheck} label="Take Attendance" />
             </NavGroup>
           </>
@@ -198,10 +203,13 @@ export default function Layout() {
             
             <NavGroup title="Academics">
               <NavItem path="/dashboard/attendance" icon={CalendarCheck} label="My Attendance" />
+              <NavItem path="/dashboard/classroom" icon={Video} label="Virtual Classroom" />
+              <NavItem path="/dashboard/materials" icon={BookOpen} label="Course Notes (Notion)" />
             </NavGroup>
 
             <NavGroup title="Finance">
               <NavItem path="/dashboard/finance" icon={Wallet} label="My Invoices" />
+              <NavItem path="/dashboard/tuition-collection" icon={Receipt} label="Tuition Ledger (Pay)" />
             </NavGroup>
           </>
         );
@@ -215,10 +223,12 @@ export default function Layout() {
             
             <NavGroup title="Academics">
               <NavItem path="/dashboard/attendance" icon={CalendarCheck} label="Ward Attendance" />
+              <NavItem path="/dashboard/classroom" icon={Video} label="Virtual Classroom" />
             </NavGroup>
             
             <NavGroup title="Finance">
               <NavItem path="/dashboard/finance" icon={Wallet} label="Ward Fees" />
+              <NavItem path="/dashboard/tuition-collection" icon={Receipt} label="Pay Tuition (Razorpay)" />
             </NavGroup>
           </>
         );
@@ -232,6 +242,7 @@ export default function Layout() {
             
             <NavGroup title="Receivables">
               <NavItem path="/dashboard/finance" icon={Wallet} label="Fee Management" />
+              <NavItem path="/dashboard/tuition-collection" icon={Receipt} label="B2C Tuition Ledger" />
             </NavGroup>
             
             <NavGroup title="Directory">

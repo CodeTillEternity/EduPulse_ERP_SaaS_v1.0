@@ -217,6 +217,13 @@ function App() {
               <Route path="academics" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY']}><Academics /></RoleProtectedRoute>} />
               <Route path="academic/exams" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'ACADEMIC_ADMIN', 'FACULTY']}><ExamManager /></RoleProtectedRoute>} />
               <Route path="academic/transcripts" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'ACADEMIC_ADMIN', 'FACULTY', 'STUDENT']}><TranscriptViewer /></RoleProtectedRoute>} />
+              <Route path="academic/classroom" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><VirtualClassroom /></RoleProtectedRoute>} />
+              <Route path="classroom" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><VirtualClassroom /></RoleProtectedRoute>} />
+              <Route path="academic/materials" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><AcademicMaterialView /></RoleProtectedRoute>} />
+              <Route path="materials" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><AcademicMaterialView /></RoleProtectedRoute>} />
+              <Route path="tuition-collection" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
+              <Route path="finance/tuition" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
+              <Route path="finance/tuition-collection" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
               <Route path="sections" element={<RoleProtectedRoute allowedRoles={['FACULTY']}><FacultySections /></RoleProtectedRoute>} />
               <Route path="guardians" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><GuardiansList /></RoleProtectedRoute>} />
               <Route path="admin/users" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN']}><AdminUsersList /></RoleProtectedRoute>} />

@@ -38,3 +38,4 @@ public class NotionSyncController {
         return ResponseEntity.ok(notionSyncService.syncPageFromNotion(pageId));
     }
 }
+

@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import StudentFeeLedger from '../pages/Portal/StudentFeeLedger';
 
 describe('StudentFeeLedger In-App Razorpay Tuition Collection', () => {
   it('renders student ledger header and KPI summary cards', () => {
-    render(<StudentFeeLedger />);
+    render(
+      <MemoryRouter>
+        <StudentFeeLedger />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText(/RBI COMPLIANT B2C PAYMENT GATEWAY/i)).toBeInTheDocument();
     expect(screen.getByText(/Student Tuition & Fee Ledger/i)).toBeInTheDocument();
@@ -15,7 +20,11 @@ describe('StudentFeeLedger In-App Razorpay Tuition Collection', () => {
   });
 
   it('renders invoice table with PENDING and PAID vouchers', () => {
-    render(<StudentFeeLedger />);
+    render(
+      <MemoryRouter>
+        <StudentFeeLedger />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText('INV-2026-FALL-0842')).toBeInTheDocument();
     expect(screen.getByText('INV-2026-LAB-0192')).toBeInTheDocument();
@@ -23,9 +32,13 @@ describe('StudentFeeLedger In-App Razorpay Tuition Collection', () => {
   });
 
   it('expands fee breakdown itemization', () => {
-    render(<StudentFeeLedger />);
+    render(
+      <MemoryRouter>
+        <StudentFeeLedger />
+      </MemoryRouter>
+    );
 
-    const breakdownButtons = screen.getAllByText(/Breakdown/i);
+    const breakdownButtons = screen.getAllByTestId('toggle-breakdown-btn');
     expect(breakdownButtons.length).toBeGreaterThan(0);
 
     fireEvent.click(breakdownButtons[0]);
@@ -34,7 +47,11 @@ describe('StudentFeeLedger In-App Razorpay Tuition Collection', () => {
   });
 
   it('opens in-app Razorpay modal on Pay Now and transitions status to PAID upon authorization', () => {
-    render(<StudentFeeLedger />);
+    render(
+      <MemoryRouter>
+        <StudentFeeLedger />
+      </MemoryRouter>
+    );
 
     const payBtn = screen.getByTestId('pay-now-INV-2026-FALL-0842');
     expect(payBtn).toBeInTheDocument();
@@ -42,7 +59,7 @@ describe('StudentFeeLedger In-App Razorpay Tuition Collection', () => {
     fireEvent.click(payBtn);
 
     // Modal opens strictly inside React DOM
-    expect(screen.getByText(/Razorpay Checkout/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Razorpay Checkout/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Amount to Authorize:/i)).toBeInTheDocument();
 
     const authorizeBtn = screen.getByTestId('confirm-razorpay-payment');
@@ -53,3 +70,4 @@ describe('StudentFeeLedger In-App Razorpay Tuition Collection', () => {
     expect(paidBadges.length).toBeGreaterThan(1);
   });
 });
+

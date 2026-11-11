@@ -28,3 +28,4 @@ public class VirtualClassroomDto {
     private Boolean recordingEnabled;
     private String provider;
 }
+

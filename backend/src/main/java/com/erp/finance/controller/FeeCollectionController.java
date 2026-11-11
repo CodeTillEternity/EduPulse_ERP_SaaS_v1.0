@@ -50,3 +50,4 @@ public class FeeCollectionController {
         return ResponseEntity.badRequest().body("{\"status\":\"invalid_signature\"}");
     }
 }
+

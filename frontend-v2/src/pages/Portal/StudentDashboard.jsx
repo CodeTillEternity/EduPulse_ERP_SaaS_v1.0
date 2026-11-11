@@ -14,7 +14,8 @@ import {
   BookOpen,
   ArrowRight,
   Sparkles,
-  GraduationCap
+  GraduationCap,
+  Video
 } from 'lucide-react';
 
 export default function StudentDashboard() {
@@ -82,13 +83,34 @@ export default function StudentDashboard() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 self-start md:self-auto">
+          <div className="flex items-center space-x-2 self-start md:self-auto flex-wrap gap-2">
+            <Link
+              to="/portal/classroom"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-md border border-white/20 transition-all"
+            >
+              <Video className="w-3.5 h-3.5 text-emerald-300" />
+              <span>Live Classroom</span>
+            </Link>
+            <Link
+              to="/portal/materials"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-md border border-white/20 transition-all"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-indigo-200" />
+              <span>Faculty Notes</span>
+            </Link>
+            <Link
+              to="/portal/fee-ledger"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-900 font-bold text-xs shadow-sm transition-all"
+            >
+              <CreditCard className="w-3.5 h-3.5 text-slate-900" />
+              <span>Fee Ledger</span>
+            </Link>
             <Link
               to="/portal/schedule"
-              className="inline-flex items-center space-x-2 px-4 py-2.5 rounded-xl bg-white text-indigo-900 font-bold text-xs hover:bg-indigo-50 shadow-sm transition-all"
+              className="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-white text-indigo-900 font-bold text-xs hover:bg-indigo-50 shadow-sm transition-all"
             >
-              <Calendar className="w-4 h-4 text-indigo-600" />
-              <span>View Full Schedule</span>
+              <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Schedule</span>
             </Link>
           </div>
         </div>

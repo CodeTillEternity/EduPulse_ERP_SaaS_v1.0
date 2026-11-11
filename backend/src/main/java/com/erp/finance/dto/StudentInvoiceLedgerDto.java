@@ -33,3 +33,4 @@ public class StudentInvoiceLedgerDto {
         private Double amount;
     }
 }
+

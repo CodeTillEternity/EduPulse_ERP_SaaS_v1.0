@@ -19,3 +19,4 @@ public class CreateClassroomRequest {
     private Integer durationMinutes;
     private Boolean recordingEnabled;
 }
+

@@ -1,11 +1,16 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent, within } from '@testing-library/react';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import AcademicMaterialView from '../components/materials/AcademicMaterialView';
 
 describe('AcademicMaterialView Native Notion Block Component', () => {
   it('renders faculty notebook header and synchronized page title', () => {
-    render(<AcademicMaterialView />);
+    render(
+      <MemoryRouter>
+        <AcademicMaterialView />
+      </MemoryRouter>
+    );
 
     expect(screen.getByText(/NATIVE NOTION WORKSPACE SYNC/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Dr. Aris Thorne/i).length).toBeGreaterThan(0);
@@ -14,7 +19,11 @@ describe('AcademicMaterialView Native Notion Block Component', () => {
   });
 
   it('renders native Notion block hierarchy including callout, heading, and code', () => {
-    render(<AcademicMaterialView />);
+    render(
+      <MemoryRouter>
+        <AcademicMaterialView />
+      </MemoryRouter>
+    );
 
     // Callout
     expect(screen.getByText(/FACULTY NOTE: These lecture notes are directly synchronized/i)).toBeInTheDocument();
@@ -28,7 +37,11 @@ describe('AcademicMaterialView Native Notion Block Component', () => {
   });
 
   it('interacts with checklist to-do items', () => {
-    render(<AcademicMaterialView />);
+    render(
+      <MemoryRouter>
+        <AcademicMaterialView />
+      </MemoryRouter>
+    );
 
     const todoText = screen.getByText(/Simulate split-brain scenario with 5-node cluster/i);
     expect(todoText).toBeInTheDocument();
@@ -39,7 +52,11 @@ describe('AcademicMaterialView Native Notion Block Component', () => {
   });
 
   it('filters document blocks when using search query', () => {
-    render(<AcademicMaterialView />);
+    render(
+      <MemoryRouter>
+        <AcademicMaterialView />
+      </MemoryRouter>
+    );
 
     const searchInput = screen.getByPlaceholderText(/Search notes in page.../i);
     fireEvent.change(searchInput, { target: { value: 'tokio' } });

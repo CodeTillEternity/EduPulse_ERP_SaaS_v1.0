@@ -55,3 +55,4 @@ public class VirtualClassroomController {
         return ResponseEntity.ok(virtualClassroomService.generateJoinToken(roomName, user, isFaculty));
     }
 }
+

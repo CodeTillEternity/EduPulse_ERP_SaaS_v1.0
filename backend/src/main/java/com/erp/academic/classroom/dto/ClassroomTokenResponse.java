@@ -17,3 +17,4 @@ public class ClassroomTokenResponse {
     private String userName;
     private Long expiresAt;
 }
+

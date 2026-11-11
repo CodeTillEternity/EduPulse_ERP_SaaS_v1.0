@@ -296,11 +296,11 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
               <ul className="space-y-3.5 text-xs text-zinc-700">
                 <li className="flex items-start gap-2.5 font-medium text-zinc-900">
                   <Database className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
-                  <span>Dedicated Database Routing (Dedicated HikariCP Pool)</span>
+                  <span>Dedicated HikariCP Database Pool Routing (Add-on Available)</span>
                 </li>
                 <li className="flex items-start gap-2.5 font-medium text-zinc-900">
                   <Server className="w-4 h-4 text-indigo-600 flex-shrink-0 mt-0.5" />
-                  <span>Zero-Downtime Tenant Migration Engine</span>
+                  <span>Zero-Downtime Tenant Migration Tooling</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -355,31 +355,31 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
                   <td className="py-3.5 px-3 font-medium text-zinc-900">Tenant Data Architecture</td>
                   <td className="py-3.5 px-3 text-center text-zinc-600">Shared Multi-Tenant (RLS)</td>
                   <td className="py-3.5 px-3 text-center font-semibold text-zinc-900">Shared Multi-Tenant (RLS)</td>
-                  <td className="py-3.5 px-3 text-center font-bold text-indigo-700">Dedicated Database Shard</td>
+                  <td className="py-3.5 px-3 text-center font-bold text-indigo-700">Dedicated Pool Add-on Ready</td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-3 font-medium text-zinc-900">Safe Exam Browser (SEB) Lockdown</td>
+                  <td className="py-3.5 px-3 font-medium text-zinc-900">Safe Exam Browser (SEB) Profiles</td>
                   <td className="py-3.5 px-3 text-center text-zinc-400">—</td>
-                  <td className="py-3.5 px-3 text-center font-semibold text-emerald-700">Included</td>
-                  <td className="py-3.5 px-3 text-center font-semibold text-emerald-700">High-Sec Configured</td>
+                  <td className="py-3.5 px-3 text-center font-semibold text-emerald-700">XML Profile Generation</td>
+                  <td className="py-3.5 px-3 text-center font-semibold text-emerald-700">Custom Exam Key Enforcement</td>
                 </tr>
                 <tr>
                   <td className="py-3.5 px-3 font-medium text-zinc-900">Automated S3 Disaster Recovery</td>
                   <td className="py-3.5 px-3 text-center text-zinc-400">—</td>
                   <td className="py-3.5 px-3 text-center font-medium">Daily Snapshots</td>
-                  <td className="py-3.5 px-3 text-center font-bold text-indigo-700">Real-time GZIP Stream</td>
+                  <td className="py-3.5 px-3 text-center font-bold text-indigo-700">Continuous Backup Stream</td>
                 </tr>
                 <tr>
                   <td className="py-3.5 px-3 font-medium text-zinc-900">B2B Recurring Billing Engine</td>
-                  <td className="py-3.5 px-3 text-center text-zinc-600">14-Day Auto-Expiry</td>
+                  <td className="py-3.5 px-3 text-center text-zinc-600">14-Day Evaluation</td>
                   <td className="py-3.5 px-3 text-center font-medium">Razorpay Recurring</td>
                   <td className="py-3.5 px-3 text-center font-semibold text-zinc-900">Razorpay / Invoiced PO</td>
                 </tr>
                 <tr>
-                  <td className="py-3.5 px-3 font-medium text-zinc-900">Uptime Guarantee</td>
-                  <td className="py-3.5 px-3 text-center text-zinc-600">Standard Best-Effort</td>
-                  <td className="py-3.5 px-3 text-center font-medium">99.9% Uptime</td>
-                  <td className="py-3.5 px-3 text-center font-bold text-indigo-700">99.99% Financial SLA</td>
+                  <td className="py-3.5 px-3 font-medium text-zinc-900">Technical Support</td>
+                  <td className="py-3.5 px-3 text-center text-zinc-600">Community & Docs</td>
+                  <td className="py-3.5 px-3 text-center font-medium">Priority Email Support</td>
+                  <td className="py-3.5 px-3 text-center font-bold text-indigo-700">Dedicated Account Manager</td>
                 </tr>
               </tbody>
             </table>

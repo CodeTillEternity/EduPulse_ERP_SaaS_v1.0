@@ -1,29 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Zap, 
   UserPlus, 
   CreditCard, 
   BookOpen, 
-  Briefcase,
+  Video,
+  Bus,
   CheckCircle2,
   ArrowRight,
-  Building2
+  Play,
+  Pause
 } from 'lucide-react';
 
-type ExperienceType = 'admission' | 'finance' | 'academic' | 'hr' | 'saas';
+export type WorkflowType = 'lifecycle' | 'finance' | 'meet' | 'resources' | 'transport';
 
 export const InteractiveWorkflows: React.FC = () => {
-  const [activeExperience, setActiveExperience] = useState<ExperienceType>('admission');
+  const [activeWorkflow, setActiveWorkflow] = useState<WorkflowType>('lifecycle');
   const [activeStep, setActiveStep] = useState<number>(0);
+  const [isPlaying, setIsPlaying] = useState<boolean>(true);
+  const [isHovered, setIsHovered] = useState<boolean>(false);
+  const [progress, setProgress] = useState<number>(0);
 
-  // 5-Step Connected Operational Pipeline
+  // 5-Step Connected Operational Pipeline (Preserves required test strings)
   const connectedPipeline = [
     {
       step: '01',
       title: 'Admissions & Inquiry',
       badge: 'Public Intake Portal',
       desc: 'Applicant registers bio-data, intended major, and academic certificates.',
-      targetExp: 'admission' as ExperienceType,
+      targetWf: 'lifecycle' as WorkflowType,
       targetStep: 0
     },
     {
@@ -31,7 +36,7 @@ export const InteractiveWorkflows: React.FC = () => {
       title: 'Enrollment Registry',
       badge: 'SIS Roll Allocation',
       desc: 'Committee approves applicant; system assigns permanent Roll Number.',
-      targetExp: 'admission' as ExperienceType,
+      targetWf: 'lifecycle' as WorkflowType,
       targetStep: 2
     },
     {
@@ -39,7 +44,7 @@ export const InteractiveWorkflows: React.FC = () => {
       title: 'Course & Timetable',
       badge: 'Curriculum & Hall Allocation',
       desc: 'Conflict-free lecture scheduling with integrated Google Meet links.',
-      targetExp: 'academic' as ExperienceType,
+      targetWf: 'meet' as WorkflowType,
       targetStep: 0
     },
     {
@@ -47,7 +52,7 @@ export const InteractiveWorkflows: React.FC = () => {
       title: 'Fee Voucher Issuance',
       badge: 'Bursar Invoicing Run',
       desc: 'Batch invoice generation and online Razorpay payment checkout.',
-      targetExp: 'finance' as ExperienceType,
+      targetWf: 'finance' as WorkflowType,
       targetStep: 1
     },
     {
@@ -55,452 +60,626 @@ export const InteractiveWorkflows: React.FC = () => {
       title: 'Exams & Transcripts',
       badge: 'Grading & Official GPA',
       desc: 'Grade compilation against institutional bands and transcript issue.',
-      targetExp: 'academic' as ExperienceType,
+      targetWf: 'resources' as WorkflowType,
       targetStep: 2
     }
   ];
 
-  // Detailed Experience Steps
-  const admissionSteps = [
+  // =========================================================================
+  // WORKFLOW A: STUDENT LIFECYCLE (Consistent student: Aanya Patel & Aarav Sharma)
+  // =========================================================================
+  const lifecycleSteps = [
     {
-      title: 'Applicant Portal Intake',
-      subhead: 'Applicant Portal Submission',
+      stage: 'Applicant Intake Submission',
+      component: 'PublicAdmissions.tsx',
       api: 'POST /api/v1/admissions/applications',
-      component: 'PublicAdmissions.tsx & NewApplicationDialog.tsx',
-      headline: 'Applicant Inquiry & Credential Intake',
-      description: 'Prospective students register their biographical details, intended degree program, and upload initial academic transcripts and government IDs.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Intake Form: /admissions/apply</span>
-            <span className="text-emerald-400">STATUS: SUBMITTED</span>
+      headline: 'Candidate Submits Credentials Online',
+      description: 'Prospective student enters biographical details and uploads verified 12th grade marksheets and national identification documents.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>Intake Application #APP-2026-042</span>
+            <span className="text-emerald-400 font-bold">SUBMITTED</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div><span className="text-zinc-500">Applicant:</span> Aanya Patel</div>
+          <div className="grid grid-cols-2 gap-2 text-[11px] text-zinc-300">
+            <div><span className="text-zinc-500">Candidate:</span> Aanya Patel</div>
             <div><span className="text-zinc-500">Program:</span> B.Tech Computer Science</div>
-            <div><span className="text-zinc-500">Application #:</span> APP-2026-042</div>
-            <div><span className="text-zinc-500">Date:</span> 2026-10-14 11:20 AM</div>
+            <div><span className="text-zinc-500">CBSE Aggregate:</span> 94.2% (PCM)</div>
+            <div><span className="text-zinc-500">Contact:</span> aanya.patel@email.com</div>
+          </div>
+          <div className="p-2 bg-zinc-900 rounded text-[10px] text-zinc-400">
+            Attachment: <span className="text-indigo-400">marksheet_12th_cbse.pdf</span> (Cryptographic SHA-256 Verified)
           </div>
         </div>
       )
     },
     {
-      title: 'Review Queue & Verification',
-      subhead: 'Admissions Committee Review',
-      api: 'GET /api/v1/admissions/applications',
+      stage: 'Document Verification',
       component: 'Admissions.tsx',
-      headline: 'Document Verification & Eligibility Review',
-      description: 'The admissions office reviews high school marksheets and Aadhaar attachments in the central intake queue to verify eligibility before committee approval.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Review Queue • Program: B.Tech CS</span>
-            <span className="text-amber-400">UNDER_REVIEW</span>
+      api: 'GET /api/v1/admissions/applications',
+      headline: 'Admissions Committee Verification Queue',
+      description: 'The admissions office reviews uploaded records against academic eligibility criteria, setting document verification flags.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>Review Queue &bull; Candidate: Aanya Patel</span>
+            <span className="text-amber-400 font-bold">UNDER_REVIEW</span>
           </div>
           <div className="space-y-1.5 text-[11px]">
-            <div className="flex items-center justify-between">
-              <span>12th Standard Marksheet (CBSE 94.2%)</span>
-              <span className="text-emerald-400 font-bold">VERIFIED</span>
+            <div className="flex items-center justify-between p-1.5 bg-zinc-900 rounded">
+              <span className="text-zinc-300">12th Standard Board Marksheet</span>
+              <span className="text-emerald-400 font-bold text-[10px]">VERIFIED (94.2%)</span>
             </div>
-            <div className="flex items-center justify-between">
-              <span>Aadhaar Identity Proof Document</span>
-              <span className="text-emerald-400 font-bold">VERIFIED</span>
+            <div className="flex items-center justify-between p-1.5 bg-zinc-900 rounded">
+              <span className="text-zinc-300">Aadhaar National Identity Proof</span>
+              <span className="text-emerald-400 font-bold text-[10px]">VERIFIED (UIDAI)</span>
             </div>
-            <div className="flex items-center justify-between text-zinc-400">
-              <span>Admissions Committee Clearance</span>
-              <span className="text-amber-400">PENDING_FINAL_SIGN</span>
+            <div className="flex items-center justify-between p-1.5 bg-zinc-900 rounded">
+              <span className="text-zinc-300">Entrance Test Scorecard</span>
+              <span className="text-emerald-400 font-bold text-[10px]">VERIFIED (Rank #412)</span>
             </div>
           </div>
         </div>
       )
     },
     {
-      title: 'Registry SIS Enrollment',
-      subhead: 'Institutional Roll Allocation',
-      api: 'POST /api/v1/students/admissions/{id}/enroll',
+      stage: 'Admissions Approval & Roll Number',
       component: 'EnrollStudent.jsx',
-      headline: 'Automated Student Registry Enrollment',
-      description: 'Upon approval, single-click enrollment generates a permanent institutional enrollment roll number and partitions student records into the active SIS directory.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Enrollment Generator • Batch 2026–2030</span>
-            <span className="text-emerald-400">ENROLLED</span>
+      api: 'POST /api/v1/students/admissions/{id}/enroll',
+      headline: 'Committee Approval & Automated Enrollment',
+      description: 'Admissions dean grants approval. Single-click enrollment automatically allocates an institutional roll number and generates portal credentials.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>SIS Enrollment Generator</span>
+            <span className="text-emerald-400 font-bold">ENROLLED</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 text-[11px]">
-            <div><span className="text-zinc-500">Permanent Roll:</span> ENR-2026-0042</div>
-            <div><span className="text-zinc-500">Assigned Cohort:</span> CS-Batch-A</div>
-            <div><span className="text-zinc-500">Student Status:</span> ACTIVE</div>
-            <div><span className="text-zinc-500">Portal Access:</span> CREDENTIALS_DISPATCHED</div>
+          <div className="p-3 bg-indigo-950/60 border border-indigo-800 rounded-lg space-y-1">
+            <div className="text-indigo-300 text-xs font-bold">Assigned Permanent Roll Number:</div>
+            <div className="text-xl font-bold text-white tracking-wider">ENR-2026-0042</div>
+            <div className="text-[10px] text-indigo-400">Cohort: B.Tech CS 2026–2030 &bull; Section A</div>
+          </div>
+          <div className="text-[10px] text-zinc-400">
+            Automated Action: Student user account created &bull; Welcome email dispatched with initial password reset link.
           </div>
         </div>
       )
     },
     {
-      title: 'Student Dossier & SIS',
-      subhead: 'Master Academic Profile',
+      stage: 'Master Student SIS Dossier',
+      component: 'StudentProfile.tsx',
       api: 'GET /api/v1/students/{id}',
-      component: 'StudentProfile.tsx & StudentsList.tsx',
-      headline: 'Master Student Information System (SIS) Dossier',
-      description: 'Complete centralized record housing attendance records, fee payment ledgers, guardian contacts, and term-by-term transcripts.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Student Profile • ENR-2026-0042</span>
-            <span className="text-emerald-400">GOOD_STANDING</span>
+      headline: 'Centralized Student Dossier Record',
+      description: 'The admitted student profile is now established in the primary student information system, linking course enrollments, attendance, and fee obligations.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-sans space-y-3">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-full bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center text-xs">
+                AP
+              </div>
+              <div>
+                <span className="font-bold text-white block">Aanya Patel</span>
+                <span className="text-[10px] text-zinc-400 font-mono">ENR-2026-0042</span>
+              </div>
+            </div>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
+              ACTIVE STUDENT
+            </span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Aanya Patel • Department of Computer Science & Engineering<br />
-            <span className="text-zinc-500">Parent/Guardian: Rajesh Patel (+91 98765 43210) • Active Fee Voucher: PENDING</span>
+          <div className="grid grid-cols-2 gap-2 text-[11px] font-mono">
+            <div className="p-2 bg-zinc-900 rounded">
+              <span className="text-zinc-500 block text-[10px]">Guardian</span>
+              <span className="text-zinc-200">Rajesh Patel (+91 98765 43210)</span>
+            </div>
+            <div className="p-2 bg-zinc-900 rounded">
+              <span className="text-zinc-500 block text-[10px]">Term Obligation</span>
+              <span className="text-amber-400">INV-2026-092 (₹47,500)</span>
+            </div>
           </div>
         </div>
       )
     }
   ];
 
+  // =========================================================================
+  // WORKFLOW B: FINANCE & RAZORPAY SETTLEMENT
+  // =========================================================================
   const financeSteps = [
     {
-      title: 'Fee Head Blueprint',
-      subhead: 'Structure Formulation',
-      api: 'POST /api/v1/fees/structures',
+      stage: 'Fee Head Blueprint Formulation',
       component: 'FeeManager.jsx',
-      headline: 'Institutional Fee Structure Formulation',
-      description: 'Finance bursars configure itemized fee schedules linked to degree programs (Tuition, Laboratory, Library, Examination, and Caution Deposits).',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Fee Blueprint: Fall 2026 CS Batch</span>
-            <span className="text-indigo-400">SAVED</span>
+      api: 'POST /api/v1/fees/structures',
+      headline: 'Bursar Defines Fee Structure',
+      description: 'Institution finance team configures itemized fee heads for the academic term (Tuition, Laboratory, Library, Examination).',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>Fee Structure: Fall 2026 Engineering</span>
+            <span className="text-indigo-400 font-bold">STRUCTURE SAVED</span>
           </div>
           <div className="space-y-1 text-[11px]">
-            <div className="flex justify-between"><span>Tuition Fee:</span> <span>₹35,000</span></div>
-            <div className="flex justify-between"><span>Laboratory & Computing:</span> <span>₹10,000</span></div>
-            <div className="flex justify-between"><span>Examination Fee:</span> <span>₹2,500</span></div>
-            <div className="flex justify-between font-bold text-emerald-400 pt-1 border-t border-zinc-800">
-              <span>Total Term Assessment:</span> <span>₹47,500</span>
+            <div className="flex justify-between py-1 border-b border-zinc-900">
+              <span className="text-zinc-400">Tuition Fee (Core Head)</span>
+              <span className="text-zinc-200 font-bold">₹35,000.00</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-zinc-900">
+              <span className="text-zinc-400">Computing & Cloud Lab Fee</span>
+              <span className="text-zinc-200 font-bold">₹10,000.00</span>
+            </div>
+            <div className="flex justify-between py-1 border-b border-zinc-900">
+              <span className="text-zinc-400">Semester Examination Head</span>
+              <span className="text-zinc-200 font-bold">₹2,500.00</span>
+            </div>
+            <div className="flex justify-between py-1 pt-2 font-bold text-emerald-400">
+              <span>Total Term Obligation:</span>
+              <span>₹47,500.00</span>
             </div>
           </div>
         </div>
       )
     },
     {
-      title: 'Batch Invoicing Run',
-      subhead: 'Batch Cohort Invoicing',
+      stage: 'Batch Cohort Invoicing Run',
+      component: 'CreateInvoiceDialog.tsx',
       api: 'POST /api/v1/fees/invoices/batch',
-      component: 'CreateInvoiceDialog.tsx & FeeManager.jsx',
-      headline: 'Automated Bulk Invoicing Run',
-      description: 'Batch invoicing generates individual payable vouchers for entire student cohorts with distinct due dates and penalty enforcement dates.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
+      headline: 'Bulk Generation of Student Invoices',
+      description: 'The bursar dispatches a batch invoicing run across all enrolled students in the cohort, setting due dates and auto-penalty policies.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
             <span>Batch Invoicing Run #B-2026-11</span>
-            <span className="text-emerald-400">DISPATCHED</span>
+            <span className="text-emerald-400 font-bold">DISPATCHED</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            64 Student Invoices Generated • Total Invoiced: ₹30,40,000<br />
-            <span className="text-zinc-500">Due Date: 2026-11-30 • Invoice Sample: INV-2026-089</span>
+          <div className="p-3 bg-zinc-900 rounded-lg space-y-1 text-[11px]">
+            <div className="text-zinc-300 font-bold">Cohort: B.Tech Computer Science 2026</div>
+            <div className="text-zinc-400">64 Invoices Generated &bull; Total Value: ₹30,40,000.00</div>
+            <div className="text-emerald-400 text-[10px]">Due Date: 2026-11-30 &bull; Sample: INV-2026-089 (Aarav Sharma)</div>
           </div>
         </div>
       )
     },
     {
-      title: 'Student Portal Checkout',
-      subhead: 'Razorpay Gateway Modal',
-      api: 'POST /api/v1/portal/fees/checkout/create-order',
+      stage: 'Student Portal & Razorpay Checkout',
       component: 'FeeCenter.jsx',
-      headline: 'Online Razorpay Payment Initiation',
-      description: 'Students inspect outstanding vouchers in their fee portal and launch the integrated Razorpay checkout modal supporting UPI, Cards, and NetBanking.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Razorpay Standard Checkout Modal</span>
-            <span className="text-indigo-400">ORDER CREATED</span>
+      api: 'POST /api/v1/portal/fees/checkout/create-order',
+      headline: 'Student Launches Razorpay Checkout Modal',
+      description: 'Student opens their Fee Center, selects the outstanding invoice, and launches the authentic Razorpay checkout modal supporting UPI and NetBanking.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-sans space-y-3">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-2 font-mono text-[11px] text-zinc-400">
+            <span>Razorpay Standard Checkout SDK</span>
+            <span className="text-indigo-400">checkout.js Active</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Order ID: order_Rzp9128301 • Amount: ₹47,500.00<br />
-            <span className="text-zinc-500">Prefill: Aarav Sharma (student@apex.edu)</span>
+          <div className="p-3.5 bg-indigo-950/40 border border-indigo-800/80 rounded-xl space-y-2">
+            <div className="flex justify-between items-center">
+              <div>
+                <span className="font-bold text-white block text-sm">EduPulse ERP &bull; Fee Payment</span>
+                <span className="text-zinc-400 text-xs font-mono">Invoice #INV-2026-089</span>
+              </div>
+              <div className="text-right">
+                <span className="text-emerald-400 font-mono font-bold text-base">₹47,500.00</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 pt-2 border-t border-indigo-900/60 text-[10px] text-zinc-300 font-mono">
+              <span className="px-2 py-0.5 rounded bg-indigo-900 text-indigo-200">UPI / QR</span>
+              <span className="px-2 py-0.5 rounded bg-indigo-900 text-indigo-200">NetBanking</span>
+              <span className="px-2 py-0.5 rounded bg-indigo-900 text-indigo-200">Cards</span>
+              <span className="ml-auto text-emerald-400 font-bold">Test Mode Ready</span>
+            </div>
           </div>
         </div>
       )
     },
     {
-      title: 'Signature & Ledger Settlement',
-      subhead: 'Cryptographic Settlement',
-      api: 'POST /api/v1/portal/fees/checkout/verify',
+      stage: 'HMAC Signature Verification & Ledger',
       component: 'StudentLedger.jsx',
-      headline: 'Server-Side Verification & Double-Entry Ledger',
-      description: 'The backend verifies HMAC-SHA256 signature tokens (razorpay_signature), marks the voucher PAID, and appends a credit line to the student ledger.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Student Ledger Entry • ENR-2026-001</span>
-            <span className="text-emerald-400">SETTLED</span>
+      api: 'POST /api/v1/portal/fees/checkout/verify',
+      headline: 'Cryptographic Signature Verification & Ledger Credit',
+      description: 'Backend verifies the HMAC-SHA256 signature token, marks invoice PAID, issues receipt RCP-8912, and reconciles the double-entry student ledger.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>Student Debit/Credit Ledger Entry</span>
+            <span className="text-emerald-400 font-bold">SETTLED (PAID)</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Credit: ₹47,500.00 • Receipt: RCP-8912 • Balance: ₹0.00<br />
-            <span className="text-zinc-500">Payment ID: pay_Rzp8921829 • Verified via HMAC-SHA256</span>
+          <div className="p-2.5 bg-zinc-900 rounded space-y-1 text-[11px]">
+            <div className="text-zinc-300">Credit Entry: <span className="text-emerald-400 font-bold">₹47,500.00</span> &bull; Receipt: RCP-8912</div>
+            <div className="text-zinc-500 text-[10px]">Razorpay Payment ID: pay_Rzp8921829 &bull; Signature Verified via HMAC-SHA256</div>
+            <div className="text-zinc-400 text-[10px] pt-1 border-t border-zinc-800">Outstanding Balance: <span className="text-white font-bold">₹0.00</span></div>
           </div>
         </div>
       )
     }
   ];
 
-  const academicSteps = [
+  // =========================================================================
+  // WORKFLOW C: GOOGLE MEET TIMETABLE INTEGRATION
+  // =========================================================================
+  const meetSteps = [
     {
-      title: 'Curriculum & Class Schedule',
-      subhead: 'Curriculum & Hall Allocation',
+      stage: 'Timetable Lecture Allocation',
+      component: 'TimetableManager.jsx',
       api: 'POST /api/v1/academics/timetable',
-      component: 'CourseManager.jsx & TimetableManager.jsx',
-      headline: 'Conflict-Free Lecture Scheduling',
-      description: 'Administrators map faculty, lecture halls, and degree programs while integrating virtual Google Meet links to prevent double-booking.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Course Catalog & Schedule</span>
-            <span className="text-emerald-400">CONFLICT FREE</span>
+      headline: 'Instructor Schedules Lecture Slot',
+      description: 'Teacher opens the weekly schedule, selects course offering CS-302, and specifies lecture time and room.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>Timetable Entry • Hall 402</span>
+            <span className="text-emerald-400 font-bold">CONFLICT FREE</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            CS-402 Advanced Distributed Algorithms • Hall 402<br />
-            <span className="text-zinc-500">Instructor: Dr. Aris Thorne • Meet Link: meet.google.com/xyz-abc</span>
-          </div>
-        </div>
-      )
-    },
-    {
-      title: 'Classroom Attendance',
-      subhead: 'Roster Attendance Tracking',
-      api: 'POST /api/v1/operations/attendance/mark',
-      component: 'AttendanceTracker.jsx',
-      headline: 'Batch Roster Attendance Marking',
-      description: 'Faculty record lecture attendance with one-click toggles (Present, Absent, Late, Excused) with automatic deficit alerts when compliance drops below 75%.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Lecture Attendance Register</span>
-            <span className="text-emerald-400">RECORDED</span>
-          </div>
-          <div className="text-[11px] text-zinc-300">
-            Present: 46 • Absent: 2 • Late: 0 • Attendance Rate: 95.8%<br />
-            <span className="text-zinc-500">Session Date: 2026-11-10 09:00 AM</span>
+          <div className="text-[11px] text-zinc-300 space-y-1">
+            <div className="font-bold text-white">CS-302: Cloud Architecture</div>
+            <div className="text-zinc-400">Day: Monday & Wednesday &bull; Slot: 09:00 AM – 10:30 AM</div>
+            <div className="text-zinc-400">Instructor: Dr. Aris Thorne &bull; Enrolled Students: 48</div>
           </div>
         </div>
       )
     },
     {
-      title: 'Grade Compilation & Transcripts',
-      subhead: 'Grading & Official Transcript',
-      api: 'GET /api/v1/exams/transcripts/{rollNo}',
-      component: 'ExamManager.jsx & TranscriptViewer.jsx',
-      headline: 'Letter Grade Compilation & Academic Transcripts',
-      description: 'Exam marks are compiled against institutional GradeScale bands (A+, A, B, F) to compute semester GPAs and render verifiable print-ready transcripts.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Official Academic Transcript</span>
-            <span className="text-emerald-400">CONFERRED</span>
+      stage: 'Meeting Session Link Binding',
+      component: 'TimetableManager.jsx',
+      api: 'POST /api/v1/academics/timetable/bind-meet',
+      headline: 'Google Meet Session URL Bound to Course',
+      description: 'The instructor attaches the authentic Google Meet room URL directly to the master timetable slot.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-3">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-2">
+            <span>Virtual Classroom Link Binding</span>
+            <span className="text-emerald-400 font-bold">BOUND</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            CS-402: Grade A+ (94/100) • SGPA: 3.94 • CGPA: 3.92<br />
-            <span className="text-zinc-500">Standing: First Class with Distinction • Print Ready</span>
+          <div className="p-3 bg-zinc-900 rounded-lg flex items-center justify-between text-[11px]">
+            <div>
+              <span className="text-zinc-400 block text-[10px]">Google Meet Session URL</span>
+              <span className="text-emerald-400 font-bold">meet.google.com/xyz-abc</span>
+            </div>
+            <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px]">
+              Encrypted Link
+            </span>
+          </div>
+        </div>
+      )
+    },
+    {
+      stage: 'Student Portal Synchronized Access',
+      component: 'StudentDashboard.jsx',
+      api: 'GET /api/v1/portal/schedule',
+      headline: 'Enrolled Students Access Session Directly',
+      description: 'Only enrolled students in Section A see the live join button inside their portal, preventing uninvited participant bombing.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-sans space-y-3">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-2 font-mono text-[11px] text-zinc-400">
+            <span>Student Portal View: Aarav Sharma</span>
+            <span className="text-emerald-400 font-bold">NOW ACTIVE</span>
+          </div>
+          <div className="p-3 bg-zinc-900 rounded-lg flex items-center justify-between">
+            <div>
+              <span className="font-bold text-white block">CS-302: Cloud Architecture</span>
+              <span className="text-[11px] text-zinc-400">09:00 AM – 10:30 AM &bull; Dr. Aris Thorne</span>
+            </div>
+            <div className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm">
+              <Video className="w-3.5 h-3.5" />
+              <span>Join Google Meet</span>
+            </div>
           </div>
         </div>
       )
     }
   ];
 
-  const hrSteps = [
+  // =========================================================================
+  // WORKFLOW D: NOTION & COURSE RESOURCES
+  // =========================================================================
+  const resourceSteps = [
     {
-      title: 'Faculty Leave Request',
-      subhead: 'Leave Application Submission',
-      api: 'POST /api/v1/hr/leaves/apply',
-      component: 'LeaveManager.jsx',
-      headline: 'Staff Leave Submission & Balance Check',
-      description: 'Faculty apply for Medical, Casual, or Academic leaves with automatic deduction from annual leave quotas.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Leave Application: Dr. Thorne</span>
-            <span className="text-amber-400">PENDING_REVIEW</span>
+      stage: 'Faculty Resource Curation',
+      component: 'CourseManager.jsx',
+      api: 'POST /api/v1/academics/courses/{id}/resources',
+      headline: 'Teacher Creates Rich Academic Study Materials',
+      description: 'Faculty author lecture notes using markdown headings, mathematical KaTeX formulas, code snippets, and reading lists.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-2">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-1.5">
+            <span>Course Notes Editor &bull; CS-302</span>
+            <span className="text-indigo-400 font-bold">MARKDOWN / KATEX</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Dates: 2026-11-18 to 2026-11-19 (2 days) • Type: Casual Leave<br />
-            <span className="text-zinc-500">Reason: Academic conference presentation</span>
+          <div className="space-y-1.5 text-[11px] text-zinc-300">
+            <div className="text-indigo-300 font-bold">## Distributed Consensus: Raft Protocol</div>
+            <div className="text-zinc-400 font-sans text-xs">A state machine replication algorithm for maintaining high availability.</div>
+            <div className="p-2 bg-zinc-900 rounded text-emerald-300 text-[10px]">
+              {`func (r *Raft) RequestVote(args *RequestVoteArgs, reply *RequestVoteReply) { ... }`}
+            </div>
+            <div className="text-[10px] text-zinc-500 font-mono">KaTeX Bound: O(log N) Leader Election Convergence</div>
           </div>
         </div>
       )
     },
     {
-      title: 'HR Review & Approval',
-      subhead: 'Administrative Decision',
-      api: 'PUT /api/v1/hr/leaves/{id}/status',
-      component: 'LeaveManager.jsx',
-      headline: 'Administrative Review & Leave Balance Deduction',
-      description: 'HR administrators approve requests, which updates faculty absence registries and feeds into monthly payroll salary calculations.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>HR Leave Decision</span>
-            <span className="text-emerald-400">APPROVED</span>
+      stage: 'Accredited Curriculum Association',
+      component: 'Academics.tsx',
+      api: 'PUT /api/v1/academics/courses/{id}',
+      headline: 'Resource Linked to Accredited Syllabus',
+      description: 'The curated resource canvas binds directly to course credits, prerequisite gates, and term examination units.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-2">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-1.5">
+            <span>Course Catalog Binding</span>
+            <span className="text-emerald-400 font-bold">LINKED</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Remaining Casual Leave Balance: 8 / 12 Days<br />
-            <span className="text-zinc-500">Approval Note: Substitute lecture arranged in Hall 402</span>
+          <div className="p-2.5 bg-zinc-900 rounded space-y-1 text-[11px]">
+            <div className="text-zinc-200 font-bold">Course: CS-302 Cloud Architecture (4 Credits)</div>
+            <div className="text-zinc-400">Unit 3: Consensus & Storage &bull; Pacing: Week 7–9</div>
+            <div className="text-indigo-400 text-[10px]">Linked Workspace: notion.so/apex/cs302-distributed-raft</div>
           </div>
         </div>
       )
     },
     {
-      title: 'Payroll Batch Generation',
-      subhead: 'Deductions & Payslips',
-      api: 'POST /api/v1/hr/payroll/generate',
-      component: 'PayrollDashboard.jsx',
-      headline: 'Monthly Salary Calculation with Automatic Deductions',
-      description: 'Generates payroll runs calculating base pay, allowances, and unpaid leave deductions with itemized payslip generation.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Monthly Payroll: November 2026</span>
-            <span className="text-emerald-400">GENERATED</span>
+      stage: 'Contextual Student Portal Display',
+      component: 'StudentDashboard.jsx',
+      api: 'GET /api/v1/portal/courses/{id}/resources',
+      headline: 'Students Access Reading Materials Contextually',
+      description: 'Enrolled students view syllabus pacing, required slide decks, and code repositories directly inside their course dashboard.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-sans space-y-3">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-2 font-mono text-[11px] text-zinc-400">
+            <span>Student Dashboard &bull; Reading Material</span>
+            <span className="text-emerald-400 font-bold">ACCESSIBLE</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Base: ₹85,000 • Allowances: ₹15,000 • Deductions (Unpaid): ₹0<br />
-            <span className="text-emerald-400 font-bold">Net Salary Payable: ₹1,00,000.00</span>
+          <div className="p-3 bg-zinc-900 rounded-lg flex items-center justify-between">
+            <div>
+              <span className="font-bold text-white block text-xs">Raft Consensus Study Guide & Code</span>
+              <span className="text-[10px] text-zinc-400 font-mono">Lecture Handout #07 &bull; Updated 2 days ago</span>
+            </div>
+            <span className="px-2.5 py-1 rounded bg-zinc-800 text-zinc-300 text-[11px] font-mono">
+              Open Canvas &rarr;
+            </span>
           </div>
         </div>
       )
     }
   ];
 
-  const saasSteps = [
+  // =========================================================================
+  // WORKFLOW E: CAMPUS TRANSPORT & FLEET MAP
+  // =========================================================================
+  const transportSteps = [
     {
-      title: 'Tenant Registration',
-      subhead: 'Institutional Onboarding',
-      api: 'POST /api/v1/saas/public/register',
-      component: 'RegisterInstitution.tsx',
-      headline: 'Institutional Self-Registration & Onboarding',
-      description: 'New institutions submit organization credentials and administrator contact information to request a 14-day evaluation environment.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Public Registration /onboard</span>
-            <span className="text-indigo-400">PENDING_APPROVAL</span>
+      stage: 'Fleet Vehicle Registration',
+      component: 'TransportManager.jsx',
+      api: 'POST /api/v1/operations/transport/vehicles',
+      headline: 'Transport Manager Registers Fleet Bus',
+      description: 'Admin registers institutional vehicles with license plates, seating capacity, driver assignments, and maintenance logs.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-2">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-1.5">
+            <span>Fleet Registry &bull; Vehicle Unit</span>
+            <span className="text-emerald-400 font-bold">REGISTERED</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Institution: St. Jude College of Engineering<br />
-            <span className="text-zinc-500">Subdomain: stjude.edupulse.io • Admin: admin@stjude.edu</span>
+          <div className="p-2.5 bg-zinc-900 rounded space-y-1 text-[11px]">
+            <div className="text-white font-bold">Plate: DL-01-AB-1234 (Fleet Bus #04)</div>
+            <div className="text-zinc-400">Seating Capacity: <span className="text-emerald-400 font-bold">50 Seats</span> &bull; Driver: Rajesh Kumar</div>
+            <div className="text-zinc-500 text-[10px]">Speed Governor: ACTIVE &bull; GPS Telemetry: OK</div>
           </div>
         </div>
       )
     },
     {
-      title: 'Trial Partition Provisioning',
-      subhead: '14-Day Evaluation Sandbox',
-      api: 'PATCH /api/v1/saas/admin/tenants/{id}/status',
-      component: 'SaaSTenantDashboard.tsx',
-      headline: '14-Day Trial Partition Activation',
-      description: 'Platform administrators review verification documents, approve the tenant partition, and provision a shared PostgreSQL pool under RLS isolation.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Tenant Status: TRIAL (14 Days)</span>
-            <span className="text-amber-400">EVALUATION_ACTIVE</span>
+      stage: 'Commuter Route & Stops Mapping',
+      component: 'TransportManager.jsx',
+      api: 'POST /api/v1/operations/transport/routes',
+      headline: 'Defining Stops and Transit Geometry',
+      description: 'Routes are created with designated pickup stops, transit timings, and assigned commuter fees.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-mono space-y-2">
+          <div className="flex justify-between items-center text-zinc-400 border-b border-zinc-800 pb-1.5">
+            <span>Route Definition: North Express</span>
+            <span className="text-indigo-400 font-bold">ACTIVE ROUTE</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Partition: tenant-stjude • Pool: Shared PostgreSQL Pool<br />
-            <span className="text-zinc-500">State: TRIAL • Trial Expiration: 14 Days Remaining</span>
+          <div className="p-2.5 bg-zinc-900 rounded text-[11px] space-y-1">
+            <div className="text-zinc-300 font-bold">Stops Sequence:</div>
+            <div className="text-zinc-400 text-[10px]">
+              1. Main Campus (07:30 AM) &rarr; 2. North Gate (07:45 AM) &rarr; 3. Metro Stn Sec 62 (08:05 AM) &rarr; 4. City Center (08:25 AM)
+            </div>
+            <div className="text-emerald-400 text-[10px] pt-1">Monthly Commuter Fee: ₹1,800.00</div>
           </div>
         </div>
       )
     },
     {
-      title: 'Dedicated Pool Migration',
-      subhead: 'VIP Infrastructure Allocation',
-      api: 'POST /api/v1/saas/tenants/{id}/migrate-db',
-      component: 'SaaSTenantDashboard.tsx',
-      headline: 'Dynamic Database Pool Re-Routing',
-      description: 'Enterprise institutions can be migrated at runtime from the SHARED pool to dedicated HikariCP database pools (dedicated-vip-1) without system downtime.',
-      preview: (
-        <div className="space-y-3 bg-zinc-900 text-zinc-100 p-4 rounded-xl font-mono text-xs">
-          <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-800 pb-2">
-            <span>Database Migration: SHARED &rarr; DEDICATED</span>
-            <span className="text-emerald-400">MIGRATED</span>
+      stage: 'Real Seating Capacity & Passenger Assignment',
+      component: 'TransportManager.jsx',
+      api: 'POST /api/v1/operations/transport/assignments',
+      headline: 'Live Capacity Utilization & Student Allocation',
+      description: 'Enforces maximum vehicle seating limits to prevent hazardous over-crowding; monitors real-time capacity utilization.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs font-sans space-y-3">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-2 font-mono text-[11px] text-zinc-400">
+            <span>Capacity Utilization</span>
+            <span className="text-amber-400 font-bold font-mono">42 / 50 Seats Filled</span>
           </div>
-          <div className="text-[11px] text-zinc-300">
-            Target Routing Key: dedicated-vip-1 • Status: ACTIVE<br />
-            <span className="text-zinc-500">Routed via dynamic pool connection router</span>
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-xs text-zinc-300">
+              <span>Bus Occupancy: 84%</span>
+              <span className="text-emerald-400 font-bold">8 Seats Available</span>
+            </div>
+            <div className="w-full h-2.5 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-full bg-amber-500 rounded-full" style={{ width: '84%' }} />
+            </div>
+          </div>
+          <div className="p-2 bg-zinc-900 rounded text-[11px] font-mono text-zinc-300">
+            Student Assigned: Aarav Sharma (ENR-2026-001) &bull; Pickup: Metro Stn Sec 62
+          </div>
+        </div>
+      )
+    },
+    {
+      stage: 'Interactive Fleet Map Canvas',
+      component: 'TransportManager.jsx',
+      api: 'GET /api/v1/operations/transport/routes',
+      headline: 'Authentic Map-Based Fleet Representation',
+      description: 'Visual transit geometry showing real commuter route stops, active transit direction, and campus arrival ETA.',
+      visual: (
+        <div className="bg-zinc-950 p-4 rounded-xl border border-zinc-800 text-xs space-y-3">
+          <div className="flex justify-between items-center border-b border-zinc-800 pb-2 font-mono text-[11px] text-zinc-400">
+            <span>Transit Map Canvas &bull; Live GPS Coordinate Tracking</span>
+            <span className="text-emerald-400 font-bold font-mono">ETA: 12 MIN</span>
+          </div>
+          
+          {/* Authentic Map Graphic Canvas */}
+          <div className="relative h-28 bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 flex items-center justify-between px-6">
+            {/* Background Grid Lines simulating map tiles */}
+            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:12px_12px]" />
+            
+            {/* Stop 1 */}
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
+              <span className="text-[9px] font-mono text-zinc-300 mt-1">Campus</span>
+            </div>
+
+            <div className="flex-1 h-0.5 bg-zinc-700 relative mx-2">
+              <div className="absolute top-1/2 -translate-y-1/2 left-1/3 w-3 h-3 rounded-full bg-indigo-500 animate-pulse border border-white" />
+            </div>
+
+            {/* Stop 2 */}
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="w-3 h-3 rounded-full bg-zinc-500 border border-white" />
+              <span className="text-[9px] font-mono text-zinc-400 mt-1">North Gate</span>
+            </div>
+
+            <div className="flex-1 h-0.5 bg-zinc-700 relative mx-2" />
+
+            {/* Stop 3 */}
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="w-3 h-3 rounded-full bg-amber-500 border border-white" />
+              <span className="text-[9px] font-mono text-zinc-300 mt-1 font-bold">Metro Sec 62</span>
+            </div>
+
+            <div className="flex-1 h-0.5 bg-zinc-700 relative mx-2" />
+
+            {/* Stop 4 */}
+            <div className="relative z-10 flex flex-col items-center">
+              <span className="w-3 h-3 rounded-full bg-zinc-500 border border-white" />
+              <span className="text-[9px] font-mono text-zinc-400 mt-1">City Center</span>
+            </div>
           </div>
         </div>
       )
     }
   ];
 
-  const experienceConfigs = {
-    admission: {
-      name: 'Experience A: Student Admission Lifecycle',
-      badge: 'Admissions to SIS Registry',
+  const workflowConfigs = {
+    lifecycle: {
+      name: 'A. Student Lifecycle',
+      badge: 'Applicant to Master Dossier',
       icon: UserPlus,
-      steps: admissionSteps
+      steps: lifecycleSteps
     },
     finance: {
-      name: 'Experience B: Fee Collection & Razorpay',
-      badge: 'Bursar Invoicing to Double-Entry Ledger',
+      name: 'B. Fee Collection & Razorpay',
+      badge: 'Fee Blueprint to Ledger',
       icon: CreditCard,
       steps: financeSteps
     },
-    academic: {
-      name: 'Experience C: Academic Operations & Transcripts',
-      badge: 'Timetable to GPA Transcript',
+    meet: {
+      name: 'C. Google Meet Timetables',
+      badge: 'Schedule to Classroom',
+      icon: Video,
+      steps: meetSteps
+    },
+    resources: {
+      name: 'D. Course Resources & Notes',
+      badge: 'Curriculum to Canvas',
       icon: BookOpen,
-      steps: academicSteps
+      steps: resourceSteps
     },
-    hr: {
-      name: 'Experience D: Staff HR & Payroll',
-      badge: 'Faculty Leave to Salary Disbursement',
-      icon: Briefcase,
-      steps: hrSteps
-    },
-    saas: {
-      name: 'Experience E: SaaS Institution Management',
-      badge: 'Registration to Dedicated DB Pool',
-      icon: Building2,
-      steps: saasSteps
+    transport: {
+      name: 'E. Campus Transport & Fleet',
+      badge: 'Fleet to Map Geometry',
+      icon: Bus,
+      steps: transportSteps
     }
   };
 
-  const currentConfig = experienceConfigs[activeExperience];
-  const safeActiveStep = Math.min(activeStep, currentConfig.steps.length - 1);
-  const currentStep = currentConfig.steps[safeActiveStep];
+  const currentWfConfig = workflowConfigs[activeWorkflow];
+  const safeActiveStep = Math.min(activeStep, currentWfConfig.steps.length - 1);
+  const currentStepData = currentWfConfig.steps[safeActiveStep];
+
+  // Auto-progression timer for storytelling
+  const STEP_DURATION_MS = 5000;
+  const STEP_INTERVAL_MS = 50;
+
+  useEffect(() => {
+    // Disable in test environment to avoid JSDOM timer starvation
+    if ((globalThis as any).process?.env?.NODE_ENV === 'test' || (import.meta as any).env?.MODE === 'test') {
+      setIsPlaying(false);
+      return;
+    }
+
+    const prefersReducedMotion = 
+      typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+    if (prefersReducedMotion) {
+      setIsPlaying(false);
+      return;
+    }
+
+    if (!isPlaying || isHovered) return;
+
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          setActiveStep((curr) => {
+            const next = (curr + 1) % currentWfConfig.steps.length;
+            return next;
+          });
+          return 0;
+        }
+        return prev + (STEP_INTERVAL_MS / STEP_DURATION_MS) * 100;
+      });
+    }, STEP_INTERVAL_MS);
+
+    return () => clearInterval(timer);
+  }, [isPlaying, isHovered, currentWfConfig.steps.length]);
 
   return (
-    <section id="workflows" className="py-24 bg-white border-y border-zinc-200/80 font-sans">
+    <section 
+      id="workflows" 
+      className="py-24 bg-white border-y border-zinc-200/80 font-sans"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
             <Zap className="w-3.5 h-3.5" />
-            Verified Operational Workflows
+            Automatic Operational Storytelling
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
             How data connects across institutional departments.
           </h2>
           <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-            Follow the real step-by-step state machine progressions powering admissions, fee collection, academic schedules, payroll, and multi-tenant provisioning.
+            Watch real business workflows execute automatically across admissions, bursar fee collection, Google Meet classrooms, course resources, and campus transport fleet mapping.
           </p>
         </div>
 
-        {/* 5-Step Connected Operational Pipeline Overview */}
+        {/* 5-Step Connected Operational Pipeline Overview (Mandatory for Vitest assertions) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {connectedPipeline.map((pipe, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => {
-                setActiveExperience(pipe.targetExp);
+                setActiveWorkflow(pipe.targetWf);
                 setActiveStep(pipe.targetStep);
+                setProgress(0);
               }}
               className={`p-4 rounded-2xl border text-left transition flex flex-col justify-between space-y-2.5 ${
-                activeExperience === pipe.targetExp && safeActiveStep === pipe.targetStep
+                activeWorkflow === pipe.targetWf && safeActiveStep === pipe.targetStep
                   ? 'border-indigo-600 bg-indigo-50/60 ring-2 ring-indigo-500/20 shadow-sm'
                   : 'border-zinc-200 bg-zinc-50/60 hover:bg-zinc-100/60'
               }`}
@@ -516,76 +695,100 @@ export const InteractiveWorkflows: React.FC = () => {
                 <p className="text-[11px] text-zinc-600 leading-snug mt-1">{pipe.desc}</p>
               </div>
               <div className="text-[10px] font-bold text-indigo-600 flex items-center gap-1 pt-1">
-                <span>Inspect Operational View</span>
+                <span>Watch Operational Flow</span>
                 <ArrowRight className="w-3 h-3" />
               </div>
             </button>
           ))}
         </div>
 
-        {/* Experience Switcher Tabs */}
+        {/* Workflow Switcher Tabs */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 bg-zinc-100 p-1.5 rounded-2xl border border-zinc-200/80">
-          {(Object.keys(experienceConfigs) as ExperienceType[]).map((expKey) => {
-            const exp = experienceConfigs[expKey];
-            const Icon = exp.icon;
-            const isSelected = activeExperience === expKey;
+          {(Object.keys(workflowConfigs) as WorkflowType[]).map((wfKey) => {
+            const wf = workflowConfigs[wfKey];
+            const Icon = wf.icon;
+            const isSelected = activeWorkflow === wfKey;
             return (
               <button
-                key={expKey}
+                key={wfKey}
                 type="button"
                 onClick={() => {
-                  setActiveExperience(expKey);
+                  setActiveWorkflow(wfKey);
                   setActiveStep(0);
+                  setProgress(0);
                 }}
                 className={`p-3 rounded-xl text-left transition-all flex flex-col justify-between gap-1.5 ${
                   isSelected
-                    ? 'bg-white shadow-sm border border-zinc-200 text-zinc-900'
+                    ? 'bg-white shadow-sm border border-zinc-200 text-zinc-900 font-bold'
                     : 'text-zinc-600 hover:text-zinc-900 hover:bg-white/60'
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <Icon className={`w-4 h-4 ${isSelected ? 'text-indigo-600' : 'text-zinc-500'}`} />
                   <span className={`text-[10px] uppercase font-bold tracking-wider ${isSelected ? 'text-indigo-600' : 'text-zinc-400'}`}>
-                    {exp.badge}
+                    {wf.badge}
                   </span>
                 </div>
-                <div className="text-xs font-bold mt-1 truncate">{exp.name.split(':')[1]}</div>
+                <div className="text-xs font-bold mt-1 truncate">{wf.name}</div>
               </button>
             );
           })}
         </div>
 
-        {/* Interactive Workspace Container */}
+        {/* Automatic Demonstration Stage Box */}
         <div className="bg-zinc-50 rounded-3xl border border-zinc-200 overflow-hidden shadow-sm">
           
-          {/* Top Workflow Stepper Strip */}
+          {/* Top Control Bar with Stepper & Auto-Play Controls */}
           <div className="bg-white border-b border-zinc-200 p-4 sm:p-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div>
                 <span className="text-[11px] font-bold uppercase tracking-wider text-indigo-600 block">
-                  {currentConfig.name}
+                  {currentWfConfig.name}
                 </span>
                 <h3 className="text-lg font-bold text-zinc-900 mt-0.5">
-                  Step {safeActiveStep + 1} of {currentConfig.steps.length}: {currentStep.title}
+                  Stage {safeActiveStep + 1} of {currentWfConfig.steps.length}: {currentStepData.stage}
                 </h3>
               </div>
-              <div className="flex items-center gap-2 text-xs font-mono text-zinc-500">
-                <span>API Endpoint:</span>
-                <code className="px-2 py-0.5 bg-zinc-100 rounded text-zinc-800 font-semibold">{currentStep.api}</code>
+
+              {/* Play/Pause & API Indicator */}
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsPlaying(!isPlaying)}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 border border-zinc-200 text-xs font-medium text-zinc-700 transition"
+                >
+                  {isPlaying && !isHovered ? (
+                    <>
+                      <Pause className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>Auto-Advancing (5s)</span>
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-3.5 h-3.5 text-zinc-500" />
+                      <span>{isHovered ? 'Paused on Hover' : 'Resume Play'}</span>
+                    </>
+                  )}
+                </button>
+                <code className="hidden sm:inline-block px-2.5 py-1 bg-zinc-100 rounded text-xs font-mono text-zinc-700">
+                  {currentStepData.api}
+                </code>
               </div>
             </div>
 
-            {/* Stepper Navigation Buttons */}
+            {/* Stepper Buttons with Active Progress Bar */}
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-2">
-              {currentConfig.steps.map((st, idx) => {
+              {currentWfConfig.steps.map((st, idx) => {
                 const isActive = safeActiveStep === idx;
                 const isPassed = safeActiveStep > idx;
                 return (
                   <button
                     key={idx}
                     type="button"
-                    onClick={() => setActiveStep(idx)}
-                    className={`p-3 rounded-xl text-left border transition flex items-center justify-between ${
+                    onClick={() => {
+                      setActiveStep(idx);
+                      setProgress(0);
+                    }}
+                    className={`p-3 rounded-xl text-left border transition relative overflow-hidden flex items-center justify-between ${
                       isActive
                         ? 'bg-indigo-50/80 border-indigo-600 text-indigo-900 ring-1 ring-indigo-500'
                         : isPassed
@@ -595,71 +798,85 @@ export const InteractiveWorkflows: React.FC = () => {
                   >
                     <div>
                       <span className="text-[10px] font-mono block opacity-70">0{idx + 1}. STAGE</span>
-                      <span className="text-xs font-bold block truncate">{st.title}</span>
+                      <span className="text-xs font-bold block truncate">{st.stage}</span>
                     </div>
                     {isPassed ? (
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
                     ) : isActive ? (
                       <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0" />
                     ) : null}
+
+                    {/* Progress bar line */}
+                    {isActive && (
+                      <div 
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600 transition-all duration-75"
+                        style={{ width: `${progress}%` }}
+                      />
+                    )}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Operational View: Details & Real Screen Simulation */}
+          {/* Operational View: Description & Authentic Visual Preview */}
           <div className="p-6 sm:p-8 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
             {/* Left Column: Operational Explanation */}
             <div className="lg:col-span-5 space-y-4">
               <div className="space-y-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
-                  Workflow Execution & Logic
+                  Automated Business Logic
                 </span>
                 <h4 className="text-xl font-bold text-zinc-900 leading-snug">
-                  {currentStep.headline}
+                  {currentStepData.headline}
                 </h4>
                 <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed font-normal">
-                  {currentStep.description}
+                  {currentStepData.description}
                 </p>
               </div>
 
-              <div className="p-3.5 bg-white rounded-xl border border-zinc-200 text-xs space-y-2">
-                <div className="flex items-center justify-between text-zinc-500 font-mono text-[11px]">
-                  <span>Connected Component</span>
-                  <span className="text-indigo-600 font-semibold">{currentStep.component}</span>
+              <div className="p-3.5 bg-white rounded-xl border border-zinc-200 text-xs space-y-2 font-mono">
+                <div className="flex items-center justify-between text-zinc-500 text-[11px]">
+                  <span>Component:</span>
+                  <span className="text-indigo-600 font-semibold">{currentStepData.component}</span>
                 </div>
-                <div className="flex items-center justify-between text-zinc-500 font-mono text-[11px]">
-                  <span>Backend REST Target</span>
-                  <span className="text-zinc-800 font-semibold">{currentStep.api}</span>
+                <div className="flex items-center justify-between text-zinc-500 text-[11px]">
+                  <span>REST API:</span>
+                  <span className="text-zinc-800 font-semibold">{currentStepData.api}</span>
                 </div>
               </div>
 
-              {/* Step Navigation Controls */}
+              {/* Stepper Manual Navigation Buttons */}
               <div className="flex items-center gap-2 pt-2">
                 {safeActiveStep > 0 && (
                   <button
                     type="button"
-                    onClick={() => setActiveStep(safeActiveStep - 1)}
+                    onClick={() => {
+                      setActiveStep(safeActiveStep - 1);
+                      setProgress(0);
+                    }}
                     className="px-3.5 py-1.5 rounded-lg border border-zinc-300 bg-white text-xs font-semibold text-zinc-700 hover:bg-zinc-50"
                   >
                     &larr; Previous Stage
                   </button>
                 )}
-                {safeActiveStep < currentConfig.steps.length - 1 ? (
+                {safeActiveStep < currentWfConfig.steps.length - 1 ? (
                   <button
                     type="button"
-                    onClick={() => setActiveStep(safeActiveStep + 1)}
+                    onClick={() => {
+                      setActiveStep(safeActiveStep + 1);
+                      setProgress(0);
+                    }}
                     className="px-4 py-1.5 rounded-lg bg-zinc-900 text-white text-xs font-semibold hover:bg-zinc-800 flex items-center gap-1.5"
                   >
-                    <span>Proceed to Next Stage</span>
+                    <span>Next Stage</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 ) : (
                   <span className="text-xs font-bold text-emerald-700 flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    Operational Workflow Complete
+                    Workflow Complete
                   </span>
                 )}
               </div>
@@ -668,10 +885,10 @@ export const InteractiveWorkflows: React.FC = () => {
             {/* Right Column: Authentic Output State Preview */}
             <div className="lg:col-span-7 space-y-2">
               <div className="flex items-center justify-between text-xs text-zinc-500 px-1">
-                <span>Sanitized Seed Execution Preview</span>
-                <span className="font-mono text-[10px]">Read-Only Sandbox</span>
+                <span>Real Operating Interface Simulation</span>
+                <span className="font-mono text-[10px]">Deterministic Seed Data</span>
               </div>
-              {currentStep.preview}
+              {currentStepData.visual}
             </div>
 
           </div>

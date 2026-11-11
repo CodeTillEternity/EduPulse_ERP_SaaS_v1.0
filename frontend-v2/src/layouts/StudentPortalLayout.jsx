@@ -68,6 +68,12 @@ export default function StudentPortalLayout() {
       path: '/portal/fees',
       icon: CreditCard,
       description: 'Invoices & online fee payment'
+    },
+    {
+      name: 'Fee Ledger (B2C)',
+      path: '/portal/fee-ledger',
+      icon: CreditCard,
+      description: 'In-app Razorpay tuition collection'
     }
   ];
 

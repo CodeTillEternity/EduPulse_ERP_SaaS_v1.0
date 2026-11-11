@@ -48,6 +48,7 @@ import OnboardingFlow from './pages/OnboardingFlow';
 import StudentPortalLayout from './layouts/StudentPortalLayout';
 import StudentDashboard from './pages/Portal/StudentDashboard';
 import FeeCenter from './pages/Portal/FeeCenter';
+import StudentFeeLedger from './pages/Portal/StudentFeeLedger';
 import VirtualClassroom from './components/classroom/VirtualClassroom';
 import AcademicMaterialView from './components/materials/AcademicMaterialView';
 import { ProfileRedirect } from './components/ProfileRedirect';
@@ -179,6 +180,7 @@ function App() {
             <Route path="/operations/transport" element={<TransportManager />} />
             <Route path="/finance/fees" element={<FeeManager />} />
             <Route path="/finance/ledger" element={<StudentLedger />} />
+            <Route path="/finance/tuition-collection" element={<StudentFeeLedger />} />
             <Route path="/hr/leaves" element={<LeaveManager />} />
             <Route path="/hr/payroll" element={<PayrollDashboard />} />
             <Route path="/billing" element={<SaaSBillingDashboard />} />
@@ -251,6 +253,7 @@ function App() {
               <Route path="materials" element={<AcademicMaterialView />} />
               <Route path="academics" element={<TranscriptViewer />} />
               <Route path="fees" element={<FeeCenter />} />
+              <Route path="fee-ledger" element={<StudentFeeLedger />} />
             </Route>
             <Route
               path="/super-admin"

@@ -7,11 +7,10 @@ import {
   Users, 
   DollarSign, 
   CheckCircle2, 
-  ArrowRight, 
   Calendar, 
   CreditCard, 
   Layers, 
-  Database
+  X
 } from 'lucide-react';
 
 export type ProductRole = 
@@ -37,15 +36,26 @@ interface RoleTourItem {
 export const RoleBasedProductTour: React.FC = () => {
   const [activeRole, setActiveRole] = useState<ProductRole>('super-admin');
 
+  // Interactive controls for live demonstrations
+  const [tenantFilter, setTenantFilter] = useState<'ALL' | 'TRIAL' | 'ACTIVE' | 'SUSPENDED'>('ALL');
+  const [selectedAdminApplicant, setSelectedAdminApplicant] = useState<'aanya' | 'devansh'>('aanya');
+  const [facultyAttendanceMarked, setFacultyAttendanceMarked] = useState<Record<string, 'PRESENT' | 'ABSENT' | 'LATE'>>({
+    'ENR-01': 'PRESENT',
+    'ENR-02': 'PRESENT',
+    'ENR-03': 'LATE',
+    'ENR-04': 'ABSENT'
+  });
+  const [isRazorpayModalOpen, setIsRazorpayModalOpen] = useState(false);
+
   const roleDefinitions: RoleTourItem[] = [
     {
       id: 'super-admin',
       label: 'Platform Super Admin',
-      badge: 'Platform Multi-Tenant Control Hub',
+      badge: 'Platform Tenant Control Console',
       icon: ShieldCheck,
       headline: 'Central tenant governance, database pool isolation, and institutional lifecycle control.',
       responsibilities: [
-        'Provision new school partitions with automated 14-day evaluation windows',
+        'Provision new institutional partitions with automated 14-day evaluation windows',
         'Dynamically route enterprise tenants to dedicated PostgreSQL database pools (HikariCP)',
         'Execute immediate tenant suspension locks to block API traffic on billing defaults',
         'Audit cross-institutional infrastructure utilization and system uptime'
@@ -162,6 +172,41 @@ export const RoleBasedProductTour: React.FC = () => {
 
   const currentRole = roleDefinitions.find(r => r.id === activeRole) || roleDefinitions[0];
 
+  // Sanitized seeded demonstration tenants matching TenantRegistryRecord
+  const demoTenants = [
+    {
+      tenantId: 'tenant-demo-01',
+      institutionName: 'Apex Institute of Technology (Demo)',
+      subdomain: 'apex',
+      subscriptionTier: 'ENTERPRISE',
+      accountStatus: 'ACTIVE',
+      databaseRoutingKey: 'dedicated-vip-1',
+      trialEndDate: '2027-12-31'
+    },
+    {
+      tenantId: 'tenant-demo-02',
+      institutionName: 'Cambridge Science Academy (Demo)',
+      subdomain: 'cambridge',
+      subscriptionTier: 'PRO',
+      accountStatus: 'TRIAL',
+      databaseRoutingKey: 'SHARED',
+      trialEndDate: '12 Days Remaining'
+    },
+    {
+      tenantId: 'tenant-demo-03',
+      institutionName: 'Greenwood Global School (Demo)',
+      subdomain: 'greenwood',
+      subscriptionTier: 'STARTER',
+      accountStatus: 'SUSPENDED',
+      databaseRoutingKey: 'SHARED',
+      trialEndDate: 'Expired'
+    }
+  ];
+
+  const filteredTenants = demoTenants.filter(t => 
+    tenantFilter === 'ALL' ? true : t.accountStatus === tenantFilter
+  );
+
   return (
     <section id="tour" className="py-20 md:py-28 bg-[#FBFBFA] border-y border-zinc-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -170,13 +215,13 @@ export const RoleBasedProductTour: React.FC = () => {
         <div className="text-center max-w-3xl mx-auto space-y-3">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
             <Layers className="w-3.5 h-3.5" />
-            Interactive Product Tour
+            Role-Based Operational Workspaces
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
             Engineered for every stakeholder in your institution.
           </h2>
           <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-            Explore the authentic, role-tailored software interfaces that power daily institutional operations across administrators, faculty, students, and bursars.
+            Interact with the authentic software interfaces that power daily institutional operations across administrators, faculty, students, and bursars.
           </p>
         </div>
 
@@ -251,121 +296,94 @@ export const RoleBasedProductTour: React.FC = () => {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-zinc-200/60 flex items-center justify-between text-xs text-zinc-500">
-              <span className="font-mono text-[11px]">Source: {currentRole.sourceModule}</span>
-              <a
-                href="#pricing"
-                className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-700 transition"
-              >
-                <span>Evaluate this role</span>
-                <ArrowRight className="w-3 h-3" />
-              </a>
+            <div className="pt-4 border-t border-zinc-200 text-xs text-zinc-500 flex items-center justify-between">
+              <span>Primary Screen: <code className="font-mono text-zinc-800">{currentRole.sourceModule}</code></span>
+              <span className="font-mono text-[10px] text-zinc-400">Route: {currentRole.routePath}</span>
             </div>
           </div>
 
-          {/* Right Column: Genuine Application Interface Representation */}
-          <div className="lg:col-span-7 p-6 sm:p-8 bg-[#0F172A] text-zinc-100 flex flex-col justify-between overflow-x-auto">
+          {/* Right Column: Live Interactive ERP Workspace */}
+          <div className="lg:col-span-7 p-6 sm:p-8 bg-zinc-950 text-white flex flex-col justify-between overflow-x-auto">
             
-            {/* macOS-style Window Frame Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-zinc-800 text-xs">
+            {/* Top Workspace Bar */}
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-3 text-xs">
               <div className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block" />
-                <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block" />
-                <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block" />
-                <span className="ml-2 font-mono text-[11px] text-zinc-400">
-                  EduPulse Operating Console • {currentRole.routePath}
-                </span>
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <span className="font-mono text-zinc-300">Demonstration Session • {currentRole.sourceModule}</span>
               </div>
-              <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-zinc-800 text-emerald-400 border border-zinc-700">
-                AUTHENTICATED • {currentRole.id.toUpperCase()}
+              <span className="text-[10px] font-mono text-zinc-500 bg-zinc-900 px-2 py-0.5 rounded border border-zinc-800">
+                Sanitized Seed Data
               </span>
             </div>
 
             {/* SCREEN 1: SUPER ADMIN CONTROL PLANE */}
             {activeRole === 'super-admin' && (
-              <div className="py-6 space-y-4 font-sans text-xs">
-                <div className="flex flex-wrap items-center justify-between gap-3 bg-zinc-900/90 p-3 rounded-xl border border-zinc-800">
-                  <div className="flex items-center gap-2">
-                    <Database className="w-4 h-4 text-indigo-400" />
-                    <span className="font-bold text-zinc-100">Central SaaS Multi-Tenant Registry</span>
+              <div className="py-6 space-y-4 font-mono text-xs">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 text-[11px]">
+                    <span className="text-zinc-400">Filter Tenants:</span>
+                    {(['ALL', 'TRIAL', 'ACTIVE', 'SUSPENDED'] as const).map(status => (
+                      <button
+                        key={status}
+                        type="button"
+                        onClick={() => setTenantFilter(status)}
+                        className={`px-2 py-0.5 rounded text-[10px] transition ${
+                          tenantFilter === status
+                            ? 'bg-indigo-600 text-white font-bold'
+                            : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                        }`}
+                      >
+                        {status}
+                      </button>
+                    ))}
                   </div>
-                  <div className="flex items-center gap-2 text-[11px] font-mono">
-                    <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300">Total Tenants: 28</span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Active: 24</span>
-                    <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">Trial: 4</span>
-                  </div>
+                  <span className="text-[10px] text-zinc-500">API: /api/v1/saas/admin/tenants</span>
                 </div>
 
-                <div className="overflow-x-auto rounded-xl border border-zinc-800 bg-zinc-950">
-                  <table className="w-full text-left text-xs">
-                    <thead className="bg-zinc-900/80 text-zinc-400 font-semibold border-b border-zinc-800 text-[10px] uppercase tracking-wider">
+                <div className="rounded-xl border border-zinc-800 overflow-hidden bg-zinc-900/50">
+                  <table className="w-full text-left text-[11px]">
+                    <thead className="bg-zinc-900 border-b border-zinc-800 text-zinc-400">
                       <tr>
                         <th className="p-3">Tenant Identifier</th>
                         <th className="p-3">Institution Name</th>
-                        <th className="p-3">Infrastructure Mode</th>
-                        <th className="p-3">Status</th>
-                        <th className="p-3 text-right">Action</th>
+                        <th className="p-3">Database Pool</th>
+                        <th className="p-3">Account State</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-zinc-800/60 font-mono text-[11px]">
-                      <tr className="hover:bg-zinc-900/40">
-                        <td className="p-3 font-semibold text-indigo-300">tenant-apex</td>
-                        <td className="p-3 font-sans text-zinc-200">Apex Institute of Technology</td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">
-                            Dedicated Pool (HikariCP)
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px]">
-                            ACTIVE
-                          </span>
-                        </td>
-                        <td className="p-3 text-right font-sans">
-                          <span className="text-[11px] text-zinc-400 hover:text-white cursor-pointer">Manage</span>
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-zinc-900/40">
-                        <td className="p-3 font-semibold text-indigo-300">tenant-cambridge</td>
-                        <td className="p-3 font-sans text-zinc-200">Cambridge Science Academy</td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800 text-[10px]">
-                            Shared Pool (RLS)
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px]">
-                            TRIAL (12d left)
-                          </span>
-                        </td>
-                        <td className="p-3 text-right font-sans">
-                          <span className="text-[11px] text-indigo-400 hover:text-indigo-300 cursor-pointer font-semibold">Migrate to VIP</span>
-                        </td>
-                      </tr>
-                      <tr className="hover:bg-zinc-900/40">
-                        <td className="p-3 font-semibold text-indigo-300">tenant-greenwood</td>
-                        <td className="p-3 font-sans text-zinc-200">Greenwood Global School</td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-full bg-blue-950 text-blue-300 border border-blue-800 text-[10px]">
-                            Shared Pool (RLS)
-                          </span>
-                        </td>
-                        <td className="p-3">
-                          <span className="px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-400 border border-rose-500/20 text-[10px]">
-                            SUSPENDED
-                          </span>
-                        </td>
-                        <td className="p-3 text-right font-sans">
-                          <span className="text-[11px] text-zinc-400 hover:text-white cursor-pointer">Reactivate</span>
-                        </td>
-                      </tr>
+                    <tbody className="divide-y divide-zinc-800/60">
+                      {filteredTenants.map(t => (
+                        <tr key={t.tenantId} className="hover:bg-zinc-900/40">
+                          <td className="p-3 font-semibold text-indigo-300">{t.tenantId}</td>
+                          <td className="p-3 font-sans text-zinc-200">{t.institutionName}</td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                              t.databaseRoutingKey === 'dedicated-vip-1'
+                                ? 'bg-indigo-950 text-indigo-300 border border-indigo-800'
+                                : 'bg-blue-950 text-blue-300 border border-blue-800'
+                            }`}>
+                              {t.databaseRoutingKey}
+                            </span>
+                          </td>
+                          <td className="p-3">
+                            <span className={`px-2 py-0.5 rounded-full text-[10px] ${
+                              t.accountStatus === 'ACTIVE'
+                                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                                : t.accountStatus === 'TRIAL'
+                                ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                            }`}>
+                              {t.accountStatus}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
 
                 <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800 flex items-center justify-between text-[11px] text-zinc-400">
-                  <span>AbstractRoutingDataSource dynamic pool re-routing: 0ms downtime</span>
-                  <span className="text-emerald-400 font-mono">Status: ALL_POOLS_HEALTHY</span>
+                  <span>Routing: Dynamic HikariCP connection dispatch</span>
+                  <span className="text-emerald-400 font-mono">Pool Status: CONNECTED</span>
                 </div>
               </div>
             )}
@@ -373,48 +391,59 @@ export const RoleBasedProductTour: React.FC = () => {
             {/* SCREEN 2: INSTITUTION ADMINISTRATOR */}
             {activeRole === 'admin' && (
               <div className="py-6 space-y-4 font-sans text-xs">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">System Users</span>
-                    <div className="text-xl font-bold text-white mt-1">14</div>
-                    <span className="text-[10px] text-emerald-400">14 Active • 0 Locked</span>
-                  </div>
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Departments</span>
-                    <div className="text-xl font-bold text-white mt-1">8</div>
-                    <span className="text-[10px] text-zinc-400">Undergrad & Postgrad</span>
-                  </div>
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Total Students</span>
-                    <div className="text-xl font-bold text-white mt-1">1,248</div>
-                    <span className="text-[10px] text-zinc-400">Across 16 Batches</span>
-                  </div>
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Admissions</span>
-                    <div className="text-xl font-bold text-white mt-1">19</div>
-                    <span className="text-[10px] text-amber-400">Awaiting Committee</span>
-                  </div>
-                </div>
-
                 <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-zinc-200">Recent Applicant Intake Queue</span>
+                    <span className="font-bold text-zinc-200">Admissions Review Queue (Admissions.tsx)</span>
                     <span className="font-mono text-[10px] text-zinc-500">Route: /admissions</span>
                   </div>
-                  <div className="divide-y divide-zinc-800/80 text-[11px]">
-                    <div className="py-2 flex items-center justify-between">
-                      <div>
-                        <span className="font-semibold text-zinc-100">Aanya Patel</span>
-                        <span className="text-zinc-500 ml-2">B.Tech Computer Science</span>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                    <div 
+                      onClick={() => setSelectedAdminApplicant('aanya')}
+                      className={`p-3 rounded-lg border cursor-pointer transition ${
+                        selectedAdminApplicant === 'aanya'
+                          ? 'border-indigo-500 bg-indigo-950/40'
+                          : 'border-zinc-800 bg-zinc-900/60 hover:bg-zinc-900'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-white">Aanya Patel</span>
+                        <span className="px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 text-[10px]">UNDER_REVIEW</span>
                       </div>
-                      <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 text-[10px]">UNDER_REVIEW</span>
+                      <div className="text-zinc-400 text-[10px] mt-1">B.Tech Computer Science</div>
                     </div>
-                    <div className="py-2 flex items-center justify-between">
-                      <div>
-                        <span className="font-semibold text-zinc-100">Devansh Verma</span>
-                        <span className="text-zinc-500 ml-2">B.Tech Mechanical Engineering</span>
+
+                    <div 
+                      onClick={() => setSelectedAdminApplicant('devansh')}
+                      className={`p-3 rounded-lg border cursor-pointer transition ${
+                        selectedAdminApplicant === 'devansh'
+                          ? 'border-indigo-500 bg-indigo-950/40'
+                          : 'border-zinc-800 bg-zinc-900/60 hover:bg-zinc-900'
+                      }`}
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-white">Devansh Verma</span>
+                        <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 text-[10px]">APPROVED & ENROLLED</span>
                       </div>
-                      <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">APPROVED & ENROLLED</span>
+                      <div className="text-zinc-400 text-[10px] mt-1">B.Tech Mechanical Engineering</div>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-zinc-900 rounded-lg border border-zinc-800 text-[11px] space-y-1.5 font-mono">
+                    <div className="text-zinc-300 font-bold font-sans">
+                      Dossier Verification: {selectedAdminApplicant === 'aanya' ? 'Aanya Patel' : 'Devansh Verma'}
+                    </div>
+                    <div className="flex items-center justify-between text-zinc-400">
+                      <span>12th Grade Transcript:</span>
+                      <span className="text-emerald-400">VERIFIED (94.2%)</span>
+                    </div>
+                    <div className="flex items-center justify-between text-zinc-400">
+                      <span>Government ID Proof:</span>
+                      <span className="text-emerald-400">VERIFIED (Aadhaar)</span>
+                    </div>
+                    <div className="flex items-center justify-between text-zinc-400">
+                      <span>Assigned Roll Number:</span>
+                      <span className="text-indigo-300">{selectedAdminApplicant === 'aanya' ? 'Pending Approval' : 'ENR-2026-0042'}</span>
                     </div>
                   </div>
                 </div>
@@ -427,163 +456,196 @@ export const RoleBasedProductTour: React.FC = () => {
                 <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Calendar className="w-4 h-4 text-indigo-400" />
-                    <span className="font-bold text-zinc-100">Weekly Schedule • Dr. Aris Thorne</span>
+                    <span className="font-bold text-zinc-100">Schedule • Dr. Aris Thorne</span>
                   </div>
                   <span className="text-[10px] font-mono text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800">
-                    Active Term: Fall 2026
+                    Fall 2026
                   </span>
                 </div>
 
-                <div className="space-y-2">
-                  <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">CS-303: High-Performance Computing</span>
-                        <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">Hall 402</span>
-                        <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px]">Google Meet Connected</span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400">Monday & Wednesday • 09:00 - 10:30 AM • 48 Students Enrolled</p>
-                    </div>
-                    <button className="px-3 py-1 rounded-lg bg-indigo-600 text-white font-semibold text-[11px] hover:bg-indigo-500 transition">
-                      Mark Attendance
-                    </button>
-                  </div>
-
-                  <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-white">CS-305: Database Internals</span>
-                        <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">Lab 201</span>
-                      </div>
-                      <p className="text-[11px] text-zinc-400">Tuesday & Thursday • 11:00 - 12:30 PM • 42 Students Enrolled</p>
-                    </div>
-                    <button className="px-3 py-1 rounded-lg bg-zinc-800 text-zinc-200 font-medium text-[11px] hover:bg-zinc-700 transition">
-                      Grade Book
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* SCREEN 4: STUDENT PORTAL */}
-            {activeRole === 'student' && (
-              <div className="py-6 space-y-4 font-sans text-xs">
-                <div className="p-4 bg-zinc-900 rounded-xl border border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-                  <div>
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Student Dossier</span>
-                    <div className="text-base font-bold text-white mt-0.5">Aarav Sharma</div>
-                    <span className="text-[11px] text-zinc-400 font-mono">Roll: 23CSM001 • B.Tech Computer Science</span>
-                  </div>
-                  <div className="text-right">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Cumulative GPA</span>
-                    <div className="text-xl font-bold text-emerald-400 mt-0.5">3.88 / 4.00</div>
-                    <span className="text-[10px] text-zinc-400">Dean's Honor List</span>
-                  </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-zinc-950 border border-zinc-800 space-y-3">
+                <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <CreditCard className="w-4 h-4 text-indigo-400" />
-                      <span className="font-bold text-zinc-200">Outstanding Tuition Invoice #INV-2026-0842</span>
+                    <div>
+                      <span className="font-bold text-white">CS-303: High-Performance Computing</span>
+                      <div className="text-[11px] text-zinc-400">Hall 402 • Google Meet Connected</div>
                     </div>
-                    <span className="px-2 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800 text-[10px] font-bold">
-                      DUE IN 5 DAYS
+                    <span className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">
+                      09:00 - 10:30 AM
                     </span>
                   </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80">
-                    <div>
-                      <span className="text-xs text-zinc-400">Payable Balance</span>
-                      <div className="text-lg font-bold text-white">₹42,500</div>
+
+                  <div className="pt-2 border-t border-zinc-800 text-[11px] space-y-2">
+                    <div className="flex justify-between items-center text-zinc-400">
+                      <span>Interactive Attendance Register (Click to toggle):</span>
                     </div>
-                    <button className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs transition shadow-sm flex items-center gap-1.5">
-                      <span>Pay via Razorpay</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
+
+                    <div className="grid grid-cols-2 gap-2 font-mono text-[11px]">
+                      {[
+                        { id: 'ENR-01', name: 'Aarav Sharma' },
+                        { id: 'ENR-02', name: 'Sophia Chen' },
+                        { id: 'ENR-03', name: 'Marcus Vance' },
+                        { id: 'ENR-04', name: 'Ananya Sharma' }
+                      ].map(std => {
+                        const status = facultyAttendanceMarked[std.id];
+                        return (
+                          <div 
+                            key={std.id}
+                            onClick={() => {
+                              const nextStatus = status === 'PRESENT' ? 'ABSENT' : status === 'ABSENT' ? 'LATE' : 'PRESENT';
+                              setFacultyAttendanceMarked(prev => ({ ...prev, [std.id]: nextStatus }));
+                            }}
+                            className="p-2 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-between cursor-pointer hover:border-zinc-700"
+                          >
+                            <span className="truncate">{std.name}</span>
+                            <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                              status === 'PRESENT'
+                                ? 'bg-emerald-950 text-emerald-400'
+                                : status === 'ABSENT'
+                                ? 'bg-rose-950 text-rose-400'
+                                : 'bg-amber-950 text-amber-400'
+                            }`}>
+                              {status}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* SCREEN 5: PARENT PORTAL */}
+            {/* SCREEN 4: STUDENT */}
+            {activeRole === 'student' && (
+              <div className="py-6 space-y-4 font-sans text-xs">
+                <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-white block">Aarav Sharma (ENR-2026-001)</span>
+                    <span className="text-[11px] text-zinc-400">B.Tech Computer Science • Semester V</span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono text-[10px] border border-emerald-800">
+                    CGPA: 3.92
+                  </span>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="font-bold text-white">Term Fee Invoice #INV-2026-089</span>
+                      <div className="text-[11px] text-zinc-400">Due: 2026-11-30 • Tuition & Lab Head</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="font-mono font-bold text-amber-400">₹45,000.00</div>
+                      <span className="text-[10px] text-zinc-500">Unsettled</span>
+                    </div>
+                  </div>
+
+                  <div className="pt-2 border-t border-zinc-800 flex justify-between items-center">
+                    <span className="text-[11px] text-zinc-400">Razorpay Online Gateway:</span>
+                    <button
+                      type="button"
+                      onClick={() => setIsRazorpayModalOpen(true)}
+                      className="px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition flex items-center gap-1.5"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Launch Razorpay Checkout</span>
+                    </button>
+                  </div>
+                </div>
+
+                {isRazorpayModalOpen && (
+                  <div className="p-3 rounded-xl bg-indigo-950/80 border border-indigo-700 text-zinc-200 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-indigo-300">Razorpay Payment Window Modal</span>
+                      <button 
+                        type="button" 
+                        onClick={() => setIsRazorpayModalOpen(false)}
+                        className="text-zinc-400 hover:text-white"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <p className="text-[11px] text-zinc-300">
+                      Order: <code className="font-mono text-white">order_Rzp8921829</code> • Amount: ₹45,000.00<br />
+                      Verification: Server verifies HMAC-SHA256 signature upon checkout completion.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SCREEN 5: PARENT */}
             {activeRole === 'parent' && (
               <div className="py-6 space-y-4 font-sans text-xs">
                 <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Linked Student</span>
-                    <span className="font-bold text-white text-sm">Aarav Sharma</span>
+                    <span className="font-bold text-white block">Parent Oversight • Ward: Aarav Sharma</span>
+                    <span className="text-[11px] text-zinc-400">Academic Standing: Dean's Honor Roll</span>
                   </div>
-                  <span className="px-2.5 py-1 rounded bg-zinc-800 text-zinc-300 font-mono text-[10px]">
-                    Guardian: Rajesh Sharma (Father)
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono text-[10px] border border-emerald-800">
+                    Compliant (96.4%)
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Attendance Rate</span>
-                    <div className="text-xl font-bold text-emerald-400 mt-1">94.2%</div>
-                    <span className="text-[10px] text-zinc-500">Above mandatory 75% rule</span>
+                <div className="p-3.5 rounded-xl bg-zinc-950 border border-zinc-800 space-y-2">
+                  <span className="text-[11px] font-bold text-zinc-300 block">Attendance Threshold Policy:</span>
+                  <p className="text-[11px] text-zinc-400">
+                    Mandatory 75% attendance enforced across all registered courses. Ward currently has 54 / 56 lecture attendances recorded.
+                  </p>
+                  <div className="pt-2 border-t border-zinc-800 flex justify-between items-center text-[11px]">
+                    <span className="text-zinc-500">Official Settlement Receipt:</span>
+                    <span className="text-emerald-400 font-mono">RCP-8912 Verified</span>
                   </div>
-                  <div className="p-3 bg-zinc-950 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Financial Status</span>
-                    <div className="text-xl font-bold text-emerald-400 mt-1">Settled</div>
-                    <span className="text-[10px] text-zinc-500">Term 4 Paid • RCP-8912</span>
-                  </div>
-                </div>
-
-                <div className="p-3 rounded-xl bg-zinc-900/60 border border-zinc-800 text-[11px] text-zinc-400 flex items-center justify-between">
-                  <span>Emergency SMS & Email Alerts: Active</span>
-                  <span className="text-emerald-400">Verified Mobile: +91 9811223344</span>
                 </div>
               </div>
             )}
 
-            {/* SCREEN 6: FINANCE & BURSAR */}
+            {/* SCREEN 6: FINANCE */}
             {activeRole === 'finance' && (
               <div className="py-6 space-y-4 font-sans text-xs">
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Term Invoiced</span>
-                    <div className="text-lg font-bold text-white mt-1">₹42,85,000</div>
-                    <span className="text-[10px] text-zinc-400">120 Students</span>
+                <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-white block">Bursar Double-Entry Ledger (StudentLedger.jsx)</span>
+                    <span className="text-[11px] text-zinc-400">Student: ENR-2026-001 (Aarav Sharma)</span>
                   </div>
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Settled (Razorpay)</span>
-                    <div className="text-lg font-bold text-emerald-400 mt-1">₹39,20,000</div>
-                    <span className="text-[10px] text-emerald-400">91.5% Collection</span>
-                  </div>
-                  <div className="p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                    <span className="text-[10px] text-zinc-400 uppercase tracking-wider block">Outstanding</span>
-                    <div className="text-lg font-bold text-amber-400 mt-1">₹3,65,000</div>
-                    <span className="text-[10px] text-amber-400">8 Vouchers Due</span>
-                  </div>
+                  <span className="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 font-mono text-[10px] border border-emerald-800">
+                    Ledger Balanced
+                  </span>
                 </div>
 
-                <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 border-b border-zinc-800/80 pb-2">
-                    <span className="font-bold text-zinc-200">Recent Settled Transactions</span>
-                    <span className="font-mono text-[10px]">Route: /finance/ledger</span>
-                  </div>
-                  <div className="divide-y divide-zinc-800/60 font-mono text-[11px]">
-                    <div className="py-1.5 flex items-center justify-between">
-                      <span className="font-sans text-zinc-200">Aarav Sharma (23CSM001)</span>
-                      <span className="text-zinc-400">Razorpay UPI</span>
-                      <span className="text-emerald-400 font-bold">₹42,500 [RCP-8912]</span>
-                    </div>
-                    <div className="py-1.5 flex items-center justify-between">
-                      <span className="font-sans text-zinc-200">Diya Mehta (23CSF002)</span>
-                      <span className="text-zinc-400">Razorpay Netbanking</span>
-                      <span className="text-emerald-400 font-bold">₹42,500 [RCP-8913]</span>
-                    </div>
-                  </div>
+                <div className="rounded-xl border border-zinc-800 overflow-hidden bg-zinc-900/60 font-mono text-[11px]">
+                  <table className="w-full text-left">
+                    <thead className="bg-zinc-900 text-zinc-400 border-b border-zinc-800">
+                      <tr>
+                        <th className="p-2.5">Date</th>
+                        <th className="p-2.5">Description</th>
+                        <th className="p-2.5 text-right">Debit</th>
+                        <th className="p-2.5 text-right">Credit</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-800 text-[10px]">
+                      <tr>
+                        <td className="p-2.5 text-zinc-400">2026-10-01</td>
+                        <td className="p-2.5 font-sans">Fall 2026 Tuition Voucher (INV-089)</td>
+                        <td className="p-2.5 text-right text-rose-400">₹45,000</td>
+                        <td className="p-2.5 text-right text-zinc-500">-</td>
+                      </tr>
+                      <tr>
+                        <td className="p-2.5 text-zinc-400">2026-10-04</td>
+                        <td className="p-2.5 font-sans">Razorpay Settlement (RCP-8912)</td>
+                        <td className="p-2.5 text-right text-zinc-500">-</td>
+                        <td className="p-2.5 text-right text-emerald-400">₹45,000</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
 
-            {/* Console Footer */}
-            <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[10px] text-zinc-500 font-mono">
-              <span>Tenant Partition: tenant-apex</span>
-              <span>PostgreSQL RLS: ACTIVE</span>
+            {/* Bottom State Bar */}
+            <div className="pt-3 border-t border-zinc-800/80 flex items-center justify-between text-[11px] text-zinc-500">
+              <span>Environment: Controlled Demonstration</span>
+              <span className="text-zinc-400 font-mono">React v18 &bull; Tailwind CSS &bull; Spring Boot REST</span>
             </div>
 
           </div>
@@ -596,4 +658,3 @@ export const RoleBasedProductTour: React.FC = () => {
 };
 
 export default RoleBasedProductTour;
-

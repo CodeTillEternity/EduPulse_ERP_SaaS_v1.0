@@ -24,49 +24,49 @@ export default function LandingPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-[#0A0A0A] text-white flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
       {/* 1. Top Announcement Bar */}
-      <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 text-indigo-100 py-2 px-4 text-xs font-medium text-center border-b border-indigo-800/50 flex items-center justify-center gap-2">
+      <div className="bg-gradient-to-r from-indigo-950 via-purple-950/60 to-[#0A0A0A] text-indigo-200 py-2 px-4 text-xs font-medium text-center border-b border-white/[0.08] flex items-center justify-center gap-2">
         <Sparkles className="w-3.5 h-3.5 text-amber-300 animate-pulse" />
-        <span>EduPulse SaaS V1.4 is Live • Safe Exam Browser (SEB) OS Lockdown & Dedicated Database Sharding</span>
+        <span>EduPulse SaaS V1.4 • Safe Exam Browser (SEB) OS Lockdown & Dedicated Database Routing</span>
         <button 
           onClick={() => navigate('/onboard')}
-          className="underline font-bold text-white hover:text-amber-200 transition ml-1"
+          className="underline font-bold text-white hover:text-indigo-300 transition ml-1"
         >
-          Claim 14-Day Free Institutional Trial →
+          Start 14-Day Free Trial →
         </button>
       </div>
 
-      {/* 2. Header & Navigation */}
-      <header className="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800">
+      {/* 2. Header & Navigation (Glassmorphism & Tight Typography) */}
+      <header className="sticky top-0 z-50 bg-[#0A0A0A]/75 backdrop-blur-xl border-b border-white/[0.08] transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 border border-indigo-400/30">
-                <GraduationCap className="h-6 w-6 text-white" />
+              <div className="h-9 w-9 rounded-xl bg-white/[0.06] border border-white/[0.12] flex items-center justify-center shadow-glow-subtle group-hover:border-white/[0.24] transition">
+                <GraduationCap className="h-5 w-5 text-white" />
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-xl tracking-tight text-white flex items-center gap-1.5">
-                  EduPulse <span className="text-xs uppercase px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 font-bold tracking-wide border border-indigo-500/30">SaaS</span>
+                <span className="font-black text-lg tracking-tight text-white flex items-center gap-1.5">
+                  EduPulse <span className="text-[10px] uppercase px-2 py-0.5 rounded-full bg-white/[0.08] text-indigo-300 font-bold tracking-widest border border-white/[0.08]">SaaS</span>
                 </span>
-                <span className="text-[10px] text-slate-400 hidden sm:inline uppercase tracking-widest font-semibold">Institutional Control Plane</span>
+                <span className="text-[10px] text-[#8E8E93] hidden sm:inline uppercase tracking-widest font-medium">Institutional Control Plane</span>
               </div>
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-              <a href="#hero" className="hover:text-indigo-400 transition-colors">Overview</a>
-              <a href="#seb-proctoring" className="hover:text-indigo-400 transition-colors flex items-center gap-1.5">
-                <Lock className="w-3.5 h-3.5 text-amber-400" />
+            <nav className="hidden md:flex items-center gap-8 text-xs font-semibold text-[#8E8E93]">
+              <a href="#hero" className="hover:text-white transition-colors">Overview</a>
+              <a href="#seb-proctoring" className="hover:text-white transition-colors flex items-center gap-1.5">
+                <Lock className="w-3 h-3 text-amber-400" />
                 SEB Proctoring
               </a>
-              <a href="#data-isolation" className="hover:text-indigo-400 transition-colors flex items-center gap-1.5">
-                <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <a href="#data-isolation" className="hover:text-white transition-colors flex items-center gap-1.5">
+                <Database className="w-3 h-3 text-emerald-400" />
                 Multi-Tenant Isolation
               </a>
-              <a href="#pricing" className="hover:text-indigo-400 transition-colors">Commercial Plans</a>
-              <a href="#faq" className="hover:text-indigo-400 transition-colors">Compliance</a>
+              <a href="#pricing" className="hover:text-white transition-colors">Commercial Plans</a>
+              <a href="#faq" className="hover:text-white transition-colors">Compliance</a>
             </nav>
 
             {/* Header Actions */}
@@ -74,9 +74,9 @@ export default function LandingPage() {
               {isAuthenticated ? (
                 <Button 
                   onClick={() => navigate('/dashboard')}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-md shadow-indigo-600/30"
+                  className="bg-white hover:bg-slate-200 text-black font-semibold text-xs rounded-xl shadow-glow-subtle transition"
                 >
-                  <UserCheck className="h-4 w-4 mr-2 text-amber-300" />
+                  <UserCheck className="h-3.5 w-3.5 mr-1.5 text-indigo-600" />
                   My Dashboard ({user?.role})
                 </Button>
               ) : (
@@ -84,16 +84,16 @@ export default function LandingPage() {
                   <Button 
                     variant="ghost" 
                     onClick={() => navigate('/login')}
-                    className="text-slate-300 hover:text-white hover:bg-slate-800 text-xs font-semibold"
+                    className="text-[#8E8E93] hover:text-white hover:bg-white/[0.06] text-xs font-medium"
                   >
                     User Login
                   </Button>
                   <Button 
                     onClick={() => navigate('/onboard')}
-                    className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-semibold text-xs shadow-md shadow-indigo-600/25"
+                    className="bg-white hover:bg-slate-200 text-black font-bold text-xs rounded-xl shadow-glow-subtle transition"
                   >
                     Start 14-Day Trial
-                    <ArrowRight className="h-4 w-4 ml-1.5" />
+                    <ArrowRight className="h-3.5 w-3.5 ml-1" />
                   </Button>
                 </>
               )}
@@ -116,32 +116,32 @@ export default function LandingPage() {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-3 pb-6 space-y-4">
-            <nav className="flex flex-col space-y-3 text-sm font-medium text-slate-300">
-              <a href="#hero" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-slate-800">
+          <div className="md:hidden bg-[#0A0A0A] border-b border-white/[0.08] px-4 pt-3 pb-6 space-y-4">
+            <nav className="flex flex-col space-y-3 text-xs font-semibold text-[#8E8E93]">
+              <a href="#hero" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-white/[0.06]">
                 Overview
               </a>
-              <a href="#seb-proctoring" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-slate-800">
+              <a href="#seb-proctoring" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-white/[0.06]">
                 Safe Exam Browser (SEB) Lockdown
               </a>
-              <a href="#data-isolation" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-slate-800">
+              <a href="#data-isolation" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-white/[0.06]">
                 Multi-Tenant Data Isolation
               </a>
-              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-slate-800">
+              <a href="#pricing" onClick={() => setMobileMenuOpen(false)} className="px-2 py-1.5 rounded-lg hover:bg-white/[0.06]">
                 Pricing & Plans
               </a>
             </nav>
-            <div className="pt-2 border-t border-slate-800 flex flex-col gap-2.5">
+            <div className="pt-2 border-t border-white/[0.08] flex flex-col gap-2.5">
               <Button 
                 onClick={() => { setMobileMenuOpen(false); navigate('/onboard'); }}
-                className="w-full justify-center bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs"
+                className="w-full justify-center bg-white text-black hover:bg-slate-200 font-bold text-xs rounded-xl"
               >
                 Start 14-Day Free Trial
               </Button>
               <Button 
                 variant="outline"
                 onClick={() => { setMobileMenuOpen(false); navigate('/login'); }}
-                className="w-full justify-center border-slate-700 text-slate-300 hover:bg-slate-800 font-semibold text-xs"
+                className="w-full justify-center border-white/[0.12] text-white hover:bg-white/[0.06] font-semibold text-xs rounded-xl"
               >
                 ERP Sign In
               </Button>
@@ -150,34 +150,35 @@ export default function LandingPage() {
         )}
       </header>
 
-      {/* 3. Hero Section */}
-      <section id="hero" className="relative overflow-hidden bg-slate-950 py-20 lg:py-32 border-b border-slate-900">
-        <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#4f46e5_1px,transparent_1px)] [background-size:24px_24px]" />
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-indigo-600/20 to-purple-600/20 blur-[120px] rounded-full pointer-events-none" />
+      {/* 3. Hero Section (Near-Black Background, Glowing Mesh Gradient) */}
+      <section id="hero" className="relative overflow-hidden bg-[#0A0A0A] py-24 lg:py-36 border-b border-white/[0.06]">
+        {/* Glowing Mesh Gradients */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[550px] bg-[radial-gradient(ellipse_at_top,rgba(99,102,241,0.18)_0%,rgba(10,10,10,0)_65%)] pointer-events-none" />
+        <div className="absolute top-1/3 left-1/4 -translate-x-1/2 w-[500px] h-[300px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-indigo-400 text-xs font-semibold uppercase tracking-wider shadow-inner">
-              <Sparkles className="h-3.5 w-3.5 text-amber-400" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md text-indigo-300 text-xs font-semibold tracking-wide shadow-glow-subtle">
+              <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               SaaS V1.4 • Autonomous Multi-Tenant Architecture
             </div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tight leading-[1.1]">
-              Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[1.08]">
+              Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-indigo-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
             </h1>
 
-            <p className="text-base sm:text-xl text-slate-400 leading-relaxed max-w-3xl mx-auto">
+            <p className="text-sm sm:text-lg text-[#8E8E93] leading-relaxed max-w-3xl mx-auto font-normal">
               Empower universities, colleges, and schools with autonomous tenant self-provisioning, Safe Exam Browser (SEB) OS lockdown, Razorpay B2B subscription billing, and dynamic dedicated database routing.
             </p>
 
-            {/* CTAs */}
+            {/* Hero CTAs */}
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Button 
                 size="lg" 
                 onClick={() => navigate('/onboard')}
-                className="w-full sm:w-auto bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold shadow-xl shadow-indigo-600/30 px-8 h-13 text-sm rounded-xl"
+                className="w-full sm:w-auto bg-white hover:bg-slate-200 text-black font-bold shadow-glow-card px-8 h-12 text-xs rounded-xl transition"
               >
-                <Zap className="h-4 w-4 mr-2" />
+                <Zap className="h-4 w-4 mr-2 text-indigo-600" />
                 Start 14-Day Free Trial
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
@@ -188,7 +189,7 @@ export default function LandingPage() {
                   const el = document.getElementById('pricing');
                   el?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="w-full sm:w-auto border-slate-800 bg-slate-900/80 hover:bg-slate-800 text-slate-200 font-semibold h-13 px-7 text-sm rounded-xl"
+                className="w-full sm:w-auto border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md text-white font-semibold h-12 px-7 text-xs rounded-xl transition"
               >
                 Explore Pricing & Tiers
               </Button>
@@ -196,30 +197,30 @@ export default function LandingPage() {
                 size="lg" 
                 variant="ghost" 
                 onClick={() => navigate('/login')}
-                className="w-full sm:w-auto text-slate-400 hover:text-white hover:bg-slate-900 font-medium h-13 px-5 text-sm"
+                className="w-full sm:w-auto text-[#8E8E93] hover:text-white hover:bg-white/[0.06] font-medium h-12 px-5 text-xs"
               >
                 Sign In to Existing Tenant
               </Button>
             </div>
           </div>
 
-          {/* Metrics Ribbon */}
-          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-slate-900">
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-white">99.99%</div>
-              <div className="text-xs sm:text-sm font-medium text-slate-400 mt-1">SLA Reliability</div>
+          {/* Metrics Ribbon with Glassmorphism */}
+          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-white/[0.06]">
+            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+              <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">99.99%</div>
+              <div className="text-xs font-medium text-[#8E8E93] mt-1">SLA Reliability</div>
             </div>
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-emerald-400">100%</div>
-              <div className="text-xs sm:text-sm font-medium text-slate-400 mt-1">RLS Cryptographic Isolation</div>
+            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+              <div className="text-3xl sm:text-4xl font-black text-emerald-400 tracking-tight">100%</div>
+              <div className="text-xs font-medium text-[#8E8E93] mt-1">RLS Isolation</div>
             </div>
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-indigo-400">Zero</div>
-              <div className="text-xs sm:text-sm font-medium text-slate-400 mt-1">Cross-Tenant Leakage</div>
+            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+              <div className="text-3xl sm:text-4xl font-black text-indigo-400 tracking-tight">Zero</div>
+              <div className="text-xs font-medium text-[#8E8E93] mt-1">Cross-Tenant Leakage</div>
             </div>
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 text-center">
-              <div className="text-3xl sm:text-4xl font-black text-purple-400">50K+</div>
-              <div className="text-xs sm:text-sm font-medium text-slate-400 mt-1">Secure Exam Sessions</div>
+            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+              <div className="text-3xl sm:text-4xl font-black text-purple-400 tracking-tight">50K+</div>
+              <div className="text-xs font-medium text-[#8E8E93] mt-1">Secure Exam Sessions</div>
             </div>
           </div>
         </div>

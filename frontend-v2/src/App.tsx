@@ -49,6 +49,7 @@ import StudentPortalLayout from './layouts/StudentPortalLayout';
 import StudentDashboard from './pages/Portal/StudentDashboard';
 import FeeCenter from './pages/Portal/FeeCenter';
 import VirtualClassroom from './components/classroom/VirtualClassroom';
+import AcademicMaterialView from './components/materials/AcademicMaterialView';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
 import { GlobalSearch } from './components/GlobalSearch';
@@ -171,6 +172,7 @@ function App() {
             <Route path="/academic/exams" element={<ExamManager />} />
             <Route path="/academic/transcripts" element={<TranscriptViewer />} />
             <Route path="/academic/classroom" element={<VirtualClassroom />} />
+            <Route path="/academic/materials" element={<AcademicMaterialView />} />
             <Route path="/operations/timetable" element={<TimetableManager />} />
             <Route path="/operations/attendance" element={<AttendanceTracker />} />
             <Route path="/operations/library" element={<LibraryManager />} />
@@ -246,6 +248,7 @@ function App() {
               <Route index element={<StudentDashboard />} />
               <Route path="schedule" element={<TimetableManager />} />
               <Route path="classroom" element={<VirtualClassroom />} />
+              <Route path="materials" element={<AcademicMaterialView />} />
               <Route path="academics" element={<TranscriptViewer />} />
               <Route path="fees" element={<FeeCenter />} />
             </Route>

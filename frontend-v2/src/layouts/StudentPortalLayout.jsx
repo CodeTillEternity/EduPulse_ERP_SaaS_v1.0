@@ -9,6 +9,7 @@ import {
   Award,
   CreditCard,
   Video,
+  BookOpen,
   LogOut,
   Menu,
   X,
@@ -49,6 +50,12 @@ export default function StudentPortalLayout() {
       path: '/portal/classroom',
       icon: Video,
       description: 'Native in-app WebRTC lectures'
+    },
+    {
+      name: 'Faculty Notes',
+      path: '/portal/materials',
+      icon: BookOpen,
+      description: 'Native Notion workspace sync'
     },
     {
       name: 'Academics / Grades',

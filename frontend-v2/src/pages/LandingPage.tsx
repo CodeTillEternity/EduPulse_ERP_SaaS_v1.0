@@ -6,6 +6,7 @@ import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
 import { ProvisioningTerminal } from '../components/marketing/ProvisioningTerminal';
 import { DashboardMockup } from '../components/marketing/DashboardMockup';
+import { ProctoringWidget } from '../components/marketing/ProctoringWidget';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -18,9 +19,7 @@ import {
   Lock, 
   Server, 
   Zap, 
-  HardDrive,
-  Key,
-  ShieldAlert
+  HardDrive
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -369,68 +368,24 @@ export default function LandingPage() {
               {/* Subtle background radial glow */}
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl pointer-events-none transition-colors" />
 
-              <div className="relative z-10 flex flex-col justify-between h-full space-y-8">
-                <div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 text-xs font-semibold">
+              <div className="relative z-10 flex flex-col justify-between h-full space-y-6">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                  <div>
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 text-xs font-semibold mb-3">
                       <Lock className="w-3.5 h-3.5 text-zinc-400" />
                       Anti-Cheat Technology
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 border border-white/10 px-2.5 py-1 rounded-full bg-white/[0.02]">
-                      Zero Trust Client
-                    </span>
+
+                    <h3 className="text-2xl sm:text-3xl font-black text-zinc-50 tracking-tight leading-snug">
+                      Safe Exam Browser OS Lockdown. <br />
+                      <span className="text-zinc-300">Total Kiosk Sandboxing.</span>
+                    </h3>
+                    <p className="text-zinc-400 text-xs sm:text-sm mt-3 leading-relaxed max-w-2xl">
+                      Eliminate digital exam fraud at the operating system root. EduPulse generates cryptographic SEB configuration keys that force student client machines into locked kiosk mode — severing secondary displays, neutralizing clipboard access, and blocking virtual machine hypervisors.
+                    </p>
                   </div>
 
-                  <h3 className="text-2xl sm:text-3xl font-black text-zinc-50 tracking-tight leading-snug">
-                    Safe Exam Browser OS Lockdown. <br />
-                    <span className="text-zinc-300">Total Kiosk Sandboxing.</span>
-                  </h3>
-                  <p className="text-zinc-400 text-xs sm:text-sm mt-3 leading-relaxed max-w-2xl">
-                    Eliminate digital exam fraud at the operating system root. EduPulse generates cryptographic SEB configuration keys that force student client machines into locked kiosk mode — severing secondary displays, neutralizing clipboard access, and blocking virtual machine hypervisors.
-                  </p>
-                </div>
-
-                {/* Simulated Kiosk HUD Mockup */}
-                <div className="bg-[#0A0A0A]/90 border border-white/5 rounded-2xl p-5 font-mono text-xs space-y-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
-                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 inline-block" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-zinc-500 inline-block" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-zinc-400 inline-block" />
-                      <span className="ml-2 text-[11px] text-zinc-400 font-mono">SEB_Kiosk_Process.sys [LOCKED]</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300 text-[10px] font-bold border border-white/10">
-                      TELEMETRY SYNCED
-                    </span>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
-                    <div className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.04]">
-                      <div className="text-zinc-300 font-semibold mb-1 flex items-center gap-1.5">
-                        <Key className="w-3.5 h-3.5 text-zinc-400" />
-                        Cryptographic Hash Handshake
-                      </div>
-                      <div className="text-zinc-400 truncate text-[10px]">sha256:9f83ac027b4011e403d91782e4f014e6e0d9b62f</div>
-                      <div className="text-zinc-300 font-semibold text-[10px] mt-1">ConfigKey Signature Verified</div>
-                    </div>
-
-                    <div className="p-3 bg-white/[0.02] rounded-xl border border-white/[0.04]">
-                      <div className="text-zinc-300 font-semibold mb-1 flex items-center gap-1.5">
-                        <ShieldAlert className="w-3.5 h-3.5 text-zinc-400" />
-                        OS Guardrail State
-                      </div>
-                      <div className="text-zinc-400 text-[10px] space-y-0.5">
-                        <div className="flex justify-between"><span>Secondary Displays:</span> <span className="text-zinc-300 font-bold">DISABLED</span></div>
-                        <div className="flex justify-between"><span>Clipboard Buffer:</span> <span className="text-zinc-300 font-bold">WIPED</span></div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] text-zinc-400 pt-1">
-                    <span className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-zinc-400 animate-ping" />
-                      Proctor Heartbeat: 14ms latency
-                    </span>
+                  <div className="flex items-center gap-3 self-start md:self-auto">
                     <motion.div
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
@@ -439,13 +394,16 @@ export default function LandingPage() {
                       <Button 
                         size="sm" 
                         onClick={() => navigate('/onboard?tier=PRO')}
-                        className="bg-violet-200 hover:bg-white text-zinc-950 font-semibold text-xs h-7 px-3 rounded-lg transition"
+                        className="bg-violet-200 hover:bg-white text-zinc-950 font-semibold text-xs h-8 px-4 rounded-xl transition shadow-sm"
                       >
                         Test Drive SEB Mode →
                       </Button>
                     </motion.div>
                   </div>
                 </div>
+
+                {/* Live Biometric & OS Hardware Lockdown Widget */}
+                <ProctoringWidget />
               </div>
             </motion.div>
 

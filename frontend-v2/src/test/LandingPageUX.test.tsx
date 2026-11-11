@@ -112,4 +112,29 @@ describe('LandingPage UX & Bento Grid Architecture', () => {
     expect(await screen.findByText(/Liam O'Connor/i)).toBeInTheDocument();
     expect(await screen.findByText(/STA-2026-019/i)).toBeInTheDocument();
   });
+
+  it('renders and interacts with the SEB biometric proctoring hardware widget', () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    // Initial state is LOCKED
+    expect(screen.getAllByText(/Simulate Exam Lockdown/i)[0]).toBeInTheDocument();
+    expect(screen.getByText(/OS KIOSK RESTRICTED/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/BLOCKED/i)[0]).toBeInTheDocument();
+    expect(screen.getByText(/DISABLED/i)).toBeInTheDocument();
+
+    // Toggle lockdown off
+    const toggleBtn = screen.getByRole('switch', { name: /Simulate Exam Lockdown/i });
+    fireEvent.click(toggleBtn);
+
+    // Flips to STANDBY
+    expect(screen.getByText(/STANDBY MODE/i)).toBeInTheDocument();
+
+    // Toggle lockdown back on
+    fireEvent.click(toggleBtn);
+    expect(screen.getByText(/OS KIOSK RESTRICTED/i)).toBeInTheDocument();
+  });
 });

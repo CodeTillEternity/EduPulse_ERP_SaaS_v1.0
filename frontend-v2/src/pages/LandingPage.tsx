@@ -7,6 +7,7 @@ import { Pricing } from '../components/marketing/Pricing';
 import { InstitutionalProductMockup } from '../components/marketing/InstitutionalProductMockup';
 import { ArchitectureExplorer } from '../components/marketing/ArchitectureExplorer';
 import { ExamSecurityExplanation } from '../components/marketing/ExamSecurityExplanation';
+import { IntegrationShowcase } from '../components/marketing/IntegrationShowcase';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -83,6 +84,9 @@ export default function LandingPage() {
               <a href="#operations" onClick={(e) => { e.preventDefault(); scrollToSection('operations'); }} className="hover:text-zinc-900 transition-colors">
                 Operations
               </a>
+              <a href="#integrations" onClick={(e) => { e.preventDefault(); scrollToSection('integrations'); }} className="hover:text-zinc-900 transition-colors">
+                Integrations
+              </a>
               <a href="#architecture" onClick={(e) => { e.preventDefault(); scrollToSection('architecture'); }} className="hover:text-zinc-900 transition-colors">
                 Architecture
               </a>
@@ -153,6 +157,9 @@ export default function LandingPage() {
               </a>
               <a href="#operations" onClick={() => { setMobileMenuOpen(false); scrollToSection('operations'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Operations
+              </a>
+              <a href="#integrations" onClick={() => { setMobileMenuOpen(false); scrollToSection('integrations'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+                Integrations (Razorpay, Meet, Notion)
               </a>
               <a href="#architecture" onClick={() => { setMobileMenuOpen(false); scrollToSection('architecture'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 SaaS Architecture
@@ -634,7 +641,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 7. SaaS Architecture and Tenant Isolation (Verifiable Explorer) */}
+      {/* 7. Confirmed Third-Party Integrations: Razorpay, Google Meet, Notion */}
+      <IntegrationShowcase />
+
+      {/* 8. SaaS Architecture and Tenant Isolation (Verifiable Explorer) */}
       <section id="architecture" className="py-24 bg-white border-y border-zinc-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
@@ -763,14 +773,14 @@ export default function LandingPage() {
 
             {/* Architecture & Security */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Architecture</h4>
+              <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Integrations & Infra</h4>
               <ul className="space-y-2 text-zinc-500">
-                <li><a href="#architecture" className="hover:text-zinc-900 transition">Tenant Resolution (JWT)</a></li>
-                <li><a href="#architecture" className="hover:text-zinc-900 transition">Thread Confinement</a></li>
-                <li><a href="#architecture" className="hover:text-zinc-900 transition">PostgreSQL RLS</a></li>
+                <li><a href="#integrations" className="hover:text-zinc-900 transition">Razorpay Fee Collection</a></li>
+                <li><a href="#integrations" className="hover:text-zinc-900 transition">Google Meet Classrooms</a></li>
+                <li><a href="#integrations" className="hover:text-zinc-900 transition">Notion Course Resources</a></li>
+                <li><a href="#architecture" className="hover:text-zinc-900 transition">PostgreSQL RLS Engine</a></li>
                 <li><a href="#architecture" className="hover:text-zinc-900 transition">Dynamic Routing DataSource</a></li>
-                <li><a href="#exam-security" className="hover:text-zinc-900 transition">Safe Exam Browser Integration</a></li>
-                <li><a href="#pricing" className="hover:text-zinc-900 transition">Razorpay B2B Billing</a></li>
+                <li><a href="#exam-security" className="hover:text-zinc-900 transition">Safe Exam Browser Support</a></li>
               </ul>
             </div>
 

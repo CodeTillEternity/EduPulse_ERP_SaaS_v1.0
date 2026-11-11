@@ -109,6 +109,37 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
     expect(screen.getByText(/SaaS Multi-Tenant Control Plane/i)).toBeInTheDocument();
   });
 
+  it('renders confirmed third-party integrations with interactive showcase tabs', async () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    // Headline & Subcopy
+    expect(screen.getByText(/Your institution's tools\. Working together\./i)).toBeInTheDocument();
+    expect(screen.getByText(/EduPulse connects institutional workflows with the services your faculty and students already use\./i)).toBeInTheDocument();
+
+    // Razorpay Integration is default active tab
+    expect(screen.getAllByText(/Razorpay Fee Collection/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Accept institutional fee payments through an integrated online payment experience\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Institutional Payment Journey/i)).toBeInTheDocument();
+    expect(screen.getByText(/Pay with Razorpay/i)).toBeInTheDocument();
+
+    // Switch to Google Meet Integration
+    const meetTabBtn = screen.getByRole('button', { name: /Google Meet Classrooms/i });
+    fireEvent.click(meetTabBtn);
+    expect(await screen.findByText(/Connect institutional academic schedules with online classroom experiences\./i)).toBeInTheDocument();
+    expect(await screen.findByText(/CS-301: Distributed Systems/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Join Session with Google Meet/i)).toBeInTheDocument();
+
+    // Switch to Notion Integration
+    const notionTabBtn = screen.getByRole('button', { name: /Notion Course Notes/i });
+    fireEvent.click(notionTabBtn);
+    expect(await screen.findByText(/Bring academic notes and learning resources closer to the courses students study\./i)).toBeInTheDocument();
+    expect(await screen.findByText(/CS201 — Lecture Notes & Binary Trees/i)).toBeInTheDocument();
+  });
+
   it('renders verifiable multi-tenant architecture explorer with interactive layers', async () => {
     render(
       <BrowserRouter>

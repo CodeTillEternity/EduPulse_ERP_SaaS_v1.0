@@ -361,48 +361,142 @@ export const GoogleMeetClassroomDemo: React.FC = () => {
         )}
 
         {/* ========================================================================= */}
-        {/* STAGE 3: STUDENT PORTAL ACCESS                                            */}
+        {/* STAGE 3: STUDENT PORTAL ACCESS & GOOGLE MEET PRE-JOIN GREEN ROOM           */}
         {/* ========================================================================= */}
         {activeStep === 'student-join' && (
-          <div className="py-4 space-y-4">
-            <div className="bg-zinc-950 p-5 rounded-2xl border border-zinc-800 space-y-4 text-xs font-sans">
-              <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-full bg-indigo-900/60 text-indigo-300 flex items-center justify-center font-bold text-xs border border-indigo-700">
-                    AS
-                  </div>
-                  <div>
-                    <span className="font-bold text-white block">Aarav Sharma (Student Portal)</span>
-                    <span className="text-zinc-400 text-[11px] font-mono">Roll: ENR-2026-001 &bull; B.Tech Computer Science</span>
-                  </div>
+          <div className="py-2 space-y-4 font-sans">
+            {/* Student Portal Timetable Launch Banner */}
+            <div className="bg-zinc-900 p-4 rounded-2xl border border-zinc-800 flex flex-wrap items-center justify-between gap-4 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-indigo-900/60 text-indigo-300 flex items-center justify-center font-bold text-xs border border-indigo-700">
+                  AS
                 </div>
-                <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
-                  ACTIVE STUDENT
+                <div>
+                  <span className="font-bold text-white block">Aarav Sharma (Student Portal)</span>
+                  <span className="text-zinc-400 text-[11px] font-mono">ENR-2026-001 &bull; CS-302 Cloud Architecture</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  STARTING NOW
                 </span>
+                <span className="text-zinc-400 text-[11px] font-mono">Room: meet.google.com/xyz-abc-qrs</span>
               </div>
+            </div>
 
-              <div className="p-4 bg-zinc-900 rounded-xl border border-zinc-800 flex flex-wrap items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 text-[10px] font-bold border border-emerald-800">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    STARTING NOW
+            {/* Google Meet Authentic Pre-Join Screen ("Green Room") */}
+            <div className="bg-[#202124] p-6 rounded-2xl border border-zinc-800 text-white shadow-xl">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                
+                {/* Left: Video Preview Tile with Audio Sensor & Controls */}
+                <div className="lg:col-span-7 flex flex-col items-center">
+                  <div className="relative w-full aspect-video max-w-md rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-700 flex items-center justify-center shadow-lg">
+                    {!isCameraOff ? (
+                      <img
+                        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80"
+                        alt="Aarav Sharma"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 rounded-full bg-indigo-600 flex items-center justify-center text-white font-bold text-2xl">
+                        AS
+                      </div>
+                    )}
+
+                    {/* Active Audio Wave Indicator on Top Left */}
+                    {!isMuted && (
+                      <div className="absolute top-3 left-3 bg-zinc-900/80 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1 text-[10px] text-emerald-400 font-mono">
+                        <span className="w-1 h-3 bg-emerald-500 rounded-full animate-pulse" />
+                        <span className="w-1 h-2 bg-emerald-400 rounded-full animate-pulse delay-75" />
+                        <span className="w-1 h-4 bg-emerald-500 rounded-full animate-pulse delay-150" />
+                        <span className="ml-1 text-white">Mic Active</span>
+                      </div>
+                    )}
+
+                    {/* Bottom Floating Hardware Controls Overlaid on Video Preview */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-3 bg-zinc-900/90 backdrop-blur-md px-4 py-2 rounded-full border border-zinc-700 shadow-md">
+                      <button
+                        type="button"
+                        onClick={() => setIsMuted(!isMuted)}
+                        className={`p-2.5 rounded-full transition ${
+                          isMuted
+                            ? 'bg-rose-600 text-white'
+                            : 'bg-zinc-800 hover:bg-zinc-700 text-white'
+                        }`}
+                        title={isMuted ? 'Unmute microphone' : 'Mute microphone'}
+                      >
+                        {isMuted ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setIsCameraOff(!isCameraOff)}
+                        className={`p-2.5 rounded-full transition ${
+                          isCameraOff
+                            ? 'bg-rose-600 text-white'
+                            : 'bg-zinc-800 hover:bg-zinc-700 text-white'
+                        }`}
+                        title={isCameraOff ? 'Turn camera on' : 'Turn camera off'}
+                      >
+                        {isCameraOff ? <VideoOff className="w-4 h-4" /> : <Video className="w-4 h-4" />}
+                      </button>
+                    </div>
                   </div>
-                  <h4 className="text-base font-bold text-white">CS-302: Cloud Architecture &bull; Virtual Session</h4>
-                  <p className="text-xs text-zinc-400">Wednesday 09:00 AM – 10:30 AM &bull; Dr. Aris Thorne</p>
+
+                  <span className="text-[11px] text-zinc-400 mt-2 font-mono">
+                    Check your audio and video before entering the lecture
+                  </span>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => handleSelectStep('active-meeting')}
-                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2 shadow-sm transition"
-                >
-                  <Video className="w-4 h-4" />
-                  <span>Join with Google Meet</span>
-                </button>
-              </div>
+                {/* Right: Join Actions & Meeting Readiness */}
+                <div className="lg:col-span-5 space-y-5 text-left">
+                  <div className="space-y-1">
+                    <h4 className="text-xl font-bold text-white tracking-tight">Ready to join?</h4>
+                    <p className="text-xs text-zinc-400">
+                      47 participants are already in the call (Dr. Aris Thorne is presenting).
+                    </p>
+                  </div>
 
-              <div className="p-3 bg-zinc-900/60 rounded-xl border border-zinc-800 text-[11px] text-zinc-400 font-mono">
-                Security Policy: Only students registered in section CS-Batch-A have authorized token access to the session link.
+                  {/* Device Diagnostics Info */}
+                  <div className="p-3 bg-zinc-900/80 rounded-xl border border-zinc-800 text-[11px] text-zinc-400 space-y-1.5 font-mono">
+                    <div className="flex justify-between">
+                      <span>Mic:</span>
+                      <span className="text-zinc-200">Realtek Audio (Default)</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Camera:</span>
+                      <span className="text-zinc-200">Integrated HD 720p</span>
+                    </div>
+                  </div>
+
+                  {/* Primary Join Action Buttons */}
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectStep('active-meeting')}
+                      className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#8ab4f8] hover:bg-[#aecbfa] text-zinc-900 font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition"
+                    >
+                      <Video className="w-4 h-4" />
+                      <span>Join now</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleSelectStep('active-meeting')}
+                      className="w-full sm:w-auto px-5 py-3 rounded-full border border-zinc-700 hover:bg-zinc-800 text-[#8ab4f8] font-bold text-xs flex items-center justify-center gap-2 transition"
+                    >
+                      <ScreenShare className="w-4 h-4" />
+                      <span>Present</span>
+                    </button>
+                  </div>
+
+                  <div className="text-[10px] text-zinc-500 font-mono">
+                    Security Policy: Verified enrollment token for CS-302 Section A.
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>

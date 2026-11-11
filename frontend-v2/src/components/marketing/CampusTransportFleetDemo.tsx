@@ -516,20 +516,74 @@ export const CampusTransportFleetDemo: React.FC = () => {
               </span>
             </div>
 
-            {/* SVG Cartographic Map Container */}
-            <div className="relative w-full h-[360px] sm:h-[400px] rounded-2xl bg-[#0c1017] border border-zinc-800 overflow-hidden shadow-inner flex items-center justify-center">
+            {/* Mapbox-Style Geographical GIS Cartographic Map Container */}
+            <div className="relative w-full h-[380px] sm:h-[420px] rounded-2xl bg-[#090d14] border border-zinc-800 overflow-hidden shadow-2xl flex items-center justify-center">
               
-              {/* GIS Cartographic Grid Lines */}
-              <div className="absolute inset-0 bg-[linear-gradient(to_right,#161e2e_1px,transparent_1px),linear-gradient(to_bottom,#161e2e_1px,transparent_1px)] bg-[size:40px_40px] opacity-40 pointer-events-none" />
-              
-              {/* Secondary decorative road lines */}
-              <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 540 320" fill="none">
-                {/* Secondary Background Arterials */}
-                <path d="M 20 80 Q 150 120 320 60 T 520 180" stroke="#1f2937" strokeWidth="6" strokeLinecap="round" />
-                <path d="M 80 300 Q 220 200 400 240 T 520 280" stroke="#1f2937" strokeWidth="6" strokeLinecap="round" />
-                <path d="M 240 20 L 260 300" stroke="#1e293b" strokeWidth="4" strokeDasharray="6 6" />
-                <path d="M 420 10 L 400 310" stroke="#1e293b" strokeWidth="4" strokeDasharray="6 6" />
+              {/* Geographical Mapbox Vector Map Canvas */}
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 540 340" fill="none">
+                {/* 1. Geographical Land Polygons & Natural Features */}
+                <rect width="540" height="340" fill="#090d14" />
+                
+                {/* Park / Green Reserve Polygon (Tech Valley Park) */}
+                <path 
+                  d="M 120 40 L 220 30 L 240 100 L 160 130 L 100 80 Z" 
+                  fill="#0c1d18" 
+                  stroke="#122e25" 
+                  strokeWidth="1" 
+                />
+                <text x="145" y="75" fill="#1b4d3e" fontSize="8" fontFamily="sans-serif" fontWeight="600" letterSpacing="0.05em">
+                  BOTANICAL RESERVE
+                </text>
 
+                {/* River / Waterway Corridor (Urban Waterway) */}
+                <path 
+                  d="M 0 280 C 120 260, 220 310, 360 270 C 440 245, 490 280, 540 275 L 540 340 L 0 340 Z" 
+                  fill="#09182b" 
+                  stroke="#0e284a" 
+                  strokeWidth="1.5" 
+                />
+                <text x="260" y="315" fill="#1b3d66" fontSize="8" fontFamily="sans-serif" fontWeight="600" letterSpacing="0.08em">
+                  RIVER CORRIDOR
+                </text>
+
+                {/* 2. Secondary Street Grid (City Blocks) */}
+                <path d="M 40 40 L 40 280" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 90 20 L 90 260" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 140 130 L 140 260" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 280 20 L 280 260" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 390 20 L 390 240" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 440 20 L 440 240" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 490 20 L 490 250" stroke="#141c2b" strokeWidth="1.5" />
+
+                <path d="M 20 60 L 520 60" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 20 120 L 520 120" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 20 180 L 520 180" stroke="#141c2b" strokeWidth="1.5" />
+                <path d="M 20 240 L 520 240" stroke="#141c2b" strokeWidth="1.5" />
+
+                {/* 3. Major Arterial Avenues (Dual Lane Corridors) */}
+                {/* Sector 62 Expressway */}
+                <path d="M 10 230 Q 180 180 340 110 T 530 60" stroke="#1e293b" strokeWidth="8" strokeLinecap="round" />
+                <path d="M 10 230 Q 180 180 340 110 T 530 60" stroke="#0f172a" strokeWidth="6" strokeLinecap="round" />
+                
+                {/* Grand Trunk Link Road */}
+                <path d="M 210 10 L 210 320" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
+                <path d="M 210 10 L 210 320" stroke="#0f172a" strokeWidth="4" strokeLinecap="round" />
+
+                {/* Ring Road Bypass */}
+                <path d="M 20 270 Q 240 260 520 230" stroke="#1e293b" strokeWidth="6" strokeLinecap="round" />
+
+                {/* Geographical Street Name Labels */}
+                <text x="216" y="45" fill="#475569" fontSize="7" fontFamily="sans-serif" fontWeight="bold" letterSpacing="0.05em" transform="rotate(90 216 45)">
+                  GRAND TRUNK ARTERIAL
+                </text>
+                <text x="280" y="102" fill="#475569" fontSize="7" fontFamily="sans-serif" fontWeight="bold" letterSpacing="0.05em">
+                  SECTOR 62 EXPRESSWAY
+                </text>
+                <text x="50" y="262" fill="#334155" fontSize="7" fontFamily="sans-serif" fontWeight="bold" letterSpacing="0.05em">
+                  CAMPUS BYPASS RING ROAD
+                </text>
+
+                {/* 4. Active Transit Routes */}
                 {/* Route 2 (South Metro Feeder - Indigo) */}
                 <path 
                   d="M 60 220 C 120 250, 240 280, 480 260" 
@@ -550,39 +604,43 @@ export const CampusTransportFleetDemo: React.FC = () => {
                   opacity={selectedVehicleId === 'vh-07' ? 1 : 0.4}
                 />
 
-                {/* Route 4 Primary Active Path (North Campus Express - Emerald) */}
+                {/* Route 4 Primary Active Corridor (North Campus Express - Emerald Glowing Polyline) */}
                 <path 
                   d="M 60 220 C 120 200, 160 170, 190 160 C 230 145, 290 125, 340 110 C 390 95, 430 80, 470 70" 
                   stroke="#10b981" 
                   strokeWidth="5" 
                   strokeLinecap="round"
-                  className={selectedVehicleId === 'vh-04' ? 'drop-shadow-[0_0_8px_rgba(16,185,129,0.8)]' : 'opacity-40'}
+                  className={selectedVehicleId === 'vh-04' ? 'drop-shadow-[0_0_10px_rgba(16,185,129,0.85)]' : 'opacity-40'}
                 />
 
                 {/* Sequenced Bus Stops on Route 4 */}
                 {/* Stop 1: EduPulse Campus (Origin) */}
                 <g>
                   <circle cx="60" cy="220" r="7" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                  <text x="65" y="240" fill="#94a3b8" fontSize="9" fontFamily="monospace" fontWeight="bold">01. Campus (Dep 08:30)</text>
+                  <rect x="25" y="235" width="85" height="15" rx="3" fill="#0f172a" stroke="#1e293b" strokeWidth="0.8" />
+                  <text x="29" y="246" fill="#cbd5e1" fontSize="8" fontFamily="monospace" fontWeight="bold">01. Campus (Dep 08:30)</text>
                 </g>
 
                 {/* Stop 2: North Gate Sec 18 */}
                 <g>
                   <circle cx="190" cy="160" r="6" fill="#10b981" stroke="#ffffff" strokeWidth="2" />
-                  <text x="180" y="180" fill="#94a3b8" fontSize="9" fontFamily="monospace" fontWeight="bold">02. North Gate (08:48)</text>
+                  <rect x="145" y="175" width="90" height="15" rx="3" fill="#0f172a" stroke="#1e293b" strokeWidth="0.8" />
+                  <text x="149" y="186" fill="#cbd5e1" fontSize="8" fontFamily="monospace" fontWeight="bold">02. North Gate (08:48)</text>
                 </g>
 
                 {/* Stop 3: Metro Station Sec 62 (Destination Target) */}
                 <g>
-                  <circle cx="340" cy="110" r="8" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" className="animate-ping opacity-75" />
+                  <circle cx="340" cy="110" r="10" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" className="animate-ping opacity-75" />
                   <circle cx="340" cy="110" r="7" fill="#f59e0b" stroke="#ffffff" strokeWidth="2" />
-                  <text x="320" y="92" fill="#fbbf24" fontSize="10" fontFamily="monospace" fontWeight="bold">03. Metro Sec 62 (09:05)</text>
+                  <rect x="295" y="75" width="98" height="16" rx="3" fill="#451a03" stroke="#f59e0b" strokeWidth="1" />
+                  <text x="300" y="86" fill="#fef08a" fontSize="8.5" fontFamily="monospace" fontWeight="bold">03. Metro Sec 62 (09:05)</text>
                 </g>
 
                 {/* Stop 4: City Center Hub (Terminal) */}
                 <g>
                   <circle cx="470" cy="70" r="6" fill="#64748b" stroke="#ffffff" strokeWidth="2" />
-                  <text x="430" y="60" fill="#94a3b8" fontSize="9" fontFamily="monospace" fontWeight="bold">04. City Center (09:25)</text>
+                  <rect x="425" y="45" width="88" height="15" rx="3" fill="#0f172a" stroke="#1e293b" strokeWidth="0.8" />
+                  <text x="429" y="56" fill="#94a3b8" fontSize="8" fontFamily="monospace" fontWeight="bold">04. City Center (09:25)</text>
                 </g>
 
                 {/* Moving Bus Marker */}
@@ -592,10 +650,9 @@ export const CampusTransportFleetDemo: React.FC = () => {
                     transition: 'transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
                   }}
                 >
-                  {/* Glowing Radar Waves */}
-                  <circle cx="0" cy="0" r="18" fill="#10b981" opacity="0.2" className="animate-ping" />
-                  <circle cx="0" cy="0" r="12" fill="#10b981" opacity="0.4" />
-                  <circle cx="0" cy="0" r="7" fill="#ffffff" stroke="#10b981" strokeWidth="3" />
+                  <circle cx="0" cy="0" r="20" fill="#10b981" opacity="0.15" className="animate-ping" />
+                  <circle cx="0" cy="0" r="13" fill="#10b981" opacity="0.35" />
+                  <circle cx="0" cy="0" r="8" fill="#ffffff" stroke="#10b981" strokeWidth="3" />
                 </g>
               </svg>
 
@@ -604,7 +661,7 @@ export const CampusTransportFleetDemo: React.FC = () => {
                 className="absolute z-10 pointer-events-none transition-all duration-700 ease-out"
                 style={{
                   left: `${(busPosition.x / 540) * 100}%`,
-                  top: `${(busPosition.y / 320) * 100}%`,
+                  top: `${(busPosition.y / 340) * 100}%`,
                   transform: 'translate(-50%, -135%)'
                 }}
               >
@@ -619,26 +676,35 @@ export const CampusTransportFleetDemo: React.FC = () => {
                 <div className="w-1.5 h-1.5 bg-emerald-500 rotate-45 mx-auto -mt-1" />
               </div>
 
-              {/* In-Map Telemetry HUD Overlay (Top Right) */}
-              <div className="absolute top-3 right-3 bg-zinc-950/80 border border-zinc-800 backdrop-blur-md p-2.5 rounded-xl text-[10px] font-mono space-y-1 text-zinc-300 pointer-events-none">
-                <div className="text-zinc-500 font-bold uppercase tracking-wider text-[9px]">Target Stop Metric</div>
+              {/* In-Map Mapbox Route HUD Overlay (Top Right) */}
+              <div className="absolute top-3 right-3 bg-zinc-950/85 border border-zinc-800 backdrop-blur-md p-3 rounded-xl text-[10px] font-mono space-y-1.5 text-zinc-300 pointer-events-none shadow-xl">
+                <div className="flex items-center justify-between gap-4 text-zinc-400 border-b border-zinc-800 pb-1">
+                  <span className="text-zinc-500 font-bold uppercase tracking-wider text-[9px]">Mapbox Directions Engine</span>
+                  <span className="text-emerald-400 font-bold">LIVE 10 Hz</span>
+                </div>
                 <div className="text-white font-bold flex items-center justify-between gap-3">
-                  <span>Next: Metro Sec 62</span>
-                  <span className="text-amber-400">ETA 4 min</span>
+                  <span>Target: Metro Sec 62</span>
+                  <span className="text-amber-400 font-bold">ETA 4 min (09:05 AM)</span>
                 </div>
                 <div className="flex justify-between gap-3 text-zinc-400">
-                  <span>Distance: 1.8 km</span>
+                  <span>Leg Distance: 1.8 km</span>
                   <span>Heading: 042° NE</span>
+                </div>
+                <div className="text-[9px] text-zinc-500 pt-0.5">
+                  Route Corridor: Sector 62 Expressway &bull; Traffic: Clear
                 </div>
               </div>
 
               {/* In-Map Map Legend (Bottom Left) */}
-              <div className="absolute bottom-3 left-3 bg-zinc-950/80 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] font-mono text-zinc-400 flex items-center gap-3">
+              <div className="absolute bottom-3 left-3 bg-zinc-950/85 border border-zinc-800 backdrop-blur-md px-3 py-1.5 rounded-lg text-[10px] font-mono text-zinc-400 flex items-center gap-3">
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" /> Route 4 Active
                 </span>
                 <span className="flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-amber-500" /> Approaching Stop
+                </span>
+                <span className="hidden sm:flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-indigo-500" /> Route 2 Feeder
                 </span>
               </div>
             </div>

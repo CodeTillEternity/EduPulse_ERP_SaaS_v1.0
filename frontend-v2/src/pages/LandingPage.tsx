@@ -13,6 +13,7 @@ import { ArchitectureExplorer } from '../components/marketing/ArchitectureExplor
 import { ExamSecurityExplanation } from '../components/marketing/ExamSecurityExplanation';
 import { IntegrationShowcase } from '../components/marketing/IntegrationShowcase';
 import { CampusTransportFleetDemo } from '../components/marketing/CampusTransportFleetDemo';
+import { InstitutionalCapabilitiesWorkbench } from '../components/marketing/InstitutionalCapabilitiesWorkbench';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -25,14 +26,8 @@ import {
   Server, 
   Zap, 
   ShieldCheck, 
-  BookOpen, 
-  Users, 
-  DollarSign, 
-  Calendar, 
-  Award, 
   Layers, 
   Building2, 
-  Cpu, 
   Bus, 
   Library
 } from 'lucide-react';
@@ -361,148 +356,8 @@ export default function LandingPage() {
             </p>
           </div>
 
-          {/* 6 Structured Module Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            
-            {/* 1. Academics & Curriculum Planning */}
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <BookOpen className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">Academics & Curriculum Planning</h3>
-                <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Configure multi-semester credit frameworks, departmental course catalogs, prerequisites, and syllabus repositories with structured course codes.
-                </p>
-              </div>
-              <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Module: CourseManager (/academic/courses)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Credit and GPA weighting algorithms</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 2. Student Lifecycle & Admissions (SIS) */}
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <Users className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">Student Lifecycle & Admissions (SIS)</h3>
-                <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Manage prospective applicant queues, review application statuses, assign unique Roll Numbers, and maintain permanent academic profile records.
-                </p>
-              </div>
-              <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Module: StudentsList & Admissions</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Applicant intake: PublicAdmissions (/admissions)</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 3. Fee Management & Recurring Invoicing */}
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <DollarSign className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">Fee Management & Recurring Invoicing</h3>
-                <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Define fee structures with multiple fee heads, issue automated term vouchers, track individual debit/credit student ledgers, and reconcile payments.
-                </p>
-              </div>
-              <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Module: FeeManager & StudentLedger</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Razorpay B2B payment gateway integration</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 4. Biometric & Class Attendance */}
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">Biometric & Class Attendance</h3>
-                <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Record daily lecture attendance by batch, reconcile hardware punch logs via REST API, and track individual student attendance thresholds.
-                </p>
-              </div>
-              <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Module: AttendanceTracker (/operations/attendance)</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Attendance percentages and deficit alerts</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 5. Examinations & Grade Books */}
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <Award className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">Examinations & Grade Books</h3>
-                <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Schedule formative assessments and semester finals, assign exam halls, record subject scores, and publish official digital transcripts.
-                </p>
-              </div>
-              <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Module: ExamManager & TranscriptViewer</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Safe Exam Browser (SEB) configuration support</span>
-                </li>
-              </ul>
-            </div>
-
-            {/* 6. Staff Payroll & HR Operations */}
-            <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <Cpu className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-base font-bold text-zinc-900">Staff Payroll & HR Operations</h3>
-                <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Manage faculty leave balances, process pending leave approvals, allocate teaching workloads, and disburse monthly institutional payroll.
-                </p>
-              </div>
-              <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Module: LeaveManager & PayrollDashboard</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Salary vouchers and leave accrual registers</span>
-                </li>
-              </ul>
-            </div>
-
-          </div>
+          {/* Odoo-Style Operational Capabilities Workbench */}
+          <InstitutionalCapabilitiesWorkbench />
         </div>
       </section>
 

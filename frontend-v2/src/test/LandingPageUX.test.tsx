@@ -88,4 +88,28 @@ describe('LandingPage UX & Bento Grid Architecture', () => {
     fireEvent.click(annualBtn);
     expect(screen.getByText(/Save 20%/i)).toBeInTheDocument();
   });
+
+  it('allows switching tenants in the Attio-style live dashboard mockup', async () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    // Initial tenant is Harvard
+    expect(screen.getByText(/Harvard University/i)).toBeInTheDocument();
+    expect(screen.getByText(/Marcus Vance/i)).toBeInTheDocument();
+
+    // Click tenant switcher dropdown
+    const tenantSwitcherBtn = screen.getByRole('button', { name: /Harvard University/i });
+    fireEvent.click(tenantSwitcherBtn);
+
+    // Select Stanford University
+    const stanfordOption = screen.getByText(/Stanford University/i);
+    fireEvent.click(stanfordOption);
+
+    // Stanford records appear
+    expect(await screen.findByText(/Liam O'Connor/i)).toBeInTheDocument();
+    expect(await screen.findByText(/STA-2026-019/i)).toBeInTheDocument();
+  });
 });

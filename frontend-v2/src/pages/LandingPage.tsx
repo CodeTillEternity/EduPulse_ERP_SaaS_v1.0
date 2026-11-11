@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
 import { ProvisioningTerminal } from '../components/marketing/ProvisioningTerminal';
+import { DashboardMockup } from '../components/marketing/DashboardMockup';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -356,14 +357,14 @@ export default function LandingPage() {
           {/* Bento Box Grid with Scroll-Linked Reveals */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
-            {/* 1. Large Asymmetrical Hero Card: SEB Proctoring (Spans 2 columns on lg) */}
+            {/* 1. Large Asymmetrical Hero Card: SEB Proctoring (Spans 3 columns on lg) */}
             <motion.div 
               id="seb-proctoring"
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-2 bg-[#111111]/80 border border-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group hover:border-white/10 transition-all duration-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+              className="lg:col-span-3 bg-[#111111]/80 border border-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group hover:border-white/10 transition-all duration-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               {/* Subtle background radial glow */}
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl pointer-events-none transition-colors" />
@@ -448,36 +449,40 @@ export default function LandingPage() {
               </div>
             </motion.div>
 
-            {/* 2. Bento Card: PostgreSQL RLS Cryptographic Isolation */}
+            {/* 2. Bento Card: PostgreSQL RLS Cryptographic Isolation (Attio-Style Live Data Grid) */}
             <motion.div 
               id="data-isolation" 
               initial={{ opacity: 0, y: 35 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-3xl p-8 relative overflow-hidden group hover:border-white/10 transition-all duration-500 flex flex-col justify-between shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
+              className="lg:col-span-3 bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-3xl p-6 sm:p-8 relative overflow-hidden group hover:border-white/10 transition-all duration-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] space-y-6"
             >
-              <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-2xl pointer-events-none transition-colors" />
+              <div className="absolute top-0 right-0 w-96 h-96 bg-white/[0.015] rounded-full blur-3xl pointer-events-none transition-colors" />
 
-              <div className="space-y-4">
-                <div className="h-10 w-10 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-400">
-                  <Database className="w-5 h-5" />
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">Row-Level Security</span>
-                  <h3 className="text-xl font-bold text-zinc-50 tracking-tight mt-1">Mathematical Isolation.</h3>
-                  <p className="text-zinc-400 text-xs leading-relaxed mt-2">
-                    Kernel-level row isolation via PostgreSQL RLS. Every database query guarantees zero cross-tenant row exposure even if an attacker executes arbitrary SQL injections.
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-300 text-xs font-semibold">
+                    <Database className="w-3.5 h-3.5 text-zinc-400" />
+                    Row-Level Security (RLS) Engine
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-zinc-50 tracking-tight leading-snug">
+                    Cryptographic Multi-Tenancy. <br />
+                    <span className="text-zinc-300">Mathematical Isolation.</span>
+                  </h3>
+                  <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed max-w-2xl font-normal">
+                    Kernel-level row isolation via PostgreSQL Row-Level Security. Switch institutions using the interactive dropdown below to watch the database runtime isolate student ledger records with zero cross-tenant bleeding.
                   </p>
                 </div>
+
+                <div className="flex items-center gap-2 self-start md:self-auto font-mono text-[11px] text-zinc-400 bg-white/[0.03] px-3 py-2 rounded-xl border border-white/5">
+                  <span className="w-2 h-2 rounded-full bg-zinc-400" />
+                  <span>Isolation Proof: 100% Active</span>
+                </div>
               </div>
 
-              {/* Terminal Snippet */}
-              <div className="mt-6 bg-[#0A0A0A] border border-white/5 rounded-xl p-3.5 font-mono text-[11px] text-zinc-400 space-y-1">
-                <div className="text-zinc-400">SET app.tenant_id = 'harvard';</div>
-                <div className="text-white">SELECT count(*) FROM users;</div>
-                <div className="text-zinc-300 text-[10px] mt-1">↳ Result: 3,420 rows (0 leak)</div>
-              </div>
+              {/* The Live Attio-Style Data Grid Showcase */}
+              <DashboardMockup />
             </motion.div>
 
             {/* 3. Bento Card: Spring Boot Dynamic DB Routing */}

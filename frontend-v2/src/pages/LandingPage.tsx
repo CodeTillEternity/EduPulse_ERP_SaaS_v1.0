@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
@@ -159,42 +160,96 @@ export default function LandingPage() {
         <div className="absolute top-1/3 left-1/4 -translate-x-1/2 w-[500px] h-[300px] bg-purple-600/10 blur-[140px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="text-center max-w-4xl mx-auto space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md text-indigo-300 text-xs font-semibold tracking-wide shadow-glow-subtle">
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.12,
+                  delayChildren: 0.05,
+                },
+              },
+            }}
+            className="text-center max-w-4xl mx-auto space-y-6"
+          >
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 15 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+              }}
+              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md text-indigo-300 text-xs font-semibold tracking-wide shadow-glow-subtle"
+            >
               <Sparkles className="h-3.5 w-3.5 text-indigo-400" />
               SaaS V1.4 • Autonomous Multi-Tenant Architecture
-            </div>
+            </motion.div>
 
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[1.08]">
+            <motion.h1 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+              }}
+              className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[1.08]"
+            >
               Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-200 to-indigo-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
-            </h1>
+            </motion.h1>
 
-            <p className="text-sm sm:text-lg text-[#8E8E93] leading-relaxed max-w-3xl mx-auto font-normal">
+            <motion.p 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+              }}
+              className="text-sm sm:text-lg text-[#8E8E93] leading-relaxed max-w-3xl mx-auto font-normal"
+            >
               Empower universities, colleges, and schools with autonomous tenant self-provisioning, Safe Exam Browser (SEB) OS lockdown, Razorpay B2B subscription billing, and dynamic dedicated database routing.
-            </p>
+            </motion.p>
 
-            {/* Hero CTAs */}
-            <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button 
-                size="lg" 
-                onClick={() => navigate('/onboard')}
-                className="w-full sm:w-auto bg-white hover:bg-slate-200 text-black font-bold shadow-glow-card px-8 h-12 text-xs rounded-xl transition"
+            {/* Hero CTAs with Magnetic Hover States */}
+            <motion.div 
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+              }}
+              className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4"
+            >
+              <motion.div
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className="w-full sm:w-auto"
               >
-                <Zap className="h-4 w-4 mr-2 text-indigo-600" />
-                Start 14-Day Free Trial
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline"
-                onClick={() => {
-                  const el = document.getElementById('pricing');
-                  el?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md text-white font-semibold h-12 px-7 text-xs rounded-xl transition"
+                <Button 
+                  size="lg" 
+                  onClick={() => navigate('/onboard')}
+                  className="w-full sm:w-auto bg-white hover:bg-slate-200 text-black font-bold shadow-glow-card px-8 h-12 text-xs rounded-xl transition"
+                >
+                  <Zap className="h-4 w-4 mr-2 text-indigo-600" />
+                  Start 14-Day Free Trial
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </Button>
+              </motion.div>
+
+              <motion.div
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                className="w-full sm:w-auto"
               >
-                Explore Pricing & Tiers
-              </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline"
+                  onClick={() => {
+                    const el = document.getElementById('pricing');
+                    el?.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="w-full sm:w-auto border-white/[0.12] bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md text-white font-semibold h-12 px-7 text-xs rounded-xl transition"
+                >
+                  Explore Pricing & Tiers
+                </Button>
+              </motion.div>
+
               <Button 
                 size="lg" 
                 variant="ghost" 
@@ -203,28 +258,33 @@ export default function LandingPage() {
               >
                 Sign In to Existing Tenant
               </Button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
-          {/* Metrics Ribbon with Glassmorphism */}
-          <div className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-white/[0.06]">
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+          {/* Metrics Ribbon with Framer Motion Staggered Fade */}
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-white/[0.06]"
+          >
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">99.99%</div>
               <div className="text-xs font-medium text-[#8E8E93] mt-1">SLA Reliability</div>
-            </div>
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            </motion.div>
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
               <div className="text-3xl sm:text-4xl font-black text-emerald-400 tracking-tight">100%</div>
               <div className="text-xs font-medium text-[#8E8E93] mt-1">RLS Isolation</div>
-            </div>
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            </motion.div>
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
               <div className="text-3xl sm:text-4xl font-black text-indigo-400 tracking-tight">Zero</div>
               <div className="text-xs font-medium text-[#8E8E93] mt-1">Cross-Tenant Leakage</div>
-            </div>
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            </motion.div>
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
               <div className="text-3xl sm:text-4xl font-black text-purple-400 tracking-tight">50K+</div>
               <div className="text-xs font-medium text-[#8E8E93] mt-1">Secure Exam Sessions</div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
@@ -235,7 +295,13 @@ export default function LandingPage() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Section Header with Apple-Style Punchy Copy */}
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.55 }}
+            className="text-center max-w-3xl mx-auto mb-16 space-y-4"
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-amber-300 text-xs font-semibold tracking-wide shadow-glow-subtle">
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               Surgical Precision • Uncompromising Integrity
@@ -249,13 +315,20 @@ export default function LandingPage() {
             <p className="text-[#8E8E93] text-sm sm:text-base leading-relaxed">
               Every system boundary is enforced at the physical, kernel, and database layers — delivering unbreachable exam integrity and absolute tenant data isolation.
             </p>
-          </div>
+          </motion.div>
 
-          {/* Bento Box Grid */}
+          {/* Bento Box Grid with Scroll-Linked Reveals */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             
             {/* 1. Large Asymmetrical Hero Card: SEB Proctoring (Spans 2 columns on lg) */}
-            <div id="seb-proctoring" className="lg:col-span-2 bg-gradient-to-br from-[#121217] via-[#0E0E12] to-[#0A0A0E] border border-white/[0.08] rounded-3xl p-8 sm:p-10 relative overflow-hidden group hover:border-amber-500/30 transition-all duration-500 shadow-glass">
+            <motion.div 
+              id="seb-proctoring"
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-2 bg-gradient-to-br from-[#121217] via-[#0E0E12] to-[#0A0A0E] border border-white/[0.08] rounded-3xl p-8 sm:p-10 relative overflow-hidden group hover:border-amber-500/30 transition-all duration-500 shadow-glass"
+            >
               {/* Subtle background radial glow */}
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-amber-500/[0.07] rounded-full blur-3xl pointer-events-none group-hover:bg-amber-500/[0.12] transition-colors" />
 
@@ -321,20 +394,33 @@ export default function LandingPage() {
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
                       Proctor Heartbeat: 14ms latency
                     </span>
-                    <Button 
-                      size="sm" 
-                      onClick={() => navigate('/onboard?tier=PRO')}
-                      className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs h-7 px-3 rounded-lg"
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 17 }}
                     >
-                      Test Drive SEB Mode →
-                    </Button>
+                      <Button 
+                        size="sm" 
+                        onClick={() => navigate('/onboard?tier=PRO')}
+                        className="bg-amber-400 hover:bg-amber-300 text-black font-bold text-xs h-7 px-3 rounded-lg"
+                      >
+                        Test Drive SEB Mode →
+                      </Button>
+                    </motion.div>
                   </div>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* 2. Bento Card: PostgreSQL RLS Cryptographic Isolation */}
-            <div id="data-isolation" className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-indigo-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass">
+            <motion.div 
+              id="data-isolation" 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-indigo-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass"
+            >
               <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/[0.06] rounded-full blur-2xl pointer-events-none group-hover:bg-indigo-500/[0.12] transition-colors" />
 
               <div className="space-y-4">
@@ -356,10 +442,16 @@ export default function LandingPage() {
                 <div className="text-white">SELECT count(*) FROM users;</div>
                 <div className="text-emerald-400 text-[10px] mt-1">↳ Result: 3,420 rows (0 leak)</div>
               </div>
-            </div>
+            </motion.div>
 
             {/* 3. Bento Card: Spring Boot Dynamic DB Routing */}
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-purple-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass">
+            <motion.div 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-purple-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass"
+            >
               <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/[0.06] rounded-full blur-2xl pointer-events-none group-hover:bg-purple-500/[0.12] transition-colors" />
 
               <div className="space-y-4">
@@ -384,10 +476,16 @@ export default function LandingPage() {
                   <div className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-full rounded-full" />
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* 4. Bento Card: Automated S3 Native Disaster Recovery */}
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass">
+            <motion.div 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.65, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-emerald-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass"
+            >
               <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500/[0.06] rounded-full blur-2xl pointer-events-none group-hover:bg-emerald-500/[0.12] transition-colors" />
 
               <div className="space-y-4">
@@ -410,10 +508,16 @@ export default function LandingPage() {
                 </span>
                 <span className="text-white font-bold">AES-256</span>
               </div>
-            </div>
+            </motion.div>
 
             {/* 5. Bento Card: Razorpay B2B Autonomous Commerce */}
-            <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-cyan-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass">
+            <motion.div 
+              initial={{ opacity: 0, y: 35 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.65, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-cyan-500/40 transition-all duration-500 flex flex-col justify-between shadow-glass"
+            >
               <div className="absolute top-0 right-0 w-48 h-48 bg-cyan-500/[0.06] rounded-full blur-2xl pointer-events-none group-hover:bg-cyan-500/[0.12] transition-colors" />
 
               <div className="space-y-4">
@@ -433,7 +537,7 @@ export default function LandingPage() {
                 <span>Webhook: subscription.charged</span>
                 <span className="text-emerald-400 font-bold">ACTIVE</span>
               </div>
-            </div>
+            </motion.div>
 
           </div>
         </div>
@@ -445,50 +549,86 @@ export default function LandingPage() {
       {/* 6. Institutional FAQ & Compliance Section */}
       <section id="faq" className="py-24 bg-[#0A0A0A] border-t border-white/[0.08] relative font-sans">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16 space-y-3">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-16 space-y-3"
+          >
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] text-indigo-300 text-xs font-semibold">
               Procurement & Compliance
             </div>
             <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Frequently Asked Questions</h3>
             <p className="text-xs sm:text-sm text-[#8E8E93] max-w-xl mx-auto">Key answers for university CIOs, registrars, and IT procurement committees.</p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-[#8E8E93]">
-            <div className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.45, delay: 0.05 }}
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+            >
               <h4 className="font-bold text-white text-sm">How does the 14-day free trial work?</h4>
               <p className="text-[#8E8E93] leading-relaxed">
                 When you sign up via the autonomous onboarding wizard, EduPulse immediately creates your institution's tenant namespace, registers your custom subdomain, and provisions a SUPERADMIN user. No payment info is required.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.45, delay: 0.1 }}
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+            >
               <h4 className="font-bold text-white text-sm">How is billing handled after the trial?</h4>
               <p className="text-[#8E8E93] leading-relaxed">
                 We support RBI-compliant Razorpay recurring B2B billing for cards, netbanking, and corporate mandate transactions. Enterprise clients can also opt for annual purchase order (PO) invoicing.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.45, delay: 0.15 }}
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+            >
               <h4 className="font-bold text-white text-sm">Can we migrate from Shared to Dedicated DB later?</h4>
               <p className="text-[#8E8E93] leading-relaxed">
                 Yes! Our automated Tenant Migration Engine allows Super Admins to migrate all institutional schema and data to a dedicated database instance with zero data loss.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-30px" }}
+              transition={{ duration: 0.45, delay: 0.2 }}
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+            >
               <h4 className="font-bold text-white text-sm">Are students required to install software for exams?</h4>
               <p className="text-[#8E8E93] leading-relaxed">
                 For Safe Exam Browser (SEB) proctored tests, students download the open-source SEB client for Windows/macOS/iOS. EduPulse provides a 1-click encrypted config launcher for instant exam entry.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* 7. Bottom CTA Banner */}
+      {/* 7. Bottom CTA Banner with Magnetic Interaction */}
       <section className="py-20 bg-gradient-to-b from-[#0A0A0A] via-[#111118] to-[#0A0A0A] text-white text-center border-t border-white/[0.08] relative overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
-        <div className="max-w-4xl mx-auto px-4 space-y-6 relative z-10">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.55 }}
+          className="max-w-4xl mx-auto px-4 space-y-6 relative z-10"
+        >
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
             Ready to Modernize Your Institution's Operations?
           </h2>
@@ -496,15 +636,22 @@ export default function LandingPage() {
             Join forward-thinking colleges and universities. Launch your self-serve institutional portal in less than 60 seconds.
           </p>
           <div className="pt-2">
-            <Button
-              size="lg"
-              onClick={() => navigate('/onboard')}
-              className="bg-white hover:bg-slate-200 text-black font-bold px-8 h-12 rounded-xl shadow-glow-card text-xs transition"
+            <motion.div
+              whileHover={{ scale: 1.04, y: -2 }}
+              whileTap={{ scale: 0.96 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              className="inline-block"
             >
-              Start 14-Day Free Institutional Trial →
-            </Button>
+              <Button
+                size="lg"
+                onClick={() => navigate('/onboard')}
+                className="bg-white hover:bg-slate-200 text-black font-bold px-8 h-12 rounded-xl shadow-glow-card text-xs transition"
+              >
+                Start 14-Day Free Institutional Trial →
+              </Button>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* 8. Footer */}

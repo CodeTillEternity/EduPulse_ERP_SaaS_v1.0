@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   CheckCircle2, 
   Sparkles, 
@@ -56,7 +57,13 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
       <div className="absolute top-1/2 right-0 w-96 h-96 bg-[radial-gradient(circle,rgba(168,85,247,0.08)_0%,rgba(10,10,10,0)_60%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto space-y-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.5 }}
+          className="text-center max-w-3xl mx-auto space-y-4"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/[0.08] backdrop-blur-md text-indigo-300 text-xs font-semibold tracking-wide shadow-glow-subtle">
             <Zap className="h-3.5 w-3.5 text-indigo-400" />
             Institutional Commercial Licensing
@@ -121,13 +128,19 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Pricing Cards Grid with Glassmorphism */}
+        {/* Pricing Cards Grid with Framer Motion Staggered Scroll Reveals */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
           
           {/* TIER 1: FREE TRIAL */}
-          <div className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-8 flex flex-col justify-between hover:border-white/[0.18] transition-all duration-300 shadow-glass">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.55, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-8 flex flex-col justify-between hover:border-white/[0.18] transition-all duration-300 shadow-glass"
+          >
             <div>
               <div className="flex items-center justify-between">
                 <div>
@@ -176,18 +189,30 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-white/[0.06]">
-              <Button
-                onClick={() => handleCta('TRIAL')}
-                className="w-full bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/[0.12] font-semibold py-2.5 text-xs rounded-xl transition"
+              <motion.div
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                Start 14-Day Free Trial
-                <ArrowRight className="w-4 h-4 ml-2 text-indigo-400" />
-              </Button>
+                <Button
+                  onClick={() => handleCta('TRIAL')}
+                  className="w-full bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/[0.12] font-semibold py-2.5 text-xs rounded-xl transition"
+                >
+                  Start 14-Day Free Trial
+                  <ArrowRight className="w-4 h-4 ml-2 text-indigo-400" />
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* TIER 2: PRO */}
-          <div className="bg-gradient-to-b from-indigo-950/40 via-[#121212]/90 to-[#111111]/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl p-8 flex flex-col justify-between relative shadow-glow-card hover:border-indigo-400 transition-all duration-300">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.55, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-gradient-to-b from-indigo-950/40 via-[#121212]/90 to-[#111111]/90 backdrop-blur-md border border-indigo-500/40 rounded-2xl p-8 flex flex-col justify-between relative shadow-glow-card hover:border-indigo-400 transition-all duration-300"
+          >
             <span className="absolute -top-3.5 right-6 px-3 py-1 rounded-full bg-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
               Most Popular
             </span>
@@ -240,18 +265,30 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-indigo-500/20">
-              <Button
-                onClick={() => handleCta('PRO')}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 text-xs rounded-xl shadow-glow-subtle transition"
+              <motion.div
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                Get Started with Pro
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+                <Button
+                  onClick={() => handleCta('PRO')}
+                  className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 text-xs rounded-xl shadow-glow-subtle transition"
+                >
+                  Get Started with Pro
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* TIER 3: ENTERPRISE */}
-          <div className="bg-[#111111]/80 backdrop-blur-md border border-purple-500/30 rounded-2xl p-8 flex flex-col justify-between hover:border-purple-400/60 transition-all duration-300 shadow-glass">
+          <motion.div 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.55, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+            className="bg-[#111111]/80 backdrop-blur-md border border-purple-500/30 rounded-2xl p-8 flex flex-col justify-between hover:border-purple-400/60 transition-all duration-300 shadow-glass"
+          >
             <div>
               <div className="flex items-center justify-between">
                 <div>
@@ -300,15 +337,21 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-white/[0.06]">
-              <Button
-                onClick={() => handleCta('ENTERPRISE')}
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-2.5 text-xs rounded-xl shadow-glow-purple transition"
+              <motion.div
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
               >
-                Deploy Enterprise Infrastructure
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </Button>
+                <Button
+                  onClick={() => handleCta('ENTERPRISE')}
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-bold py-2.5 text-xs rounded-xl shadow-glow-purple transition"
+                >
+                  Deploy Enterprise Infrastructure
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
         </div>
 

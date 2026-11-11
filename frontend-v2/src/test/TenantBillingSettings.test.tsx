@@ -78,7 +78,7 @@ describe('TenantBillingSettings View & Stripe Upgrade Tests', () => {
     });
   });
 
-  it('initiates Stripe Checkout redirect when upgrading to PRO plan', async () => {
+  it('initiates Razorpay Subscription checkout when upgrading to PRO plan', async () => {
     (axiosClient.get as any).mockResolvedValueOnce({
       data: {
         success: true,
@@ -95,7 +95,8 @@ describe('TenantBillingSettings View & Stripe Upgrade Tests', () => {
       data: {
         success: true,
         data: {
-          checkoutUrl: 'https://checkout.stripe.com/c/pay/cs_test_mock_pro_123',
+          subscriptionId: 'sub_test_mock_pro_123',
+          keyId: 'rzp_test_1234567890',
           tier: 'PRO',
         },
       },
@@ -111,12 +112,12 @@ describe('TenantBillingSettings View & Stripe Upgrade Tests', () => {
       expect(screen.getByText('Commercial Pro')).toBeInTheDocument();
     });
 
-    const proButton = screen.getByRole('button', { name: /Upgrade to Pro via Stripe/i });
+    const proButton = screen.getByRole('button', { name: /Upgrade to Pro via Razorpay/i });
     fireEvent.click(proButton);
 
     await waitFor(() => {
       expect(axiosClient.post).toHaveBeenCalledWith(
-        '/api/v1/saas/billing/stripe-checkout',
+        '/api/v1/saas/billing/razorpay-subscription',
         expect.objectContaining({
           tier: 'PRO',
         })
@@ -124,7 +125,7 @@ describe('TenantBillingSettings View & Stripe Upgrade Tests', () => {
     });
   });
 
-  it('initiates Stripe Checkout redirect when upgrading to ENTERPRISE plan', async () => {
+  it('initiates Razorpay Subscription checkout when upgrading to ENTERPRISE plan', async () => {
     (axiosClient.get as any).mockResolvedValueOnce({
       data: {
         success: true,
@@ -141,7 +142,8 @@ describe('TenantBillingSettings View & Stripe Upgrade Tests', () => {
       data: {
         success: true,
         data: {
-          checkoutUrl: 'https://checkout.stripe.com/c/pay/cs_test_mock_enterprise_999',
+          subscriptionId: 'sub_test_mock_ent_999',
+          keyId: 'rzp_test_1234567890',
           tier: 'ENTERPRISE',
         },
       },
@@ -157,12 +159,12 @@ describe('TenantBillingSettings View & Stripe Upgrade Tests', () => {
       expect(screen.getByText('Enterprise High-Sec')).toBeInTheDocument();
     });
 
-    const enterpriseButton = screen.getByRole('button', { name: /Upgrade to Enterprise via Stripe/i });
+    const enterpriseButton = screen.getByRole('button', { name: /Upgrade to Enterprise via Razorpay/i });
     fireEvent.click(enterpriseButton);
 
     await waitFor(() => {
       expect(axiosClient.post).toHaveBeenCalledWith(
-        '/api/v1/saas/billing/stripe-checkout',
+        '/api/v1/saas/billing/razorpay-subscription',
         expect.objectContaining({
           tier: 'ENTERPRISE',
         })

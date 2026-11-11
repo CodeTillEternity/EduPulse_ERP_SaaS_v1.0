@@ -107,7 +107,7 @@ export const IntegrationShowcase: React.FC = () => {
                   <CreditCard className="w-4 h-4 text-indigo-600" />
                   Institutional Payment Journey & Settlement Pipeline
                 </h4>
-                <span className="text-[11px] font-mono text-zinc-500">Route: /portal/fees &rarr; /api/v1/fee-payments</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100 text-[11px] font-medium text-zinc-700">Student Portal &rarr; Bursar Settlement Pipeline</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
@@ -126,8 +126,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Bursar defines tuition schedules, lab charges, and amenities in <span className="font-mono text-zinc-800">FeeManager</span>.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
-                    table: fee_structure
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-500">
+                    Bursar Fee Engine
                   </div>
                 </div>
 
@@ -145,8 +145,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Itemized fee obligations calculate automatically and populate student portal accounts.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
-                    table: student_invoice
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-500">
+                    Automated Student Voucher
                   </div>
                 </div>
 
@@ -164,8 +164,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Student or parent opens Fee Center and launches secure Razorpay modal (UPI, cards, netbanking).
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                    SDK: Razorpay Checkout.js
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-indigo-700">
+                    UPI • Cards • Netbanking
                   </div>
                 </div>
 
@@ -183,8 +183,8 @@ export const IntegrationShowcase: React.FC = () => {
                       EduPulse backend verifies cryptographic signature against Razorpay secret key.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                    HMAC-SHA256 Check
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-indigo-700">
+                    Bank-Grade Webhook Verification
                   </div>
                 </div>
 
@@ -202,8 +202,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Status transitions to PAID, debit/credit ledger reconciles, and digital receipts generate.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-emerald-700">
-                    Status: PAID &amp; Audited
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-emerald-700">
+                    Instant Reconciled Receipt
                   </div>
                 </div>
 
@@ -281,7 +281,7 @@ export const IntegrationShowcase: React.FC = () => {
                   <Video className="w-4 h-4 text-indigo-600" />
                   Virtual Lecture Delivery & Academic Timetable Synchronization
                 </h4>
-                <span className="text-[11px] font-mono text-zinc-500">Route: /operations/timetable &rarr; /portal/schedule</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100 text-[11px] font-medium text-zinc-700">Master Timetable &rarr; Student Schedule Sync</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
@@ -300,8 +300,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Faculty schedules lectures in <span className="font-mono text-zinc-800">TimetableManager</span> with assigned days and time slots.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
-                    table: timetable_slot
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-500">
+                    Conflict-Free Scheduling
                   </div>
                 </div>
 
@@ -319,8 +319,8 @@ export const IntegrationShowcase: React.FC = () => {
                       The Google Meet session URL binds directly to the scheduled course offering section.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                    field: virtual_meeting_url
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-indigo-700">
+                    Encrypted Class Link
                   </div>
                 </div>
 
@@ -338,8 +338,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Enrolled students access the live session directly from their portal timetable without email link clutter.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
-                    Route: /portal/schedule
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-500">
+                    One-Click Student Launch
                   </div>
                 </div>
 
@@ -357,8 +357,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Faculty conducts interactive lectures with screen sharing, breakout rooms, and real-time chat.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                    Service: Google Meet Cloud
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-indigo-700">
+                    High-Definition Video Stream
                   </div>
                 </div>
 
@@ -376,8 +376,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Lecture completion and topic coverage are logged into the institutional curriculum ledger.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-emerald-700">
-                    table: attendance_record
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-emerald-700">
+                    Lecture Topic & Attendance Log
                   </div>
                 </div>
 
@@ -455,7 +455,7 @@ export const IntegrationShowcase: React.FC = () => {
                   <FileText className="w-4 h-4 text-indigo-600" />
                   Curriculum Repository & Notion Workspace Linking
                 </h4>
-                <span className="text-[11px] font-mono text-zinc-500">Route: /academic/courses &rarr; /portal/courses</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100 text-[11px] font-medium text-zinc-700">Course Catalog &rarr; Student Learning Portal</span>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -474,8 +474,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Faculty organize syllabi, reading lists, lecture handouts, and lab assignments in collaborative Notion workspaces.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
-                    Workspace: Department Notion
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-600">
+                    Faculty Collaborative Canvas
                   </div>
                 </div>
 
@@ -490,11 +490,11 @@ export const IntegrationShowcase: React.FC = () => {
                     </div>
                     <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Catalog Binding in CourseManager</h5>
                     <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
-                      Instructors bind the Notion resource URL to the master course definition in <span className="font-mono text-zinc-800">/academic/courses</span>.
+                      Instructors bind the Notion resource URL to the master course definition in Course Management.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                    field: course.syllabus_url
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-indigo-700">
+                    Accredited Course Linkage
                   </div>
                 </div>
 
@@ -512,8 +512,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Enrolled students access live workspaces directly from their course dashboard alongside credit requirements.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
-                    Route: /portal/courses
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-600">
+                    Contextual Student Access
                   </div>
                 </div>
 
@@ -531,8 +531,8 @@ export const IntegrationShowcase: React.FC = () => {
                       Academic resources remain organized alongside credit hours, prerequisites, and examination calendars.
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-emerald-700">
-                    Framework: Curricular Alignment
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-emerald-700">
+                    Degree Milestone Pacing
                   </div>
                 </div>
 

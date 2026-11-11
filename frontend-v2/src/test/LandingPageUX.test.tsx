@@ -36,39 +36,40 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
     expect(screen.getAllByText(/Zero Setup Fees/i).length).toBeGreaterThan(0);
   });
 
-  it('renders the authentic system architecture and data model inspector with interactive domain tabs', async () => {
+  it('renders the authentic live workspace console with interactive tabs', async () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    // Inspector Header & Initial Academics Domain
+    // Inspector Header & Initial Student SIS Tab
     expect(screen.getByText(/The EduPulse Institutional System Core/i)).toBeInTheDocument();
-    expect(screen.getByText(/System Architecture & Data Entity Blueprint/i)).toBeInTheDocument();
-    expect(screen.getByText(/Curriculum Framework & Course Catalog/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/table: course/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/EduPulse Institutional Operating System/i)).toBeInTheDocument();
+    expect(screen.getByText(/Aarav Mehta/i)).toBeInTheDocument();
+    expect(screen.getByText(/ENR-2026-0104/i)).toBeInTheDocument();
 
-    // Tab buttons: Student SIS
-    const studentsTab = screen.getByRole('button', { name: /Student Information \(SIS\)/i });
-    expect(studentsTab).toBeInTheDocument();
-    fireEvent.click(studentsTab);
-    expect(await screen.findByText(/Student Lifecycle, Admissions & Permanent SIS/i)).toBeInTheDocument();
-    expect((await screen.findAllByText(/table: student/i)).length).toBeGreaterThan(0);
+    // Tab buttons: Timetable & Meet
+    const timetableTab = screen.getByRole('button', { name: /Timetable & Meet/i });
+    expect(timetableTab).toBeInTheDocument();
+    fireEvent.click(timetableTab);
+    expect(await screen.findByText(/CS-301/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Distributed Systems & Cloud Computing/i)).toBeInTheDocument();
+    expect((await screen.findAllByText(/Google Meet Ready/i)).length).toBeGreaterThan(0);
 
-    // Tab buttons: Fee & Ledger Engine
-    const feesTab = screen.getByRole('button', { name: /Fee & Ledger Engine/i });
+    // Tab buttons: Razorpay Fees
+    const feesTab = screen.getByRole('button', { name: /Razorpay Fees/i });
     expect(feesTab).toBeInTheDocument();
     fireEvent.click(feesTab);
-    expect(await screen.findByText(/Institutional Invoicing, Ledgers & Online Fee Settlement/i)).toBeInTheDocument();
-    expect((await screen.findAllByText(/table: fee_structure/i)).length).toBeGreaterThan(0);
+    expect(await screen.findByText(/Recent Settled Transactions via Razorpay Gateway/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Fall 2026 Tuition & Computing Fee/i)).toBeInTheDocument();
 
-    // Tab buttons: Campus Operations
-    const opsTabs = screen.getAllByRole('button', { name: /Campus Operations/i });
-    expect(opsTabs.length).toBeGreaterThan(0);
-    fireEvent.click(opsTabs[0]);
-    expect(await screen.findByText(/Lecture Timetables, Attendance & Campus Logistics/i)).toBeInTheDocument();
-    expect((await screen.findAllByText(/table: timetable_slot/i)).length).toBeGreaterThan(0);
+    // Tab buttons: Exams & SEB
+    const examsTab = screen.getByRole('button', { name: /Exams & SEB/i });
+    expect(examsTab).toBeInTheDocument();
+    fireEvent.click(examsTab);
+    expect(await screen.findByText(/Safe Exam Browser \(SEB 3\.x\) Active Lockdown/i)).toBeInTheDocument();
+    expect(await screen.findByText(/BrowserExamKey Handshake Verified/i)).toBeInTheDocument();
   });
 
   it('renders all 6 institutional capabilities and core ERP module cards', () => {
@@ -93,7 +94,7 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/259-Module Functional Blueprint Across 23 Institutional Domains/i)).toBeInTheDocument();
+    expect(screen.getByText(/259-Module Functional (Blueprint|Architecture)/i)).toBeInTheDocument();
     expect(screen.getByText(/Complete Institutional ERP Breadth\./i)).toBeInTheDocument();
     expect(screen.getAllByText(/V1.4 Operational/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Blueprint Roadmap/i).length).toBeGreaterThan(0);

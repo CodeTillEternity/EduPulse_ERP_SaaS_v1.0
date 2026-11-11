@@ -305,13 +305,13 @@ export default function LandingPage() {
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
               <Layers className="w-3.5 h-3.5 text-indigo-600" />
-              System Architecture &amp; Data Model
+              Live Workspace Console
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
               The EduPulse Institutional System Core
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600">
-              An authentic architectural breakdown of the verified relational tables, administrative workflows, and isolation policies operating inside <span className="font-mono text-zinc-800">/dashboard</span>.
+              An authentic demonstration of the multi-role management console, student SIS directory, timetable schedules, and Razorpay fee settlement accessed by institutional leadership inside <span className="font-mono text-zinc-800">/dashboard</span>.
             </p>
           </div>
 

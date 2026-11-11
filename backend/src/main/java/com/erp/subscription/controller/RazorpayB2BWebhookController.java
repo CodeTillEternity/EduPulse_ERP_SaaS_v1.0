@@ -31,6 +31,7 @@ public class RazorpayB2BWebhookController {
     private final SaaSBillingService saaSBillingService;
     private final ObjectMapper objectMapper;
 
+    @org.springframework.beans.factory.annotation.Autowired
     public RazorpayB2BWebhookController(SaaSBillingService saaSBillingService, ObjectMapper objectMapper) {
         this.saaSBillingService = saaSBillingService;
         this.objectMapper = objectMapper;

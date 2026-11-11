@@ -12,6 +12,7 @@ import { ERPDomainsBlueprint } from '../components/marketing/ERPDomainsBlueprint
 import { ArchitectureExplorer } from '../components/marketing/ArchitectureExplorer';
 import { ExamSecurityExplanation } from '../components/marketing/ExamSecurityExplanation';
 import { IntegrationShowcase } from '../components/marketing/IntegrationShowcase';
+import { CampusTransportFleetDemo } from '../components/marketing/CampusTransportFleetDemo';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -513,9 +514,9 @@ export default function LandingPage() {
 
       {/* 6. Institutional Operations & Departmental Coverage */}
       <section id="operations" className="py-24 bg-[#FBFBFA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
+          <div className="text-center max-w-3xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
               <Bus className="w-3.5 h-3.5 text-indigo-600" />
               Campus Operations
@@ -528,7 +529,11 @@ export default function LandingPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Interactive Campus Transport & Fleet Operations Center Demonstration */}
+          <CampusTransportFleetDemo />
+
+          {/* Complementary Campus Operations: Library & Multi-Tenant Control Plane */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
             
             {/* Library Management */}
             <div className="bg-white rounded-2xl p-7 border border-zinc-200 shadow-sm space-y-4">
@@ -541,20 +546,6 @@ export default function LandingPage() {
               </p>
               <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 font-mono text-[11px] text-zinc-600">
                 Module: LibraryManager (/operations/library)
-              </div>
-            </div>
-
-            {/* Campus Transportation */}
-            <div className="bg-white rounded-2xl p-7 border border-zinc-200 shadow-sm space-y-4">
-              <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-800">
-                <Bus className="w-5 h-5 text-indigo-600" />
-              </div>
-              <h3 className="text-base font-bold text-zinc-900">Campus Transport & Routes</h3>
-              <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-                Define institutional transport bus routes, designate pickup stops, register institutional fleet vehicles, and allocate student passenger seats.
-              </p>
-              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 font-mono text-[11px] text-zinc-600">
-                Module: TransportManager (/operations/transport)
               </div>
             </div>
 

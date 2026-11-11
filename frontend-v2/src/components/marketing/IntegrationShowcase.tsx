@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import { 
   ShieldCheck, 
   CreditCard, 
-  Video, 
   FileText, 
   Server,
   Building2,
-  Lock,
   Globe
 } from 'lucide-react';
+import { GoogleMeetClassroomDemo } from './GoogleMeetClassroomDemo';
 
 export const IntegrationShowcase: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'razorpay' | 'google-meet' | 'notion'>('razorpay');
@@ -248,176 +247,7 @@ export const IntegrationShowcase: React.FC = () => {
 
         {/* 2. GOOGLE MEET INTEGRATION SHOWCASE */}
         {activeTab === 'google-meet' && (
-          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left space-y-10">
-            
-            {/* Header Banner */}
-            <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-zinc-100">
-              <div className="flex items-center gap-4">
-                <div className="h-12 w-12 rounded-2xl bg-white border border-zinc-200 flex items-center justify-center p-2.5 shadow-xs">
-                  <GoogleMeetLogo className="w-full h-full" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Online Classrooms</span>
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">
-                      Production Integrated
-                    </span>
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">
-                    Connect institutional academic schedules with online classroom experiences.
-                  </h3>
-                </div>
-              </div>
-
-              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs text-zinc-600 max-w-md">
-                <span className="font-semibold text-zinc-800">Architectural Boundary:</span> Real-time video/audio streaming is handled by Google's secure infrastructure, while EduPulse manages academic timetables, course enrollment validation, and attendance logs.
-              </div>
-            </div>
-
-            {/* Horizontal 5-Stage Operational Workflow */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
-                  <Video className="w-4 h-4 text-indigo-600" />
-                  Virtual Lecture Delivery & Academic Timetable Synchronization
-                </h4>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-zinc-100 text-[11px] font-medium text-zinc-700">Master Timetable &rarr; Student Schedule Sync</span>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
-                
-                {/* Stage 1 */}
-                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
-                        01
-                      </span>
-                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Schedule</span>
-                    </div>
-                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Lecture Scheduling</h5>
-                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
-                      Faculty schedules lectures in <span className="font-mono text-zinc-800">TimetableManager</span> with assigned days and time slots.
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-500">
-                    Conflict-Free Scheduling
-                  </div>
-                </div>
-
-                {/* Stage 2 */}
-                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
-                        02
-                      </span>
-                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Association</span>
-                    </div>
-                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Meeting Link Binding</h5>
-                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
-                      The Google Meet session URL binds directly to the scheduled course offering section.
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-indigo-700">
-                    Encrypted Class Link
-                  </div>
-                </div>
-
-                {/* Stage 3 */}
-                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
-                        03
-                      </span>
-                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Access</span>
-                    </div>
-                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Student Timetable Sync</h5>
-                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
-                      Enrolled students access the live session directly from their portal timetable without email link clutter.
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-medium text-zinc-500">
-                    One-Click Student Launch
-                  </div>
-                </div>
-
-                {/* Stage 4 */}
-                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
-                        04
-                      </span>
-                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Delivery</span>
-                    </div>
-                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Secure Video Session</h5>
-                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
-                      Faculty conducts interactive lectures with screen sharing, breakout rooms, and real-time chat.
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-indigo-700">
-                    High-Definition Video Stream
-                  </div>
-                </div>
-
-                {/* Stage 5 */}
-                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
-                  <div>
-                    <div className="flex items-center justify-between">
-                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
-                        05
-                      </span>
-                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Tracking</span>
-                    </div>
-                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Topic & Attendance Log</h5>
-                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
-                      Lecture completion and topic coverage are logged into the institutional curriculum ledger.
-                    </p>
-                  </div>
-                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-semibold text-emerald-700">
-                    Lecture Topic & Attendance Log
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            {/* 3 Technical Integration Guarantees */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
-                  <Lock className="w-4 h-4 text-indigo-600" />
-                  <span>Enrollment-Restricted Access</span>
-                </div>
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  Only authenticated students actively registered in the specific course section see the meeting join button, preventing unauthorized room access.
-                </p>
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
-                  <Server className="w-4 h-4 text-indigo-600" />
-                  <span>Collision-Free Scheduling</span>
-                </div>
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  Timetable conflict algorithms prevent double-booking faculty lecturers or scheduling overlapping lecture periods for student cohorts.
-                </p>
-              </div>
-
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
-                  <Globe className="w-4 h-4 text-indigo-600" />
-                  <span>Global High-Bandwidth Cloud</span>
-                </div>
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  Offloads demanding media traffic to Google's content delivery network, ensuring reliable video streaming regardless of local campus server capacity.
-                </p>
-              </div>
-            </div>
-
-          </div>
+          <GoogleMeetClassroomDemo />
         )}
 
         {/* 3. NOTION INTEGRATION SHOWCASE */}

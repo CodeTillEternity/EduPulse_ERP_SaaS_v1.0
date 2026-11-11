@@ -12,59 +12,112 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-describe('LandingPage UX & Bento Grid Architecture', () => {
+describe('LandingPage Enterprise Light Architecture & UX', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders high-contrast announcement bar and hero headline', () => {
+  it('renders the authoritative enterprise hero headline and supporting copy', () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/EduPulse SaaS V1.4 • Safe Exam Browser/i)).toBeInTheDocument();
-    expect(screen.getByText(/Next-Gen Institutional ERP with/i)).toBeInTheDocument();
-    expect(screen.getByText(/Kernel-Level Exam Proctoring/i)).toBeInTheDocument();
-    expect(screen.getByText(/edupulse-cli • tenant-provision/i)).toBeInTheDocument();
+    // Hero Headline & Subcopy
+    expect(screen.getByText(/One platform to run your entire institution\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Bring academics, student management, finance and institutional operations together in one connected platform\./i)).toBeInTheDocument();
+    expect(screen.getByText(/EduPulse SaaS V1.4 • Autonomous Multi-Tenant Architecture/i)).toBeInTheDocument();
+    
+    // Trust Markers
+    expect(screen.getByText(/Role-Based Multi-Tenancy/i)).toBeInTheDocument();
+    expect(screen.getByText(/Zero Setup Fees/i)).toBeInTheDocument();
+    expect(screen.getByText(/14-Day Free Evaluation/i)).toBeInTheDocument();
+    expect(screen.getByText(/FERPA & Data Compliant/i)).toBeInTheDocument();
   });
 
-  it('renders Apple-style Bento Grid cards with SEB lockdown and RLS architecture', () => {
+  it('renders the realistic DOM-based institutional product mockup with interactive tabs', async () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    // Bento Hero: Safe Exam Browser
-    expect(screen.getAllByText(/Safe Exam Browser OS Lockdown/i)[0]).toBeInTheDocument();
-    expect(screen.getByText(/Total Kiosk Sandboxing/i)).toBeInTheDocument();
-    expect(screen.getByText(/SEB_Kiosk_Process.sys \[LOCKED\]/i)).toBeInTheDocument();
+    // Mockup Chrome Header & Campus Overview KPI Cards
+    expect(screen.getByText(/portal\.edupulse\.io\/harvard\/admin/i)).toBeInTheDocument();
+    expect(screen.getByText(/Harvard College of Sciences & Humanities/i)).toBeInTheDocument();
+    expect(screen.getByText(/Active Students/i)).toBeInTheDocument();
+    expect(screen.getByText(/Average Attendance/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Fee Collection/i).length).toBeGreaterThan(0);
 
-    // Bento Adjacent 1: PostgreSQL RLS
-    expect(screen.getByText(/Mathematical Isolation/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Row-Level Security/i)[0]).toBeInTheDocument();
+    // Tab buttons
+    const studentsTab = screen.getByRole('button', { name: /Student SIS/i });
+    expect(studentsTab).toBeInTheDocument();
+    fireEvent.click(studentsTab);
+    expect(await screen.findByText(/Sophia Chen/i)).toBeInTheDocument();
 
-    // Bento Adjacent 2: Dynamic DB Routing
-    expect(screen.getByText(/Dedicated DB Pools/i)).toBeInTheDocument();
-    expect(screen.getByText(/EduPulseHikariCP-vip-1/i)).toBeInTheDocument();
+    const timetableTab = screen.getByRole('button', { name: /Timetable & Attendance/i });
+    expect(timetableTab).toBeInTheDocument();
+    fireEvent.click(timetableTab);
+    expect(await screen.findByText(/CS-301 Distributed Systems/i)).toBeInTheDocument();
 
-    // Bento Adjacent 3: Automated S3 Recovery
-    expect(screen.getByText(/Automated S3 Recovery/i)).toBeInTheDocument();
-
-    // Bento Adjacent 4: Autonomous B2B Billing
-    expect(screen.getByText(/Autonomous B2B Billing/i)).toBeInTheDocument();
+    const financeTab = screen.getByRole('button', { name: /Fee Collection/i });
+    expect(financeTab).toBeInTheDocument();
+    fireEvent.click(financeTab);
+    expect(await screen.findByText(/Term 2 Tuition Fee/i)).toBeInTheDocument();
   });
 
-  it('navigates to self-serve onboarding when Start Trial CTA buttons are clicked', () => {
+  it('renders all 6 institutional capabilities and core ERP module cards', () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    const startTrialBtns = screen.getAllByRole('button', { name: /Start 14-Day Free Trial/i });
+    expect(screen.getByText(/Academics & Curriculum Planning/i)).toBeInTheDocument();
+    expect(screen.getByText(/Student Lifecycle & Admissions \(SIS\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fee Management & Recurring Invoicing/i)).toBeInTheDocument();
+    expect(screen.getByText(/Biometric & Class Attendance/i)).toBeInTheDocument();
+    expect(screen.getByText(/Examinations & Grade Books/i)).toBeInTheDocument();
+    expect(screen.getByText(/Staff Payroll & HR Operations/i)).toBeInTheDocument();
+  });
+
+  it('renders connected 4-step academic and administrative workflows', () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/Eliminate information silos between departments\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Admissions & Enrollment/i)).toBeInTheDocument();
+    expect(screen.getByText(/Academic Scheduling/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fee Generation & Invoicing/i)).toBeInTheDocument();
+    expect(screen.getByText(/Examination & Certification/i)).toBeInTheDocument();
+  });
+
+  it('renders multi-tenant architecture and security specifications', () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/Custom Subdomain Routing/i)).toBeInTheDocument();
+    expect(screen.getByText(/Dedicated Database Pools/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Automated S3 Disaster Recovery/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/PostgreSQL Row-Level Security \(RLS\)/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Safe Exam Browser \(SEB\) OS Lockdown/i).length).toBeGreaterThan(0);
+  });
+
+  it('navigates to self-serve onboarding when Start Free Trial CTA buttons are clicked', () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    const startTrialBtns = screen.getAllByRole('button', { name: /Start free trial/i });
     expect(startTrialBtns.length).toBeGreaterThan(0);
 
     fireEvent.click(startTrialBtns[0]);
@@ -89,7 +142,7 @@ describe('LandingPage UX & Bento Grid Architecture', () => {
     expect(screen.getByText(/Save 20%/i)).toBeInTheDocument();
   });
 
-  it('allows switching tenants in the Attio-style live dashboard mockup', async () => {
+  it('allows switching tenants in the interactive Attio-style RLS console', async () => {
     render(
       <BrowserRouter>
         <LandingPage />

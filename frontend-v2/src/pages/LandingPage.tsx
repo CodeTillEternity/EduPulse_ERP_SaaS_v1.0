@@ -5,8 +5,8 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
 import { InstitutionalProductMockup } from '../components/marketing/InstitutionalProductMockup';
-import { DashboardMockup } from '../components/marketing/DashboardMockup';
-import { ProctoringWidget } from '../components/marketing/ProctoringWidget';
+import { ArchitectureExplorer } from '../components/marketing/ArchitectureExplorer';
+import { ExamSecurityExplanation } from '../components/marketing/ExamSecurityExplanation';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -14,23 +14,21 @@ import {
   Menu, 
   X, 
   CheckCircle2, 
-  Sparkles, 
   UserCheck, 
-  Database, 
   Lock, 
   Server, 
   Zap, 
-  HardDrive,
-  ShieldCheck,
-  BookOpen,
-  Users,
-  DollarSign,
-  Calendar,
-  Award,
-  Layers,
-  FileCheck,
-  Building2,
-  Cpu
+  ShieldCheck, 
+  BookOpen, 
+  Users, 
+  DollarSign, 
+  Calendar, 
+  Award, 
+  Layers, 
+  Building2, 
+  Cpu, 
+  Bus, 
+  Library
 } from 'lucide-react';
 
 export default function LandingPage() {
@@ -76,17 +74,20 @@ export default function LandingPage() {
               <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection('overview'); }} className="hover:text-zinc-900 transition-colors">
                 Overview
               </a>
-              <a href="#modules" onClick={(e) => { e.preventDefault(); scrollToSection('modules'); }} className="hover:text-zinc-900 transition-colors">
+              <a href="#capabilities" onClick={(e) => { e.preventDefault(); scrollToSection('capabilities'); }} className="hover:text-zinc-900 transition-colors">
                 Capabilities
               </a>
               <a href="#workflows" onClick={(e) => { e.preventDefault(); scrollToSection('workflows'); }} className="hover:text-zinc-900 transition-colors">
                 Workflows
               </a>
+              <a href="#operations" onClick={(e) => { e.preventDefault(); scrollToSection('operations'); }} className="hover:text-zinc-900 transition-colors">
+                Operations
+              </a>
               <a href="#architecture" onClick={(e) => { e.preventDefault(); scrollToSection('architecture'); }} className="hover:text-zinc-900 transition-colors">
                 Architecture
               </a>
-              <a href="#security" onClick={(e) => { e.preventDefault(); scrollToSection('security'); }} className="hover:text-zinc-900 transition-colors">
-                Security & Exams
+              <a href="#exam-security" onClick={(e) => { e.preventDefault(); scrollToSection('exam-security'); }} className="hover:text-zinc-900 transition-colors">
+                Exam Security
               </a>
               <a href="#pricing" onClick={(e) => { e.preventDefault(); scrollToSection('pricing'); }} className="hover:text-zinc-900 transition-colors">
                 Pricing
@@ -144,17 +145,20 @@ export default function LandingPage() {
               <a href="#overview" onClick={() => { setMobileMenuOpen(false); scrollToSection('overview'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Overview
               </a>
-              <a href="#modules" onClick={() => { setMobileMenuOpen(false); scrollToSection('modules'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+              <a href="#capabilities" onClick={() => { setMobileMenuOpen(false); scrollToSection('capabilities'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Capabilities & Modules
               </a>
               <a href="#workflows" onClick={() => { setMobileMenuOpen(false); scrollToSection('workflows'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Workflows
               </a>
-              <a href="#architecture" onClick={() => { setMobileMenuOpen(false); scrollToSection('architecture'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
-                Multi-Tenant Architecture
+              <a href="#operations" onClick={() => { setMobileMenuOpen(false); scrollToSection('operations'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+                Operations
               </a>
-              <a href="#security" onClick={() => { setMobileMenuOpen(false); scrollToSection('security'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
-                Security & Exams
+              <a href="#architecture" onClick={() => { setMobileMenuOpen(false); scrollToSection('architecture'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+                SaaS Architecture
+              </a>
+              <a href="#exam-security" onClick={() => { setMobileMenuOpen(false); scrollToSection('exam-security'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+                Exam Security & SEB
               </a>
               <a href="#pricing" onClick={() => { setMobileMenuOpen(false); scrollToSection('pricing'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Pricing
@@ -181,20 +185,19 @@ export default function LandingPage() {
 
       {/* 2. Strong Product-Focused Hero */}
       <section id="overview" className="relative pt-20 pb-16 md:pt-28 md:pb-24 overflow-hidden">
-        {/* Soft atmospheric gradient */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-6xl h-96 bg-gradient-to-b from-indigo-50/50 via-zinc-50/20 to-transparent pointer-events-none rounded-full blur-3xl -z-10" />
 
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           
-          {/* Subtle Institutional Badge */}
+          {/* Authentic Architecture Badge */}
           <motion.div 
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-zinc-200 shadow-sm text-xs font-semibold text-zinc-700"
           >
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500" />
-            <span>EduPulse SaaS V1.4 • Autonomous Multi-Tenant Architecture</span>
+            <span className="flex h-2 w-2 rounded-full bg-indigo-600" />
+            <span>EduPulse SaaS V1.4 • Institutional ERP Platform</span>
           </motion.div>
 
           {/* Primary Hero Headline */}
@@ -244,7 +247,7 @@ export default function LandingPage() {
             </Button>
           </motion.div>
 
-          {/* Trust Markers */}
+          {/* Authentic Proof Points */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -258,7 +261,7 @@ export default function LandingPage() {
             <span className="hidden sm:inline text-zinc-300">•</span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              Zero Setup Fees
+              PostgreSQL Row-Level Security
             </span>
             <span className="hidden sm:inline text-zinc-300">•</span>
             <span className="flex items-center gap-1.5">
@@ -268,46 +271,50 @@ export default function LandingPage() {
             <span className="hidden sm:inline text-zinc-300">•</span>
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-              FERPA & Data Compliant
+              Zero Setup Fees
             </span>
           </motion.div>
 
         </div>
       </section>
 
-      {/* 3. Actual Product Showcase */}
+      {/* 3. Actual Product Showcase (Authentic Interface Preview) */}
       <section id="showcase" className="py-12 md:py-16 bg-white border-y border-zinc-200/80">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
-          <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
+          <div className="text-center max-w-2xl mx-auto space-y-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
+              <Layers className="w-3.5 h-3.5 text-indigo-600" />
+              Application Interface
+            </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
-              A unified operating environment built for higher education
+              The EduPulse Institutional Administration Core
             </h2>
-            <p className="text-sm text-zinc-600">
-              Interactive preview of the EduPulse institutional control plane — click between modules to inspect student registers, class schedules, and tuition reconciliation.
+            <p className="text-xs sm:text-sm text-zinc-600">
+              An authentic preview of the management workspace accessed by institutional registrars and campus directors upon logging into <span className="font-mono text-zinc-800">/dashboard</span>.
             </p>
           </div>
 
-          {/* The High-Fidelity Realistic Product Mockup */}
+          {/* Genuine DOM-Based Product Mockup */}
           <InstitutionalProductMockup />
 
         </div>
       </section>
 
-      {/* 4. Institutional Capabilities and ERP Modules */}
-      <section id="modules" className="py-24 bg-[#FBFBFA]">
+      {/* 4. Core Institutional Capabilities */}
+      <section id="capabilities" className="py-24 bg-[#FBFBFA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
-              <Layers className="w-3.5 h-3.5 text-indigo-600" />
-              Comprehensive Core Modules
+              <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+              Implemented Modules
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-              Every department, synchronized in real time.
+              Integrated systems for institutional governance.
             </h2>
             <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-              EduPulse replaces fragmented point solutions with an integrated institutional operating system designed to meet modern accreditation and auditing standards.
+              Every capability below corresponds directly to a functioning subsystem in the EduPulse codebase with dedicated controllers, repositories, and interfaces.
             </p>
           </div>
 
@@ -322,17 +329,17 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-base font-bold text-zinc-900">Academics & Curriculum Planning</h3>
                 <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Design complex credit frameworks, map course syllabi repositories, enforce prerequisites, and coordinate department-wide academic calendars with zero scheduling friction.
+                  Configure multi-semester credit frameworks, departmental course catalogs, prerequisites, and syllabus repositories with structured course codes.
                 </p>
               </div>
               <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Credit and GPA weighting algorithms</span>
+                  <span>Module: CourseManager (/academic/courses)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Prerequisite checking & audit trails</span>
+                  <span>Credit and GPA weighting algorithms</span>
                 </li>
               </ul>
             </div>
@@ -345,17 +352,17 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-base font-bold text-zinc-900">Student Lifecycle & Admissions (SIS)</h3>
                 <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Autonomous online application portals, digital document verification, permanent student records, roll number allocation, and comprehensive cohort tracking.
+                  Manage prospective applicant queues, review application statuses, assign unique Roll Numbers, and maintain permanent academic profile records.
                 </p>
               </div>
               <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Self-serve applicant onboarding portal</span>
+                  <span>Module: StudentsList & Admissions</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Digital student profiles & records</span>
+                  <span>Applicant intake: PublicAdmissions (/admissions)</span>
                 </li>
               </ul>
             </div>
@@ -368,17 +375,17 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-base font-bold text-zinc-900">Fee Management & Recurring Invoicing</h3>
                 <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Automated term fee schedules, integrated Razorpay B2B payment gateway, multi-head fee structures, scholarship adjustments, and real-time reconciliation.
+                  Define fee structures with multiple fee heads, issue automated term vouchers, track individual debit/credit student ledgers, and reconcile payments.
                 </p>
               </div>
               <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Instant fee voucher & receipt generation</span>
+                  <span>Module: FeeManager & StudentLedger</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>RBI-compliant recurring autopay support</span>
+                  <span>Razorpay B2B payment gateway integration</span>
                 </li>
               </ul>
             </div>
@@ -391,17 +398,17 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-base font-bold text-zinc-900">Biometric & Class Attendance</h3>
                 <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Hardware-agnostic RFID and biometric reader synchronization, faculty mobile attendance registers, threshold warnings, and automated parent notifications.
+                  Record daily lecture attendance by batch, reconcile hardware punch logs via REST API, and track individual student attendance thresholds.
                 </p>
               </div>
               <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Real-time hardware sync & punch logs</span>
+                  <span>Module: AttendanceTracker (/operations/attendance)</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Automated attendance deficit flagging</span>
+                  <span>Attendance percentages and deficit alerts</span>
                 </li>
               </ul>
             </div>
@@ -414,17 +421,17 @@ export default function LandingPage() {
               <div>
                 <h3 className="text-base font-bold text-zinc-900">Examinations & Grade Books</h3>
                 <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Configure formative quizzes and summative proctored finals, compute relative and absolute GPA/CGPA curves, and generate tamper-proof digital transcripts.
+                  Schedule formative assessments and semester finals, assign exam halls, record subject scores, and publish official digital transcripts.
                 </p>
               </div>
               <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Official marksheets & digital transcripts</span>
+                  <span>Module: ExamManager & TranscriptViewer</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Safe Exam Browser (SEB) lockdown support</span>
+                  <span>Safe Exam Browser (SEB) configuration support</span>
                 </li>
               </ul>
             </div>
@@ -432,22 +439,22 @@ export default function LandingPage() {
             {/* 6. Staff Payroll & HR Operations */}
             <div className="bg-white rounded-2xl p-6 border border-zinc-200 shadow-sm hover:shadow-md transition space-y-4">
               <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <Building2 className="w-5 h-5" />
+                <Cpu className="w-5 h-5" />
               </div>
               <div>
                 <h3 className="text-base font-bold text-zinc-900">Staff Payroll & HR Operations</h3>
                 <p className="text-xs sm:text-sm text-zinc-600 mt-1.5 leading-relaxed">
-                  Faculty workload assignment, biometric leave accruals, statutory tax deductions, automated salary disbursement vouchers, and institutional departmental budgeting.
+                  Manage faculty leave balances, process pending leave approvals, allocate teaching workloads, and disburse monthly institutional payroll.
                 </p>
               </div>
               <ul className="text-xs text-zinc-500 space-y-1.5 pt-2 border-t border-zinc-100">
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Automated payroll computation</span>
+                  <span>Module: LeaveManager & PayrollDashboard</span>
                 </li>
                 <li className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-                  <span>Faculty research & teaching workload tracking</span>
+                  <span>Salary vouchers and leave accrual registers</span>
                 </li>
               </ul>
             </div>
@@ -456,87 +463,103 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. Connected Academic and Administrative Workflows */}
+      {/* 5. Real Academic and Administrative Workflows */}
       <section id="workflows" className="py-24 bg-white border-y border-zinc-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
               <Zap className="w-3.5 h-3.5" />
-              Unified Institutional Flow
+              End-to-End Operational Flow
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-              Eliminate information silos between departments.
+              How data connects across institutional departments.
             </h2>
             <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-              When a student is enrolled, every relevant department updates instantly — from course registration to fee vouchers and examination eligibility.
+              From the moment an applicant submits credentials to graduation day, EduPulse synchronizes records across academic, operations, and finance teams.
             </p>
           </div>
 
-          {/* Connected 4-Step Process Visual */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+          {/* 5-Step Connected Pipeline */}
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
             
             {/* Step 1 */}
-            <div className="relative bg-zinc-50 rounded-2xl p-6 border border-zinc-200 flex flex-col justify-between">
+            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-4">
+                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
                   01
                 </div>
-                <h3 className="font-bold text-zinc-900 text-sm">Admissions & Enrollment</h3>
-                <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
-                  Prospective applicant submits credentials. Upon acceptance, EduPulse auto-provisions a student ID, assigns a cohort, and creates their central profile.
+                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Admissions & Inquiry</h3>
+                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
+                  Prospective student applies via the public admission portal. Application is saved to the admission queue for committee evaluation.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[11px] font-medium text-indigo-700">
-                Trigger: Application Approved
+              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                Route: /admissions
               </div>
             </div>
 
             {/* Step 2 */}
-            <div className="relative bg-zinc-50 rounded-2xl p-6 border border-zinc-200 flex flex-col justify-between">
+            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-4">
+                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
                   02
                 </div>
-                <h3 className="font-bold text-zinc-900 text-sm">Academic Scheduling</h3>
-                <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
-                  Enrolled credits automatically populate student timetables, book faculty lecture halls, and configure biometric attendance scanners for every class.
+                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Enrollment Registry</h3>
+                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
+                  Registrar approves application. Student profile is allocated a permanent Roll Number, batch assignment, and student portal credentials.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[11px] font-medium text-indigo-700">
-                Auto: Timetable & Rosters Populated
+              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                Route: /admissions/enroll
               </div>
             </div>
 
             {/* Step 3 */}
-            <div className="relative bg-zinc-50 rounded-2xl p-6 border border-zinc-200 flex flex-col justify-between">
+            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-4">
+                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
                   03
                 </div>
-                <h3 className="font-bold text-zinc-900 text-sm">Fee Generation & Invoicing</h3>
-                <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
-                  Tuition invoices generate based on enrolled course credits and lab fees. Razorpay payment links are dispatched to parents with instant receipt reconciliation.
+                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Course & Timetable</h3>
+                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
+                  Credits allocate to enrolled courses. Lecture timetables, room assignments, and faculty attendance registers populate automatically.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[11px] font-medium text-indigo-700">
-                Auto: Term Invoices Dispatched
+              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                Route: /academic/courses
               </div>
             </div>
 
             {/* Step 4 */}
-            <div className="relative bg-zinc-50 rounded-2xl p-6 border border-zinc-200 flex flex-col justify-between">
+            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
               <div>
-                <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-4">
+                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
                   04
                 </div>
-                <h3 className="font-bold text-zinc-900 text-sm">Examination & Certification</h3>
-                <p className="text-xs text-zinc-600 mt-2 leading-relaxed">
-                  Upon fee and attendance clearance, digital hall tickets are issued with Safe Exam Browser launch keys. Final grades compile into verified digital transcripts.
+                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Fee Voucher Issuance</h3>
+                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
+                  Tuition invoices generate based on enrolled credit hours and program fee structures. Students pay via the portal or Razorpay gateway.
                 </p>
               </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[11px] font-medium text-indigo-700">
-                Result: Verified Degree Transcripts
+              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                Route: /finance/fees
+              </div>
+            </div>
+
+            {/* Step 5 */}
+            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
+              <div>
+                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
+                  05
+                </div>
+                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Exams & Transcripts</h3>
+                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
+                  Final exam hall tickets issue upon fee clearance. Course marks compile into cumulative GPA/CGPA and verified digital transcripts.
+                </p>
+              </div>
+              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                Route: /academic/transcripts
               </div>
             </div>
 
@@ -545,64 +568,64 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. Multi-Tenant SaaS Architecture */}
-      <section id="architecture" className="py-24 bg-[#FBFBFA]">
+      {/* 6. Institutional Operations & Departmental Coverage */}
+      <section id="operations" className="py-24 bg-[#FBFBFA]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
-              <Server className="w-3.5 h-3.5 text-indigo-600" />
-              Enterprise Infrastructure
+              <Bus className="w-3.5 h-3.5 text-indigo-600" />
+              Campus Operations
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-              Engineered for massive university scale.
+              Complete administrative coverage across campus services.
             </h2>
             <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-              Whether running a single campus or a statewide multi-college university network, EduPulse provides flexible data topologies and automated infrastructure management.
+              Beyond academic registers, EduPulse manages transport routes, library resource lending, and multi-tenant SaaS control planes.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             
-            {/* Dynamic Subdomain Routing */}
+            {/* Library Management */}
             <div className="bg-white rounded-2xl p-7 border border-zinc-200 shadow-sm space-y-4">
               <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-800">
-                <Globe className="w-5 h-5 text-indigo-600" />
+                <Library className="w-5 h-5 text-indigo-600" />
               </div>
-              <h3 className="text-base font-bold text-zinc-900">Custom Subdomain Routing</h3>
+              <h3 className="text-base font-bold text-zinc-900">Library Resource Circulation</h3>
               <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-                Every client institution receives a dedicated subdomain (e.g. <span className="font-mono text-zinc-800 bg-zinc-100 px-1 py-0.5 rounded">harvard.edupulse.io</span>). Spring filters extract the tenant slug on every request, routing compute seamlessly without code forks.
+                Track physical and digital book catalogs by ISBN. Manage student loan checkouts, return dates, reservation queues, and overdue penalty fee integration.
               </p>
               <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 font-mono text-[11px] text-zinc-600">
-                HTTP Host Header → TenantContextFilter → ThreadLocal
+                Module: LibraryManager (/operations/library)
               </div>
             </div>
 
-            {/* Dedicated Database Routing */}
+            {/* Campus Transportation */}
             <div className="bg-white rounded-2xl p-7 border border-zinc-200 shadow-sm space-y-4">
               <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-800">
-                <Database className="w-5 h-5 text-indigo-600" />
+                <Bus className="w-5 h-5 text-indigo-600" />
               </div>
-              <h3 className="text-base font-bold text-zinc-900">Dedicated Database Pools</h3>
+              <h3 className="text-base font-bold text-zinc-900">Campus Transport & Routes</h3>
               <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-                Enterprise institutions with strict regulatory mandates can route to isolated PostgreSQL instances via Spring's <span className="font-mono text-zinc-800 bg-zinc-100 px-1 py-0.5 rounded">AbstractRoutingDataSource</span> with dedicated HikariCP connection pools.
+                Define institutional transport bus routes, designate pickup stops, register institutional fleet vehicles, and allocate student passenger seats.
               </p>
               <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 font-mono text-[11px] text-zinc-600">
-                RoutingKey Lookup: SHARED vs DEDICATED_VIP
+                Module: TransportManager (/operations/transport)
               </div>
             </div>
 
-            {/* Automated S3 Disaster Recovery */}
+            {/* Central SaaS Control Plane */}
             <div className="bg-white rounded-2xl p-7 border border-zinc-200 shadow-sm space-y-4">
               <div className="w-10 h-10 rounded-xl bg-zinc-100 border border-zinc-200 flex items-center justify-center text-zinc-800">
-                <HardDrive className="w-5 h-5 text-indigo-600" />
+                <Server className="w-5 h-5 text-indigo-600" />
               </div>
-              <h3 className="text-base font-bold text-zinc-900">Automated S3 Disaster Recovery</h3>
+              <h3 className="text-base font-bold text-zinc-900">SaaS Multi-Tenant Control Plane</h3>
               <p className="text-xs sm:text-sm text-zinc-600 leading-relaxed">
-                Automated background jobs execute streaming database dumps, compress archives with AES-256 encryption, and upload to AWS S3 multi-region storage with automated lifecycle policies.
+                Super administrators monitor tenant namespaces, transition account states (ACTIVE to SUSPENDED), and trigger database pool migrations via the central control panel.
               </p>
               <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 font-mono text-[11px] text-zinc-600">
-                Recovery Point Objective: &lt; 5m • AES-256 Storage
+                Module: SaaSTenantDashboard (/saas-admin)
               </div>
             </div>
 
@@ -611,151 +634,61 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 7. Security and Data Isolation (PostgreSQL RLS Deep Dive + Live Attio Mockup) */}
-      <section id="security" className="py-24 bg-white border-y border-zinc-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      {/* 7. SaaS Architecture and Tenant Isolation (Verifiable Explorer) */}
+      <section id="architecture" className="py-24 bg-white border-y border-zinc-200/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           <div className="max-w-3xl mx-auto text-center space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800">
               <ShieldCheck className="w-3.5 h-3.5" />
-              Mathematical Isolation
+              Database & Security Architecture
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-              PostgreSQL Row-Level Security (RLS)
+              How EduPulse Enforces Tenant Data Isolation
             </h2>
             <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-              Instead of relying on fragile application-level SQL <span className="font-mono text-zinc-800 bg-zinc-100 px-1 py-0.5 rounded">WHERE</span> clauses, EduPulse enforces data boundaries directly inside the PostgreSQL database engine.
+              Instead of relying on application-level filtering where a missed WHERE clause leaks records, EduPulse enforces tenant isolation across four distinct architectural boundaries.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs text-zinc-600">
-            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200">
-              <h4 className="font-bold text-zinc-900 text-sm mb-1.5">Kernel-Level Enforcement</h4>
-              <p className="leading-relaxed">
-                Every database transaction executes <span className="font-mono text-zinc-800">SET LOCAL app.tenant_id</span>. Any query attempting to access another institution's data returns zero rows at the storage engine level.
-              </p>
-            </div>
-            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200">
-              <h4 className="font-bold text-zinc-900 text-sm mb-1.5">Role-Based Access Control (RBAC)</h4>
-              <p className="leading-relaxed">
-                Fine-grained security principals ensure that Super Admins, Institutional Registrars, Faculty, Students, and Parents only see the records authorized for their role.
-              </p>
-            </div>
-            <div className="p-5 rounded-xl bg-zinc-50 border border-zinc-200">
-              <h4 className="font-bold text-zinc-900 text-sm mb-1.5">Cryptographic Audit Logging</h4>
-              <p className="leading-relaxed">
-                Every administrative configuration change, grade alteration, and fee concession is permanently logged with actor timestamps for FERPA compliance.
-              </p>
-            </div>
-          </div>
-
-          {/* Interactive RLS Demonstration Card */}
-          <div id="data-isolation" className="pt-2">
-            <div className="bg-zinc-50 rounded-2xl p-6 sm:p-8 border border-zinc-200 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-zinc-900">
-                    Interactive RLS Verification Console
-                  </h3>
-                  <p className="text-xs text-zinc-600">
-                    Switch the active institution below to inspect how the PostgreSQL runtime dynamically isolates student ledgers:
-                  </p>
-                </div>
-                <div className="flex items-center gap-2 text-[11px] font-mono text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-200 shrink-0">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" />
-                  <span>Isolation Proof: 100% Active</span>
-                </div>
-              </div>
-
-              {/* The Live Interactive Attio-Style Data Table */}
-              <DashboardMockup />
-            </div>
-          </div>
+          {/* Interactive Verifiable Architecture Explorer */}
+          <ArchitectureExplorer />
 
         </div>
       </section>
 
       {/* 8. Safe Exam Browser and Examination Security */}
-      <section id="seb-proctoring" className="py-24 bg-[#FBFBFA]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <section id="exam-security" className="py-24 bg-[#FBFBFA]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           
           <div className="max-w-3xl mx-auto text-center space-y-3">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
               <Lock className="w-3.5 h-3.5 text-indigo-600" />
-              High-Stakes Examination Security
+              Assessment Security
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-              Safe Exam Browser (SEB) OS Lockdown
+              Exam Security with Safe Exam Browser (SEB)
             </h2>
             <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-              Eliminate digital exam fraud at the operating system root. EduPulse generates cryptographic SEB configuration keys that force student client machines into locked kiosk mode.
+              EduPulse integrates with the open-source Safe Exam Browser (ETH Zurich) to provide tamper-resistant testing environments for high-stakes examinations.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs text-zinc-600">
-            <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <Monitor className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-zinc-900 text-sm">Dual-Screen & VM Neutralization</h4>
-              <p className="leading-relaxed">
-                SEB terminates unauthorized secondary monitors, blocks virtual machines (VMware, VirtualBox), and detects remote desktop tools.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <Cpu className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-zinc-900 text-sm">Clipboard & Process Lockdown</h4>
-              <p className="leading-relaxed">
-                Clears the system clipboard, intercepts print-screen commands, and disables hotkeys (Alt+Tab, Cmd+Tab) to prevent browser switching.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-2xl border border-zinc-200 shadow-sm space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                <FileCheck className="w-4 h-4" />
-              </div>
-              <h4 className="font-bold text-zinc-900 text-sm">Cryptographic Handshake</h4>
-              <p className="leading-relaxed">
-                Every request contains a SHA-256 browser exam key. The backend rejects any attempt to take the assessment through a standard browser.
-              </p>
-            </div>
-          </div>
-
-          {/* Interactive SEB Hardware Lockdown Demonstration Widget */}
-          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-zinc-200 shadow-sm space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-base sm:text-lg font-bold text-zinc-900">
-                  Interactive SEB Lockdown Simulator
-                </h3>
-                <p className="text-xs text-zinc-600">
-                  Toggle the switch inside the proctoring widget below to simulate an active exam kiosk lockdown:
-                </p>
-              </div>
-              <div className="text-xs font-medium text-zinc-500">
-                Safe Exam Browser (SEB) v3.x Compatible
-              </div>
-            </div>
-
-            {/* Embed Proctoring Widget */}
-            <ProctoringWidget />
-          </div>
+          {/* Authentic Examination Security Workflow */}
+          <ExamSecurityExplanation />
 
         </div>
       </section>
 
-      {/* 9. Subscription Plans and Pricing (Light-First Component) */}
+      {/* 9. Subscription Plans and Pricing */}
       <Pricing />
 
       {/* 10. Final Conversion Section */}
       <section className="py-20 md:py-28 bg-white border-t border-zinc-200/80">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
-            <Sparkles className="w-3.5 h-3.5" />
-            Instant Autonomous Provisioning
+            <Zap className="w-3.5 h-3.5" />
+            14-Day Free Evaluation
           </div>
           
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-zinc-900 leading-tight">
@@ -763,7 +696,7 @@ export default function LandingPage() {
           </h2>
           
           <p className="text-sm sm:text-base text-zinc-600 max-w-2xl mx-auto leading-relaxed font-normal">
-            Join forward-thinking colleges and universities. Launch your self-serve institutional portal in less than 60 seconds.
+            Launch your self-serve institutional portal in less than 60 seconds. Evaluate the full EduPulse ERP platform with zero setup fees or long-term commitment.
           </p>
           
           <div className="pt-2 flex flex-wrap items-center justify-center gap-4">
@@ -777,7 +710,7 @@ export default function LandingPage() {
             </Button>
             
             <a 
-              href="mailto:contact@edupulse.io?subject=Enterprise%20Institutional%20Demo%20Request"
+              href="mailto:contact@edupulse.io?subject=EduPulse%20Institutional%20Inquiry"
               className="inline-flex items-center justify-center border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold h-12 px-6 text-xs rounded-xl transition shadow-sm"
             >
               Schedule an institutional demo
@@ -785,10 +718,10 @@ export default function LandingPage() {
           </div>
 
           <div className="pt-2 flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-500">
-            <span>• 14-day free trial</span>
+            <span>• 14-day full feature trial</span>
             <span>• No credit card required</span>
-            <span>• Dedicated tenant subdomain</span>
-            <span>• FERPA compliant</span>
+            <span>• Self-serve onboarding</span>
+            <span>• Instant tenant partition</span>
           </div>
         </div>
       </section>
@@ -807,24 +740,24 @@ export default function LandingPage() {
                 <span className="font-bold text-base text-zinc-900">EduPulse SaaS ERP</span>
               </div>
               <p className="text-xs text-zinc-500 leading-relaxed max-w-sm">
-                The unified institutional operating system for universities, colleges, and educational groups. Scalable multi-tenancy, Row-Level Security, and Safe Exam Browser proctoring.
+                The unified institutional operating system for universities, colleges, and educational groups. Multi-tenant database routing, PostgreSQL Row-Level Security, and integrated assessment workflows.
               </p>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-zinc-200 text-[11px] font-medium text-zinc-700 shadow-sm">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>All Systems Operational • 99.99% SLA</span>
+                <span>All Core Services Operational</span>
               </div>
             </div>
 
-            {/* Modules */}
+            {/* Core Modules */}
             <div className="space-y-3">
               <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Core Modules</h4>
               <ul className="space-y-2 text-zinc-500">
-                <li><a href="#modules" className="hover:text-zinc-900 transition">Academic Planning</a></li>
-                <li><a href="#modules" className="hover:text-zinc-900 transition">Student Lifecycle SIS</a></li>
-                <li><a href="#modules" className="hover:text-zinc-900 transition">Fee & Invoicing</a></li>
-                <li><a href="#modules" className="hover:text-zinc-900 transition">Biometric Attendance</a></li>
-                <li><a href="#modules" className="hover:text-zinc-900 transition">Exam Proctoring (SEB)</a></li>
-                <li><a href="#modules" className="hover:text-zinc-900 transition">Staff Payroll & HR</a></li>
+                <li><a href="#capabilities" className="hover:text-zinc-900 transition">Academic Planning</a></li>
+                <li><a href="#capabilities" className="hover:text-zinc-900 transition">Student Lifecycle (SIS)</a></li>
+                <li><a href="#capabilities" className="hover:text-zinc-900 transition">Fee & Invoicing</a></li>
+                <li><a href="#capabilities" className="hover:text-zinc-900 transition">Class Attendance</a></li>
+                <li><a href="#capabilities" className="hover:text-zinc-900 transition">Examinations & Transcripts</a></li>
+                <li><a href="#capabilities" className="hover:text-zinc-900 transition">Staff Payroll & HR</a></li>
               </ul>
             </div>
 
@@ -832,25 +765,24 @@ export default function LandingPage() {
             <div className="space-y-3">
               <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Architecture</h4>
               <ul className="space-y-2 text-zinc-500">
-                <li><a href="#architecture" className="hover:text-zinc-900 transition">Multi-Tenant Routing</a></li>
-                <li><a href="#architecture" className="hover:text-zinc-900 transition">Dedicated DB Pools</a></li>
-                <li><a href="#security" className="hover:text-zinc-900 transition">PostgreSQL RLS</a></li>
-                <li><a href="#seb-proctoring" className="hover:text-zinc-900 transition">Safe Exam Browser</a></li>
-                <li><a href="#architecture" className="hover:text-zinc-900 transition">Automated S3 Backups</a></li>
+                <li><a href="#architecture" className="hover:text-zinc-900 transition">Tenant Resolution (JWT)</a></li>
+                <li><a href="#architecture" className="hover:text-zinc-900 transition">Thread Confinement</a></li>
+                <li><a href="#architecture" className="hover:text-zinc-900 transition">PostgreSQL RLS</a></li>
+                <li><a href="#architecture" className="hover:text-zinc-900 transition">Dynamic Routing DataSource</a></li>
+                <li><a href="#exam-security" className="hover:text-zinc-900 transition">Safe Exam Browser Integration</a></li>
                 <li><a href="#pricing" className="hover:text-zinc-900 transition">Razorpay B2B Billing</a></li>
               </ul>
             </div>
 
-            {/* Compliance & Legal */}
+            {/* Administrative Access */}
             <div className="space-y-3">
-              <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Governance</h4>
+              <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Portals & Access</h4>
               <ul className="space-y-2 text-zinc-500">
-                <li><a href="#security" className="hover:text-zinc-900 transition">FERPA Compliance</a></li>
-                <li><a href="#security" className="hover:text-zinc-900 transition">GDPR Data Privacy</a></li>
-                <li><a href="#security" className="hover:text-zinc-900 transition">Security Whitepaper</a></li>
-                <li><a href="#pricing" className="hover:text-zinc-900 transition">Service Level Agreement</a></li>
                 <li><Link to="/login" className="hover:text-zinc-900 transition">Institutional Sign In</Link></li>
                 <li><Link to="/onboard" className="hover:text-zinc-900 transition">14-Day Free Onboarding</Link></li>
+                <li><Link to="/admissions" className="hover:text-zinc-900 transition">Public Admissions</Link></li>
+                <li><a href="#pricing" className="hover:text-zinc-900 transition">Commercial Plans</a></li>
+                <li><a href="#overview" className="hover:text-zinc-900 transition">System Overview</a></li>
               </ul>
             </div>
 
@@ -870,48 +802,5 @@ export default function LandingPage() {
       </footer>
 
     </div>
-  );
-}
-
-// Icon helper components for any missed lucide icons
-function Globe(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      {...props}
-    >
-      <circle cx="12" cy="12" r="10" />
-      <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-      <path d="M2 12h20" />
-    </svg>
-  );
-}
-
-function Monitor(props: React.SVGProps<SVGSVGElement>) {
-  return (
-    <svg 
-      xmlns="http://www.w3.org/2000/svg" 
-      width="24" 
-      height="24" 
-      viewBox="0 0 24 24" 
-      fill="none" 
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
-      strokeLinejoin="round" 
-      {...props}
-    >
-      <rect width="20" height="14" x="2" y="3" rx="2" />
-      <line x1="8" x2="16" y1="21" y2="21" />
-      <line x1="12" x2="12" y1="17" y2="21" />
-    </svg>
   );
 }

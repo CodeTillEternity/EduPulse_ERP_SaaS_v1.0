@@ -69,7 +69,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             Predictable Tiers for Every Institution
           </h2>
           <p className="text-zinc-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-normal">
-            Scalable multi-tenant architecture with mathematical Row-Level Security isolation, dedicated database routing, and automated compliance.
+            Scalable multi-tenant architecture with PostgreSQL Row-Level Security isolation, dynamic database routing, and tiered feature entitlements.
           </p>
 
           {/* Clean Segmented Controls */}
@@ -304,7 +304,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <span>Kernel-Level SEB Proctoring with Process Lockdown</span>
+                  <span>Safe Exam Browser (SEB) Assessment Integration</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
@@ -312,11 +312,11 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <span>Automated native S3 disaster recovery streaming</span>
+                  <span>Automated database backup pipeline</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                  <span>24/7 dedicated enterprise reliability engineer & 99.99% SLA</span>
+                  <span>Direct technical onboarding & enterprise support SLA</span>
                 </li>
               </ul>
             </div>

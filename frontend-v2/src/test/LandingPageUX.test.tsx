@@ -12,12 +12,12 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-describe('LandingPage Enterprise Light Architecture & UX', () => {
+describe('LandingPage Authentic Enterprise UX & Architecture', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('renders the authoritative enterprise hero headline and supporting copy', () => {
+  it('renders the authoritative enterprise hero headline and verified proof points', () => {
     render(
       <BrowserRouter>
         <LandingPage />
@@ -27,16 +27,16 @@ describe('LandingPage Enterprise Light Architecture & UX', () => {
     // Hero Headline & Subcopy
     expect(screen.getByText(/One platform to run your entire institution\./i)).toBeInTheDocument();
     expect(screen.getByText(/Bring academics, student management, finance and institutional operations together in one connected platform\./i)).toBeInTheDocument();
-    expect(screen.getByText(/EduPulse SaaS V1.4 • Autonomous Multi-Tenant Architecture/i)).toBeInTheDocument();
+    expect(screen.getByText(/EduPulse SaaS V1.4 • Institutional ERP Platform/i)).toBeInTheDocument();
     
-    // Trust Markers
+    // Verifiable Trust Proof Points
     expect(screen.getByText(/Role-Based Multi-Tenancy/i)).toBeInTheDocument();
-    expect(screen.getByText(/Zero Setup Fees/i)).toBeInTheDocument();
-    expect(screen.getByText(/14-Day Free Evaluation/i)).toBeInTheDocument();
-    expect(screen.getByText(/FERPA & Data Compliant/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/PostgreSQL Row-Level Security/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/14-Day Free Evaluation/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Zero Setup Fees/i).length).toBeGreaterThan(0);
   });
 
-  it('renders the realistic DOM-based institutional product mockup with interactive tabs', async () => {
+  it('renders the authentic DOM-based institutional product mockup with interactive tabs', async () => {
     render(
       <BrowserRouter>
         <LandingPage />
@@ -44,27 +44,27 @@ describe('LandingPage Enterprise Light Architecture & UX', () => {
     );
 
     // Mockup Chrome Header & Campus Overview KPI Cards
-    expect(screen.getByText(/portal\.edupulse\.io\/harvard\/admin/i)).toBeInTheDocument();
-    expect(screen.getByText(/Harvard College of Sciences & Humanities/i)).toBeInTheDocument();
-    expect(screen.getByText(/Active Students/i)).toBeInTheDocument();
-    expect(screen.getByText(/Average Attendance/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Fee Collection/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/app\.edupulse\.io\/admin\/dashboard/i)).toBeInTheDocument();
+    expect(screen.getByText(/EduPulse Institutional Operations/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enrolled Students/i)).toBeInTheDocument();
+    expect(screen.getByText(/Academic Programs/i)).toBeInTheDocument();
+    expect(screen.getByText(/Term Courses Active/i)).toBeInTheDocument();
 
     // Tab buttons
     const studentsTab = screen.getByRole('button', { name: /Student SIS/i });
     expect(studentsTab).toBeInTheDocument();
     fireEvent.click(studentsTab);
-    expect(await screen.findByText(/Sophia Chen/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Alex Morgan/i)).toBeInTheDocument();
 
-    const timetableTab = screen.getByRole('button', { name: /Timetable & Attendance/i });
-    expect(timetableTab).toBeInTheDocument();
-    fireEvent.click(timetableTab);
-    expect(await screen.findByText(/CS-301 Distributed Systems/i)).toBeInTheDocument();
+    const coursesTab = screen.getByRole('button', { name: /Course Catalog/i });
+    expect(coursesTab).toBeInTheDocument();
+    fireEvent.click(coursesTab);
+    expect(await screen.findByText(/Data Structures & Algorithms/i)).toBeInTheDocument();
 
-    const financeTab = screen.getByRole('button', { name: /Fee Collection/i });
-    expect(financeTab).toBeInTheDocument();
-    fireEvent.click(financeTab);
-    expect(await screen.findByText(/Term 2 Tuition Fee/i)).toBeInTheDocument();
+    const feesTab = screen.getByRole('button', { name: /Fee Structure/i });
+    expect(feesTab).toBeInTheDocument();
+    fireEvent.click(feesTab);
+    expect(await screen.findByText(/Semester Tuition Fee/i)).toBeInTheDocument();
   });
 
   it('renders all 6 institutional capabilities and core ERP module cards', () => {
@@ -82,32 +82,77 @@ describe('LandingPage Enterprise Light Architecture & UX', () => {
     expect(screen.getByText(/Staff Payroll & HR Operations/i)).toBeInTheDocument();
   });
 
-  it('renders connected 4-step academic and administrative workflows', () => {
+  it('renders connected 5-step academic and administrative workflows', () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/Eliminate information silos between departments\./i)).toBeInTheDocument();
-    expect(screen.getByText(/Admissions & Enrollment/i)).toBeInTheDocument();
-    expect(screen.getByText(/Academic Scheduling/i)).toBeInTheDocument();
-    expect(screen.getByText(/Fee Generation & Invoicing/i)).toBeInTheDocument();
-    expect(screen.getByText(/Examination & Certification/i)).toBeInTheDocument();
+    expect(screen.getByText(/How data connects across institutional departments\./i)).toBeInTheDocument();
+    expect(screen.getByText(/Admissions & Inquiry/i)).toBeInTheDocument();
+    expect(screen.getByText(/Enrollment Registry/i)).toBeInTheDocument();
+    expect(screen.getByText(/Course & Timetable/i)).toBeInTheDocument();
+    expect(screen.getByText(/Fee Voucher Issuance/i)).toBeInTheDocument();
+    expect(screen.getByText(/Exams & Transcripts/i)).toBeInTheDocument();
   });
 
-  it('renders multi-tenant architecture and security specifications', () => {
+  it('renders campus operations coverage for library, transport, and SaaS admin', () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    expect(screen.getByText(/Custom Subdomain Routing/i)).toBeInTheDocument();
-    expect(screen.getByText(/Dedicated Database Pools/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/Automated S3 Disaster Recovery/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/PostgreSQL Row-Level Security \(RLS\)/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Safe Exam Browser \(SEB\) OS Lockdown/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Library Resource Circulation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Campus Transport & Routes/i)).toBeInTheDocument();
+    expect(screen.getByText(/SaaS Multi-Tenant Control Plane/i)).toBeInTheDocument();
+  });
+
+  it('renders verifiable multi-tenant architecture explorer with interactive layers', async () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/How EduPulse Enforces Tenant Data Isolation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Multi-Tenant Data Isolation & Security Architecture/i)).toBeInTheDocument();
+
+    // Layer 1: Identity Resolution
+    const layer1Btn = screen.getByRole('button', { name: /1\. Identity Resolution/i });
+    fireEvent.click(layer1Btn);
+    expect(await screen.findByText(/com\.erp\.multitenancy\.TenantFilter\.java/i)).toBeInTheDocument();
+
+    // Layer 2: Thread Confinement
+    const layer2Btn = screen.getByRole('button', { name: /2\. Thread Confinement/i });
+    fireEvent.click(layer2Btn);
+    expect(await screen.findByText(/com\.erp\.multitenancy\.TenantContextFilter\.java/i)).toBeInTheDocument();
+
+    // Layer 3: PostgreSQL RLS
+    const layer3Btn = screen.getByRole('button', { name: /3\. PostgreSQL RLS/i });
+    fireEvent.click(layer3Btn);
+    expect(await screen.findByText(/V15__enable_postgres_rls_tenant_tables\.sql/i)).toBeInTheDocument();
+
+    // Layer 4: Dynamic Routing
+    const layer4Btn = screen.getByRole('button', { name: /4\. Dynamic Routing/i });
+    fireEvent.click(layer4Btn);
+    expect(await screen.findByText(/TenantRoutingDataSource\.java/i)).toBeInTheDocument();
+  });
+
+  it('renders authentic examination security and open-source Safe Exam Browser explanation', () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/Exam Security with Safe Exam Browser \(SEB\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Safe Exam Browser \(SEB\) & Assessment Security/i)).toBeInTheDocument();
+    expect(screen.getByText(/Assessment Configuration/i)).toBeInTheDocument();
+    expect(screen.getByText(/SEB Profile Generation/i)).toBeInTheDocument();
+    expect(screen.getByText(/Browser Exam Key Verification/i)).toBeInTheDocument();
+    expect(screen.getByText(/Grading & Transcript Recording/i)).toBeInTheDocument();
   });
 
   it('navigates to self-serve onboarding when Start Free Trial CTA buttons are clicked', () => {
@@ -140,54 +185,5 @@ describe('LandingPage Enterprise Light Architecture & UX', () => {
     const annualBtn = screen.getByRole('button', { name: /Annual/i });
     fireEvent.click(annualBtn);
     expect(screen.getByText(/Save 20%/i)).toBeInTheDocument();
-  });
-
-  it('allows switching tenants in the interactive Attio-style RLS console', async () => {
-    render(
-      <BrowserRouter>
-        <LandingPage />
-      </BrowserRouter>
-    );
-
-    // Initial tenant is Harvard
-    expect(screen.getByText(/Harvard University/i)).toBeInTheDocument();
-    expect(screen.getByText(/Marcus Vance/i)).toBeInTheDocument();
-
-    // Click tenant switcher dropdown
-    const tenantSwitcherBtn = screen.getByRole('button', { name: /Harvard University/i });
-    fireEvent.click(tenantSwitcherBtn);
-
-    // Select Stanford University
-    const stanfordOption = screen.getByText(/Stanford University/i);
-    fireEvent.click(stanfordOption);
-
-    // Stanford records appear
-    expect(await screen.findByText(/Liam O'Connor/i)).toBeInTheDocument();
-    expect(await screen.findByText(/STA-2026-019/i)).toBeInTheDocument();
-  });
-
-  it('renders and interacts with the SEB biometric proctoring hardware widget', () => {
-    render(
-      <BrowserRouter>
-        <LandingPage />
-      </BrowserRouter>
-    );
-
-    // Initial state is LOCKED
-    expect(screen.getAllByText(/Simulate Exam Lockdown/i)[0]).toBeInTheDocument();
-    expect(screen.getByText(/OS KIOSK RESTRICTED/i)).toBeInTheDocument();
-    expect(screen.getAllByText(/BLOCKED/i)[0]).toBeInTheDocument();
-    expect(screen.getByText(/DISABLED/i)).toBeInTheDocument();
-
-    // Toggle lockdown off
-    const toggleBtn = screen.getByRole('switch', { name: /Simulate Exam Lockdown/i });
-    fireEvent.click(toggleBtn);
-
-    // Flips to STANDBY
-    expect(screen.getByText(/STANDBY MODE/i)).toBeInTheDocument();
-
-    // Toggle lockdown back on
-    fireEvent.click(toggleBtn);
-    expect(screen.getByText(/OS KIOSK RESTRICTED/i)).toBeInTheDocument();
   });
 });

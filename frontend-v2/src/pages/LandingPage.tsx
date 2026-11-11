@@ -71,9 +71,12 @@ export default function LandingPage() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-7 text-xs font-semibold text-zinc-600">
+            <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-600">
               <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection('overview'); }} className="hover:text-zinc-900 transition-colors">
                 Overview
+              </a>
+              <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="hover:text-zinc-900 transition-colors">
+                Blueprint
               </a>
               <a href="#capabilities" onClick={(e) => { e.preventDefault(); scrollToSection('capabilities'); }} className="hover:text-zinc-900 transition-colors">
                 Capabilities
@@ -285,24 +288,24 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 3. Actual Product Showcase (Authentic Interface Preview) */}
+      {/* 3. Actual Product Showcase (Authentic System Architecture & Blueprint) */}
       <section id="showcase" className="py-12 md:py-16 bg-white border-y border-zinc-200/80">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
           
           <div className="text-center max-w-2xl mx-auto space-y-2">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 border border-zinc-200 text-xs font-semibold text-zinc-700">
               <Layers className="w-3.5 h-3.5 text-indigo-600" />
-              Application Interface
+              System Architecture &amp; Data Model
             </div>
             <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-zinc-900">
-              The EduPulse Institutional Administration Core
+              The EduPulse Institutional System Core
             </h2>
             <p className="text-xs sm:text-sm text-zinc-600">
-              An authentic preview of the management workspace accessed by institutional registrars and campus directors upon logging into <span className="font-mono text-zinc-800">/dashboard</span>.
+              An authentic architectural breakdown of the verified relational tables, administrative workflows, and isolation policies operating inside <span className="font-mono text-zinc-800">/dashboard</span>.
             </p>
           </div>
 
-          {/* Genuine DOM-Based Product Mockup */}
+          {/* Genuine System Architecture Inspector */}
           <InstitutionalProductMockup />
 
         </div>

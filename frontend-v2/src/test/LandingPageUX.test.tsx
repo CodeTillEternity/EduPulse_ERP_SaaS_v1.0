@@ -36,35 +36,39 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
     expect(screen.getAllByText(/Zero Setup Fees/i).length).toBeGreaterThan(0);
   });
 
-  it('renders the authentic DOM-based institutional product mockup with interactive tabs', async () => {
+  it('renders the authentic system architecture and data model inspector with interactive domain tabs', async () => {
     render(
       <BrowserRouter>
         <LandingPage />
       </BrowserRouter>
     );
 
-    // Mockup Chrome Header & Campus Overview KPI Cards
-    expect(screen.getByText(/app\.edupulse\.io\/admin\/dashboard/i)).toBeInTheDocument();
-    expect(screen.getByText(/EduPulse Institutional Operations/i)).toBeInTheDocument();
-    expect(screen.getByText(/Enrolled Students/i)).toBeInTheDocument();
-    expect(screen.getByText(/Academic Programs/i)).toBeInTheDocument();
-    expect(screen.getByText(/Term Courses Active/i)).toBeInTheDocument();
+    // Inspector Header & Initial Academics Domain
+    expect(screen.getByText(/The EduPulse Institutional System Core/i)).toBeInTheDocument();
+    expect(screen.getByText(/System Architecture & Data Entity Blueprint/i)).toBeInTheDocument();
+    expect(screen.getByText(/Curriculum Framework & Course Catalog/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/table: course/i).length).toBeGreaterThan(0);
 
-    // Tab buttons
-    const studentsTab = screen.getByRole('button', { name: /Student SIS/i });
+    // Tab buttons: Student SIS
+    const studentsTab = screen.getByRole('button', { name: /Student Information \(SIS\)/i });
     expect(studentsTab).toBeInTheDocument();
     fireEvent.click(studentsTab);
-    expect(await screen.findByText(/Alex Morgan/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Student Lifecycle, Admissions & Permanent SIS/i)).toBeInTheDocument();
+    expect((await screen.findAllByText(/table: student/i)).length).toBeGreaterThan(0);
 
-    const coursesTab = screen.getByRole('button', { name: /Course Catalog/i });
-    expect(coursesTab).toBeInTheDocument();
-    fireEvent.click(coursesTab);
-    expect(await screen.findByText(/Data Structures & Algorithms/i)).toBeInTheDocument();
-
-    const feesTab = screen.getByRole('button', { name: /Fee Structure/i });
+    // Tab buttons: Fee & Ledger Engine
+    const feesTab = screen.getByRole('button', { name: /Fee & Ledger Engine/i });
     expect(feesTab).toBeInTheDocument();
     fireEvent.click(feesTab);
-    expect(await screen.findByText(/Semester Tuition Fee/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Institutional Invoicing, Ledgers & Online Fee Settlement/i)).toBeInTheDocument();
+    expect((await screen.findAllByText(/table: fee_structure/i)).length).toBeGreaterThan(0);
+
+    // Tab buttons: Campus Operations
+    const opsTab = screen.getByRole('button', { name: /Campus Operations/i });
+    expect(opsTab).toBeInTheDocument();
+    fireEvent.click(opsTab);
+    expect(await screen.findByText(/Lecture Timetables, Attendance & Campus Logistics/i)).toBeInTheDocument();
+    expect((await screen.findAllByText(/table: timetable_slot/i)).length).toBeGreaterThan(0);
   });
 
   it('renders all 6 institutional capabilities and core ERP module cards', () => {
@@ -123,21 +127,22 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
     // Razorpay Integration is default active tab
     expect(screen.getAllByText(/Razorpay Fee Collection/i).length).toBeGreaterThan(0);
     expect(screen.getByText(/Accept institutional fee payments through an integrated online payment experience\./i)).toBeInTheDocument();
-    expect(screen.getByText(/Institutional Payment Journey/i)).toBeInTheDocument();
-    expect(screen.getByText(/Pay with Razorpay/i)).toBeInTheDocument();
+    expect(screen.getByText(/Institutional Payment Journey & Settlement Pipeline/i)).toBeInTheDocument();
+    expect(screen.getByText(/Direct Bank Settlement/i)).toBeInTheDocument();
 
     // Switch to Google Meet Integration
     const meetTabBtn = screen.getByRole('button', { name: /Google Meet Classrooms/i });
     fireEvent.click(meetTabBtn);
     expect(await screen.findByText(/Connect institutional academic schedules with online classroom experiences\./i)).toBeInTheDocument();
-    expect(await screen.findByText(/CS-301: Distributed Systems/i)).toBeInTheDocument();
-    expect(await screen.findByText(/Join Session with Google Meet/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Virtual Lecture Delivery & Academic Timetable Synchronization/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Enrollment-Restricted Access/i)).toBeInTheDocument();
 
     // Switch to Notion Integration
     const notionTabBtn = screen.getByRole('button', { name: /Notion Course Notes/i });
     fireEvent.click(notionTabBtn);
     expect(await screen.findByText(/Bring academic notes and learning resources closer to the courses students study\./i)).toBeInTheDocument();
-    expect(await screen.findByText(/CS201 — Lecture Notes & Binary Trees/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Curriculum Repository & Notion Workspace Linking/i)).toBeInTheDocument();
+    expect(await screen.findByText(/Rich Collaborative Canvas/i)).toBeInTheDocument();
   });
 
   it('renders verifiable multi-tenant architecture explorer with interactive layers', async () => {

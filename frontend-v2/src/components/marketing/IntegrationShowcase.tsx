@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { 
-  ExternalLink, 
-  Clock,
-  Check
+  ShieldCheck, 
+  CreditCard, 
+  Video, 
+  FileText, 
+  Server,
+  Building2,
+  Lock,
+  Globe
 } from 'lucide-react';
 
 export const IntegrationShowcase: React.FC = () => {
@@ -29,7 +34,7 @@ export const IntegrationShowcase: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('razorpay')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
                 activeTab === 'razorpay'
                   ? 'bg-white border-zinc-300 text-zinc-900 shadow-sm ring-1 ring-zinc-300/50'
                   : 'bg-zinc-100/70 border-zinc-200/70 text-zinc-600 hover:text-zinc-900 hover:bg-white'
@@ -42,7 +47,7 @@ export const IntegrationShowcase: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('google-meet')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
                 activeTab === 'google-meet'
                   ? 'bg-white border-zinc-300 text-zinc-900 shadow-sm ring-1 ring-zinc-300/50'
                   : 'bg-zinc-100/70 border-zinc-200/70 text-zinc-600 hover:text-zinc-900 hover:bg-white'
@@ -55,7 +60,7 @@ export const IntegrationShowcase: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab('notion')}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
+              className={`px-4 py-2.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-2 border ${
                 activeTab === 'notion'
                   ? 'bg-white border-zinc-300 text-zinc-900 shadow-sm ring-1 ring-zinc-300/50'
                   : 'bg-zinc-100/70 border-zinc-200/70 text-zinc-600 hover:text-zinc-900 hover:bg-white'
@@ -69,347 +74,504 @@ export const IntegrationShowcase: React.FC = () => {
 
         {/* 1. RAZORPAY INTEGRATION SHOWCASE */}
         {activeTab === 'razorpay' && (
-          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              
-              {/* Left Column: Positioning & Workflow */}
-              <div className="lg:col-span-6 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-[#002970]/5 border border-[#002970]/15 flex items-center justify-center p-2">
-                    <RazorpayLogo className="w-full h-full" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold text-[#002970] uppercase tracking-wider">Payments & Bursar</span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">Razorpay Fee Collection</h3>
-                  </div>
+          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left space-y-10">
+            
+            {/* Header Banner */}
+            <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-zinc-100">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl bg-[#002970]/5 border border-[#002970]/15 flex items-center justify-center p-2.5">
+                  <RazorpayLogo className="w-full h-full" />
                 </div>
-
-                <p className="text-sm text-zinc-700 leading-relaxed font-medium">
-                  "Accept institutional fee payments through an integrated online payment experience."
-                </p>
-
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  EduPulse bridges student accounting and banking infrastructure through Razorpay. Institutional bursars configure tuition schedules, lab charges, and campus fees in <span className="font-mono text-zinc-800 bg-zinc-100 px-1 py-0.5 rounded">FeeManager</span>, which automatically populate student accounts with online settlement links.
-                </p>
-
-                {/* 7-Step Institutional Workflow */}
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Institutional Payment Journey</h4>
-                  <ol className="space-y-2 text-xs text-zinc-600">
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
-                      <span>Institution configures multi-head fee structures by program and term.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
-                      <span>Student fee obligations and invoice vouchers generate automatically.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
-                      <span>Student or parent accesses the payment option inside the student portal (<span className="font-mono text-[10px]">/portal/fees</span>).</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
-                      <span>Razorpay processes the online payment via UPI, netbanking, or cards.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">5</span>
-                      <span>EduPulse receives and processes payment confirmation via server-to-server webhook.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">6</span>
-                      <span>Institutional payment records and debit/credit ledgers update instantly to settled status.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">7</span>
-                      <span>Digital receipts and audited financial vouchers become immediately downloadable.</span>
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-[11px] text-zinc-500">
-                  <span className="font-semibold text-zinc-700">Important distinction:</span> Razorpay integration for institutional student fee collection operates independently from EduPulse's own B2B SaaS platform subscription licensing.
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold text-[#002970] uppercase tracking-wider">Institutional Fee Collection</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">
+                      Production Integrated
+                    </span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">
+                    Accept institutional fee payments through an integrated online payment experience.
+                  </h3>
                 </div>
               </div>
 
-              {/* Right Column: Connected Interface Preview */}
-              <div className="lg:col-span-6 bg-zinc-50/80 rounded-2xl border border-zinc-200/90 p-5 space-y-4">
-                <div className="flex items-center justify-between text-xs text-zinc-500 border-b border-zinc-200 pb-2">
-                  <span className="font-semibold text-zinc-700">Student Portal — Fee Center View</span>
-                  <span className="font-mono text-[11px]">INV-2026-0001</span>
-                </div>
-
-                {/* Simulated Invoice Card */}
-                <div className="bg-white rounded-xl p-4 border border-zinc-200 space-y-3 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h5 className="font-bold text-zinc-900 text-xs">Fall 2026 Semester Tuition & Lab Fee</h5>
-                      <span className="text-[11px] text-zinc-500">Department of Computer Science & Engineering</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-[10px] font-semibold">
-                      UNPAID
-                    </span>
-                  </div>
-
-                  <div className="flex items-baseline justify-between pt-1">
-                    <span className="text-xs text-zinc-500">Amount Due:</span>
-                    <span className="text-xl font-bold font-mono text-zinc-900">$4,500.00</span>
-                  </div>
-
-                  {/* Razorpay Trigger Button */}
-                  <div className="pt-2 border-t border-zinc-100">
-                    <div className="w-full py-2.5 px-4 rounded-xl bg-[#002970] text-white font-semibold text-xs flex items-center justify-between shadow-sm">
-                      <div className="flex items-center gap-2">
-                        <RazorpayLogo className="w-4 h-4 fill-white text-white" />
-                        <span>Pay with Razorpay</span>
-                      </div>
-                      <span className="text-[11px] opacity-90 font-mono">UPI • Cards • Netbanking</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Modal preview overlay */}
-                <div className="p-4 bg-white rounded-xl border border-zinc-200/80 space-y-2.5 text-xs">
-                  <div className="flex items-center justify-between text-[11px] text-zinc-500">
-                    <span className="font-semibold text-zinc-800">Payment Flow Integration</span>
-                    <span className="text-emerald-700 font-medium flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5" /> Webhook Connected
-                    </span>
-                  </div>
-                  <div className="p-2.5 rounded-lg bg-zinc-50 font-mono text-[10px] text-zinc-600 border border-zinc-200/60">
-                    <div>order_id: "order_H89v1k92La"</div>
-                    <div>status: "captured" &rarr; update student_ledger set status = 'PAID'</div>
-                  </div>
-                </div>
-
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs text-zinc-600 max-w-md">
+                <span className="font-semibold text-zinc-800">Architectural Boundary:</span> Student Fee Collection operates as an institutional bursar workflow integrated via Razorpay Checkout, separate from EduPulse's own B2B SaaS platform subscription licensing.
               </div>
-
             </div>
+
+            {/* Horizontal 5-Stage Operational Workflow */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
+                  <CreditCard className="w-4 h-4 text-indigo-600" />
+                  Institutional Payment Journey & Settlement Pipeline
+                </h4>
+                <span className="text-[11px] font-mono text-zinc-500">Route: /portal/fees &rarr; /api/v1/fee-payments</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+                
+                {/* Stage 1 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        01
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Setup</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Fee Schedule Formulation</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Bursar defines tuition schedules, lab charges, and amenities in <span className="font-mono text-zinc-800">FeeManager</span>.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
+                    table: fee_structure
+                  </div>
+                </div>
+
+                {/* Stage 2 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        02
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Invoicing</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Student Voucher Issuance</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Itemized fee obligations calculate automatically and populate student portal accounts.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
+                    table: student_invoice
+                  </div>
+                </div>
+
+                {/* Stage 3 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        03
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Checkout</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Online Payment Option</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Student or parent opens Fee Center and launches secure Razorpay modal (UPI, cards, netbanking).
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                    SDK: Razorpay Checkout.js
+                  </div>
+                </div>
+
+                {/* Stage 4 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        04
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Verification</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Server Webhook Handshake</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      EduPulse backend verifies cryptographic signature against Razorpay secret key.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                    HMAC-SHA256 Check
+                  </div>
+                </div>
+
+                {/* Stage 5 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        05
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Settlement</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Ledger Settlement & Receipts</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Status transitions to PAID, debit/credit ledger reconciles, and digital receipts generate.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-emerald-700">
+                    Status: PAID &amp; Audited
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* 3 Technical Integration Guarantees */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <Building2 className="w-4 h-4 text-indigo-600" />
+                  <span>Direct Bank Settlement</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Fee payments route directly into your institution's verified merchant bank account. EduPulse never holds tuition escrow funds.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                  <span>Automated Reconciliation</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Eliminates manual bank challan verification. Invoices, student ledgers, and transaction references match automatically.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <Globe className="w-4 h-4 text-indigo-600" />
+                  <span>Universal Payment Rails</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Support for UPI intent, dynamic QR codes, international and domestic cards, EMI options, and over 50 netbanking institutions.
+                </p>
+              </div>
+            </div>
+
           </div>
         )}
 
         {/* 2. GOOGLE MEET INTEGRATION SHOWCASE */}
         {activeTab === 'google-meet' && (
-          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              
-              {/* Left Column: Interface Preview */}
-              <div className="lg:col-span-6 order-2 lg:order-1 bg-zinc-50/80 rounded-2xl border border-zinc-200/90 p-5 space-y-4">
-                <div className="flex items-center justify-between text-xs text-zinc-500 border-b border-zinc-200 pb-2">
-                  <span className="font-semibold text-zinc-700">Course Schedule — Timetable View</span>
-                  <span className="font-mono text-[11px]">CS-301 • Room: Virtual</span>
+          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left space-y-10">
+            
+            {/* Header Banner */}
+            <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-zinc-100">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl bg-white border border-zinc-200 flex items-center justify-center p-2.5 shadow-xs">
+                  <GoogleMeetLogo className="w-full h-full" />
                 </div>
-
-                {/* Timetable Slot Card */}
-                <div className="bg-white rounded-xl p-4 border border-zinc-200 space-y-3 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h5 className="font-bold text-zinc-900 text-xs">CS-301: Distributed Systems</h5>
-                      <span className="text-[11px] text-zinc-500">Lecture: Raft Consensus & Byzantine Faults</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-[10px] font-semibold">
-                      LIVE CLASS
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-4 text-xs text-zinc-600">
-                    <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-zinc-400" />
-                      10:00 AM – 11:30 AM
-                    </span>
-                    <span>•</span>
-                    <span>Faculty: Dr. Robert Vance</span>
-                  </div>
-
-                  {/* Google Meet Action Button */}
-                  <div className="pt-2 border-t border-zinc-100">
-                    <a
-                      href="#google-meet"
-                      onClick={(e) => e.preventDefault()}
-                      className="w-full py-2.5 px-4 rounded-xl bg-white hover:bg-zinc-50 border border-zinc-300 text-zinc-800 font-semibold text-xs flex items-center justify-between transition shadow-sm"
-                    >
-                      <div className="flex items-center gap-2">
-                        <GoogleMeetLogo className="w-4 h-4" />
-                        <span>Join Session with Google Meet</span>
-                      </div>
-                      <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                    </a>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white rounded-xl border border-zinc-200 text-[11px] text-zinc-600 space-y-1">
-                  <div className="font-semibold text-zinc-800">Faculty-to-Student Calendar Binding</div>
-                  <p className="text-zinc-500 text-[10px]">
-                    Meeting URL is automatically accessible to enrolled students via <span className="font-mono">/portal/schedule</span> without manual link emailing.
-                  </p>
-                </div>
-              </div>
-
-              {/* Right Column: Positioning & Workflow */}
-              <div className="lg:col-span-6 order-1 lg:order-2 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center p-2 shadow-sm">
-                    <GoogleMeetLogo className="w-full h-full" />
-                  </div>
-                  <div>
+                <div>
+                  <div className="flex items-center gap-2">
                     <span className="text-[11px] font-bold text-emerald-700 uppercase tracking-wider">Online Classrooms</span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">Google Meet Integration</h3>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">
+                      Production Integrated
+                    </span>
                   </div>
-                </div>
-
-                <p className="text-sm text-zinc-700 leading-relaxed font-medium">
-                  "Connect institutional academic schedules with online classroom experiences."
-                </p>
-
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  Faculty and students seamlessly link course schedules with interactive video lectures. Virtual lecture sessions scheduled in EduPulse generate direct meeting access points for enrolled students, ensuring lecture timetables and video conference rooms stay unified.
-                </p>
-
-                {/* 5-Step Academic Workflow */}
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Virtual Class Workflow</h4>
-                  <ol className="space-y-2 text-xs text-zinc-600">
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
-                      <span>Faculty schedules an online or hybrid lecture in <span className="font-mono text-[10px]">TimetableManager</span>.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
-                      <span>The relevant course syllabus and timetable entry is associated with the meeting link.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
-                      <span>Enrolled students access the live session directly through their EduPulse student timetable.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
-                      <span>Faculty conducts the lecture session securely within Google Meet.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">5</span>
-                      <span>Course records and lecture topic completion are tracked inside EduPulse.</span>
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-[11px] text-zinc-500">
-                  <span className="font-semibold text-zinc-700">Implementation Note:</span> Google Meet conducts the real-time audio/video stream while EduPulse enforces course registration checks and schedule mapping.
+                  <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">
+                    Connect institutional academic schedules with online classroom experiences.
+                  </h3>
                 </div>
               </div>
 
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs text-zinc-600 max-w-md">
+                <span className="font-semibold text-zinc-800">Architectural Boundary:</span> Real-time video/audio streaming is handled by Google's secure infrastructure, while EduPulse manages academic timetables, course enrollment validation, and attendance logs.
+              </div>
             </div>
+
+            {/* Horizontal 5-Stage Operational Workflow */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
+                  <Video className="w-4 h-4 text-indigo-600" />
+                  Virtual Lecture Delivery & Academic Timetable Synchronization
+                </h4>
+                <span className="text-[11px] font-mono text-zinc-500">Route: /operations/timetable &rarr; /portal/schedule</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+                
+                {/* Stage 1 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        01
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Schedule</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Lecture Scheduling</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Faculty schedules lectures in <span className="font-mono text-zinc-800">TimetableManager</span> with assigned days and time slots.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
+                    table: timetable_slot
+                  </div>
+                </div>
+
+                {/* Stage 2 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        02
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Association</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Meeting Link Binding</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      The Google Meet session URL binds directly to the scheduled course offering section.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                    field: virtual_meeting_url
+                  </div>
+                </div>
+
+                {/* Stage 3 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        03
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Access</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Student Timetable Sync</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Enrolled students access the live session directly from their portal timetable without email link clutter.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
+                    Route: /portal/schedule
+                  </div>
+                </div>
+
+                {/* Stage 4 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        04
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Delivery</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Secure Video Session</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Faculty conducts interactive lectures with screen sharing, breakout rooms, and real-time chat.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                    Service: Google Meet Cloud
+                  </div>
+                </div>
+
+                {/* Stage 5 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        05
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Tracking</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Topic & Attendance Log</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Lecture completion and topic coverage are logged into the institutional curriculum ledger.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-emerald-700">
+                    table: attendance_record
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* 3 Technical Integration Guarantees */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <Lock className="w-4 h-4 text-indigo-600" />
+                  <span>Enrollment-Restricted Access</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Only authenticated students actively registered in the specific course section see the meeting join button, preventing unauthorized room access.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <Server className="w-4 h-4 text-indigo-600" />
+                  <span>Collision-Free Scheduling</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Timetable conflict algorithms prevent double-booking faculty lecturers or scheduling overlapping lecture periods for student cohorts.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <Globe className="w-4 h-4 text-indigo-600" />
+                  <span>Global High-Bandwidth Cloud</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Offloads demanding media traffic to Google's content delivery network, ensuring reliable video streaming regardless of local campus server capacity.
+                </p>
+              </div>
+            </div>
+
           </div>
         )}
 
         {/* 3. NOTION INTEGRATION SHOWCASE */}
         {activeTab === 'notion' && (
-          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-              
-              {/* Left Column: Positioning & Workflow */}
-              <div className="lg:col-span-6 space-y-6">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center p-2 shadow-sm">
-                    <NotionLogo className="w-full h-full" />
-                  </div>
-                  <div>
+          <div className="bg-white rounded-3xl border border-zinc-200 shadow-sm overflow-hidden p-6 sm:p-10 text-left space-y-10">
+            
+            {/* Header Banner */}
+            <div className="flex flex-wrap items-center justify-between gap-6 pb-8 border-b border-zinc-100">
+              <div className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-2xl bg-white border border-zinc-200 flex items-center justify-center p-2.5 shadow-xs">
+                  <NotionLogo className="w-full h-full" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
                     <span className="text-[11px] font-bold text-zinc-900 uppercase tracking-wider">Learning Resources</span>
-                    <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">Notion Workspace Integration</h3>
-                  </div>
-                </div>
-
-                <p className="text-sm text-zinc-700 leading-relaxed font-medium">
-                  "Bring academic notes and learning resources closer to the courses students study."
-                </p>
-
-                <p className="text-xs text-zinc-600 leading-relaxed">
-                  Connect departmental course definitions with rich collaborative course notes. Instructors organize lecture notes, reading lists, and lab assignments in Notion, linking them directly to corresponding courses in EduPulse so students always have study materials in context.
-                </p>
-
-                {/* 4-Step Learning Workflow */}
-                <div className="space-y-3 pt-2">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-500">Course Resource Workflow</h4>
-                  <ol className="space-y-2 text-xs text-zinc-600">
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">1</span>
-                      <span>Faculty organizes relevant course materials, syllabus notes, and reading guides in Notion.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">2</span>
-                      <span>Resources are linked directly to the course in EduPulse's <span className="font-mono text-[10px]">CourseManager</span>.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">3</span>
-                      <span>Enrolled students access available notes and materials through their course view.</span>
-                    </li>
-                    <li className="flex items-start gap-2.5">
-                      <span className="w-5 h-5 rounded-md bg-zinc-100 text-zinc-700 font-bold flex items-center justify-center shrink-0 text-[11px]">4</span>
-                      <span>Academic resources remain organized alongside credit hours, prerequisites, and attendance.</span>
-                    </li>
-                  </ol>
-                </div>
-
-                <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-[11px] text-zinc-500">
-                  <span className="font-semibold text-zinc-700">Implementation Note:</span> Notion provides the collaborative document space while EduPulse maintains academic credit frameworks and student enrollment boundaries.
-                </div>
-              </div>
-
-              {/* Right Column: Connected Interface Preview */}
-              <div className="lg:col-span-6 bg-zinc-50/80 rounded-2xl border border-zinc-200/90 p-5 space-y-4">
-                <div className="flex items-center justify-between text-xs text-zinc-500 border-b border-zinc-200 pb-2">
-                  <span className="font-semibold text-zinc-700">Academic Catalog — Course View</span>
-                  <span className="font-mono text-[11px]">CS-201 • 4 Credits</span>
-                </div>
-
-                {/* Course Resource Card */}
-                <div className="bg-white rounded-xl p-4 border border-zinc-200 space-y-3 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h5 className="font-bold text-zinc-900 text-xs">CS-201: Data Structures & Algorithms</h5>
-                      <span className="text-[11px] text-zinc-500">Department of Computer Science</span>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200 text-[10px] font-semibold">
-                      FALL TERM
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">
+                      Production Integrated
                     </span>
                   </div>
-
-                  {/* Connected Notion Document Card */}
-                  <div className="p-3 rounded-lg border border-zinc-200 bg-zinc-50/70 flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-7 h-7 rounded-md bg-white border border-zinc-200 flex items-center justify-center p-1 shadow-xs">
-                        <NotionLogo className="w-full h-full" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-zinc-900 text-xs">CS201 — Lecture Notes & Binary Trees</div>
-                        <div className="text-[10px] text-zinc-500 font-mono">notion.so/edupulse/cs201-algorithms</div>
-                      </div>
-                    </div>
-                    <a
-                      href="#notion"
-                      onClick={(e) => e.preventDefault()}
-                      className="px-2.5 py-1 rounded-md bg-white border border-zinc-200 text-[11px] font-semibold text-zinc-700 hover:bg-zinc-50 flex items-center gap-1 shrink-0 shadow-xs"
-                    >
-                      <span>Open</span>
-                      <ExternalLink className="w-3 h-3 text-zinc-400" />
-                    </a>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    <span className="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[10px] font-medium">Syllabus Pacing</span>
-                    <span className="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[10px] font-medium">Reading Lists</span>
-                    <span className="px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 text-[10px] font-medium">Lab Handouts</span>
-                  </div>
-                </div>
-
-                <div className="p-3 bg-white rounded-xl border border-zinc-200 text-[11px] text-zinc-600 space-y-1">
-                  <div className="font-semibold text-zinc-800">Contextual Learning Experience</div>
-                  <p className="text-zinc-500 text-[10px]">
-                    Students review course notes and study guides in their personal or shared Notion workspaces directly linked from their academic course enrollment.
-                  </p>
+                  <h3 className="text-xl sm:text-2xl font-bold text-zinc-900">
+                    Bring academic notes and learning resources closer to the courses students study.
+                  </h3>
                 </div>
               </div>
 
+              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 text-xs text-zinc-600 max-w-md">
+                <span className="font-semibold text-zinc-800">Architectural Boundary:</span> Instructors curate collaborative notes and dynamic study documents in Notion, while EduPulse enforces accredited credit requirements, grading policies, and prerequisite gates.
+              </div>
             </div>
+
+            {/* Horizontal 4-Stage Operational Workflow */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-900 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-indigo-600" />
+                  Curriculum Repository & Notion Workspace Linking
+                </h4>
+                <span className="text-[11px] font-mono text-zinc-500">Route: /academic/courses &rarr; /portal/courses</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                
+                {/* Stage 1 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        01
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Curation</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Faculty Workspace Setup</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Faculty organize syllabi, reading lists, lecture handouts, and lab assignments in collaborative Notion workspaces.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
+                    Workspace: Department Notion
+                  </div>
+                </div>
+
+                {/* Stage 2 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        02
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Linkage</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Catalog Binding in CourseManager</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Instructors bind the Notion resource URL to the master course definition in <span className="font-mono text-zinc-800">/academic/courses</span>.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
+                    field: course.syllabus_url
+                  </div>
+                </div>
+
+                {/* Stage 3 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        03
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Access</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Contextual Student Access</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Enrolled students access live workspaces directly from their course dashboard alongside credit requirements.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-zinc-500">
+                    Route: /portal/courses
+                  </div>
+                </div>
+
+                {/* Stage 4 */}
+                <div className="p-4 rounded-2xl bg-zinc-50/80 border border-zinc-200/80 flex flex-col justify-between space-y-3">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="w-6 h-6 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center">
+                        04
+                      </span>
+                      <span className="text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">Alignment</span>
+                    </div>
+                    <h5 className="font-bold text-xs text-zinc-900 mt-2.5">Syllabus Pacing Synchronization</h5>
+                    <p className="text-[11px] text-zinc-600 mt-1 leading-relaxed">
+                      Academic resources remain organized alongside credit hours, prerequisites, and examination calendars.
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-zinc-200/60 text-[10px] font-mono text-emerald-700">
+                    Framework: Curricular Alignment
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {/* 3 Technical Integration Guarantees */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-zinc-100">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <FileText className="w-4 h-4 text-indigo-600" />
+                  <span>Rich Collaborative Canvas</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Leverage Notion's real-time document editing, mathematical KaTeX formulas, and syntax-highlighted code blocks for modern coursework.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <Server className="w-4 h-4 text-indigo-600" />
+                  <span>Zero ERP File Storage Bloat</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Heavy lecture slide decks, PDFs, and multimedia attachments stay housed in Notion, keeping institutional ERP database instances lean.
+                </p>
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-xs font-bold text-zinc-900">
+                  <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                  <span>Structured Degree Alignment</span>
+                </div>
+                <p className="text-xs text-zinc-600 leading-relaxed">
+                  Combines the flexibility of collaborative documentation with the rigor of accredited departmental degree requirements.
+                </p>
+              </div>
+            </div>
+
           </div>
         )}
 

@@ -68,7 +68,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             <Zap className="h-3.5 w-3.5 text-zinc-400" />
             Institutional Commercial Licensing
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-50 leading-tight">
             Predictable Tiers for Every Institution
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto font-normal">
@@ -144,7 +144,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             <div>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">Starter Evaluation</h3>
+                  <h3 className="text-lg font-bold text-zinc-50 tracking-tight">Starter Evaluation</h3>
                   <p className="text-xs text-zinc-400 mt-1">Self-serve institutional trial</p>
                 </div>
                 <div className="p-2 bg-white/[0.04] rounded-lg border border-white/10">
@@ -220,7 +220,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             <div>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">Pro Institution</h3>
+                  <h3 className="text-lg font-bold text-zinc-50 tracking-tight">Pro Institution</h3>
                   <p className="text-xs text-zinc-400 mt-1">Colleges & established schools</p>
                 </div>
                 <div className="p-2 bg-white/[0.04] rounded-lg border border-white/10">
@@ -292,7 +292,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             <div>
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">Enterprise High-Sec</h3>
+                  <h3 className="text-lg font-bold text-zinc-50 tracking-tight">Enterprise High-Sec</h3>
                   <p className="text-xs text-zinc-400 mt-1">Multi-campus university systems</p>
                 </div>
                 <div className="p-2 bg-white/[0.04] rounded-lg border border-white/10">
@@ -357,7 +357,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
 
         {/* Feature Entitlement Summary Table with Glassmorphism */}
         <div className="mt-16 bg-[#111111]/60 backdrop-blur-md border border-white/5 rounded-2xl p-6 sm:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-          <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2 tracking-tight">
+          <h4 className="text-base font-bold text-zinc-50 mb-4 flex items-center gap-2 tracking-tight">
             <ShieldCheck className="w-4 h-4 text-zinc-400" />
             Security & Entitlement Matrix
           </h4>

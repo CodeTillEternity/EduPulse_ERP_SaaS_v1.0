@@ -191,9 +191,9 @@ export default function LandingPage() {
                 hidden: { opacity: 0, y: 20 },
                 visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
               }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-black text-white tracking-tighter leading-[1.08]"
+              className="text-4xl sm:text-6xl lg:text-7xl font-black text-zinc-50 tracking-tighter leading-[1.08]"
             >
-              Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
+              Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 via-zinc-200 to-zinc-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
             </motion.h1>
 
             <motion.p 
@@ -306,9 +306,9 @@ export default function LandingPage() {
               <Sparkles className="w-3.5 h-3.5 text-zinc-400" />
               Surgical Precision • Uncompromising Integrity
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tighter leading-tight">
+            <h2 className="text-3xl sm:text-5xl font-black text-zinc-50 tracking-tighter leading-tight">
               Hardware-Level Security. <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-b from-white via-zinc-200 to-zinc-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 via-zinc-200 to-zinc-400">
                 Mathematical Multi-Tenancy.
               </span>
             </h2>
@@ -344,7 +344,7 @@ export default function LandingPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight leading-snug">
+                  <h3 className="text-2xl sm:text-3xl font-black text-zinc-50 tracking-tight leading-snug">
                     Safe Exam Browser OS Lockdown. <br />
                     <span className="text-zinc-300">Total Kiosk Sandboxing.</span>
                   </h3>
@@ -429,7 +429,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">Row-Level Security</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight mt-1">Mathematical Isolation.</h3>
+                  <h3 className="text-xl font-bold text-zinc-50 tracking-tight mt-1">Mathematical Isolation.</h3>
                   <p className="text-zinc-400 text-xs leading-relaxed mt-2">
                     Kernel-level row isolation via PostgreSQL RLS. Every database query guarantees zero cross-tenant row exposure even if an attacker executes arbitrary SQL injections.
                   </p>
@@ -460,7 +460,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">Dynamic Sharding</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight mt-1">Dedicated DB Pools.</h3>
+                  <h3 className="text-xl font-bold text-zinc-50 tracking-tight mt-1">Dedicated DB Pools.</h3>
                   <p className="text-zinc-400 text-xs leading-relaxed mt-2">
                     AbstractRoutingDataSource dynamically swaps connection pools at runtime. High-throughput Enterprise tenants route to dedicated HikariCP clusters with zero downtime.
                   </p>
@@ -494,7 +494,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">Continuous DR</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight mt-1">Automated S3 Recovery.</h3>
+                  <h3 className="text-xl font-bold text-zinc-50 tracking-tight mt-1">Automated S3 Recovery.</h3>
                   <p className="text-zinc-400 text-xs leading-relaxed mt-2">
                     Streaming pg_dump pipelines compress and upload tenant backups to encrypted AWS S3 buckets with automated lifecycle retention and instant point-in-time recovery.
                   </p>
@@ -526,7 +526,7 @@ export default function LandingPage() {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-widest font-semibold">Institutional Commerce</span>
-                  <h3 className="text-xl font-bold text-white tracking-tight mt-1">Autonomous B2B Billing.</h3>
+                  <h3 className="text-xl font-bold text-zinc-50 tracking-tight mt-1">Autonomous B2B Billing.</h3>
                   <p className="text-zinc-400 text-xs leading-relaxed mt-2">
                     RBI-compliant Razorpay recurring subscriptions with automatic tenant trial-to-paid transitions, tiered feature entitlement locks, and webhook-driven account lifecycles.
                   </p>
@@ -559,7 +559,7 @@ export default function LandingPage() {
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10 text-zinc-400 text-xs font-semibold">
               Procurement & Compliance
             </div>
-            <h3 className="text-3xl sm:text-4xl font-black text-white tracking-tight">Frequently Asked Questions</h3>
+            <h3 className="text-3xl sm:text-4xl font-black text-zinc-50 tracking-tight">Frequently Asked Questions</h3>
             <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto">Key answers for university CIOs, registrars, and IT procurement committees.</p>
           </motion.div>
 
@@ -571,7 +571,7 @@ export default function LandingPage() {
               transition={{ duration: 0.45, delay: 0.05 }}
               className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
-              <h4 className="font-bold text-white text-sm">How does the 14-day free trial work?</h4>
+              <h4 className="font-bold text-zinc-50 text-sm">How does the 14-day free trial work?</h4>
               <p className="text-zinc-400 leading-relaxed">
                 When you sign up via the autonomous onboarding wizard, EduPulse immediately creates your institution's tenant namespace, registers your custom subdomain, and provisions a SUPERADMIN user. No payment info is required.
               </p>
@@ -584,7 +584,7 @@ export default function LandingPage() {
               transition={{ duration: 0.45, delay: 0.1 }}
               className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
-              <h4 className="font-bold text-white text-sm">How is billing handled after the trial?</h4>
+              <h4 className="font-bold text-zinc-50 text-sm">How is billing handled after the trial?</h4>
               <p className="text-zinc-400 leading-relaxed">
                 We support RBI-compliant Razorpay recurring B2B billing for cards, netbanking, and corporate mandate transactions. Enterprise clients can also opt for annual purchase order (PO) invoicing.
               </p>
@@ -597,7 +597,7 @@ export default function LandingPage() {
               transition={{ duration: 0.45, delay: 0.15 }}
               className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
-              <h4 className="font-bold text-white text-sm">Can we migrate from Shared to Dedicated DB later?</h4>
+              <h4 className="font-bold text-zinc-50 text-sm">Can we migrate from Shared to Dedicated DB later?</h4>
               <p className="text-zinc-400 leading-relaxed">
                 Yes! Our automated Tenant Migration Engine allows Super Admins to migrate all institutional schema and data to a dedicated database instance with zero data loss.
               </p>
@@ -610,7 +610,7 @@ export default function LandingPage() {
               transition={{ duration: 0.45, delay: 0.2 }}
               className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
-              <h4 className="font-bold text-white text-sm">Are students required to install software for exams?</h4>
+              <h4 className="font-bold text-zinc-50 text-sm">Are students required to install software for exams?</h4>
               <p className="text-zinc-400 leading-relaxed">
                 For Safe Exam Browser (SEB) proctored tests, students download the open-source SEB client for Windows/macOS/iOS. EduPulse provides a 1-click encrypted config launcher for instant exam entry.
               </p>
@@ -629,10 +629,10 @@ export default function LandingPage() {
           transition={{ duration: 0.55 }}
           className="max-w-4xl mx-auto px-4 space-y-6 relative z-10"
         >
-          <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-5xl font-black text-zinc-50 tracking-tight leading-tight drop-shadow-sm">
             Ready to Modernize Your Institution's Operations?
           </h2>
-          <p className="text-xs sm:text-base text-zinc-400 max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base text-zinc-400 max-w-2xl mx-auto font-normal leading-relaxed">
             Join forward-thinking colleges and universities. Launch your self-serve institutional portal in less than 60 seconds.
           </p>
           <div className="pt-2">

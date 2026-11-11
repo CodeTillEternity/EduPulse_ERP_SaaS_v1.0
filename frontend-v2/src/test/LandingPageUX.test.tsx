@@ -27,6 +27,7 @@ describe('LandingPage UX & Bento Grid Architecture', () => {
     expect(screen.getByText(/EduPulse SaaS V1.4 • Safe Exam Browser/i)).toBeInTheDocument();
     expect(screen.getByText(/Next-Gen Institutional ERP with/i)).toBeInTheDocument();
     expect(screen.getByText(/Kernel-Level Exam Proctoring/i)).toBeInTheDocument();
+    expect(screen.getByText(/edupulse-cli • tenant-provision/i)).toBeInTheDocument();
   });
 
   it('renders Apple-style Bento Grid cards with SEB lockdown and RLS architecture', () => {

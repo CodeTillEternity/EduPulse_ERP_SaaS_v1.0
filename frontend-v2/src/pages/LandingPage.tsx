@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
+import { ProvisioningTerminal } from '../components/marketing/ProvisioningTerminal';
 import { 
   GraduationCap, 
   ArrowRight, 
@@ -160,106 +161,141 @@ export default function LandingPage() {
         <div className="absolute top-1/4 left-1/3 -translate-x-1/2 w-[700px] h-[400px] bg-white/[0.02] blur-[160px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={{
-              hidden: { opacity: 0 },
-              visible: {
-                opacity: 1,
-                transition: {
-                  staggerChildren: 0.12,
-                  delayChildren: 0.05,
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            
+            {/* Left Column: Tracked-Tight Geist Typography & High-Contrast CTAs */}
+            <motion.div 
+              initial="hidden"
+              animate="visible"
+              variants={{
+                hidden: { opacity: 0 },
+                visible: {
+                  opacity: 1,
+                  transition: {
+                    staggerChildren: 0.1,
+                    delayChildren: 0.05,
+                  },
                 },
-              },
-            }}
-            className="text-center max-w-4xl mx-auto space-y-6"
-          >
-            <motion.div 
-              variants={{
-                hidden: { opacity: 0, y: 15 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
               }}
-              className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md text-zinc-400 text-xs font-semibold tracking-wide"
+              className="lg:col-span-6 space-y-6 text-left"
             >
-              <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
-              SaaS V1.4 • Autonomous Multi-Tenant Architecture
-            </motion.div>
-
-            <motion.h1 
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
-              }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-black text-zinc-50 tracking-tighter leading-[1.08]"
-            >
-              Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 via-zinc-200 to-zinc-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
-            </motion.h1>
-
-            <motion.p 
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
-              }}
-              className="text-sm sm:text-lg text-zinc-400 leading-relaxed max-w-3xl mx-auto font-normal"
-            >
-              Empower universities, colleges, and schools with autonomous tenant self-provisioning, Safe Exam Browser (SEB) OS lockdown, Razorpay B2B subscription billing, and dynamic dedicated database routing.
-            </motion.p>
-
-            {/* Hero CTAs with Magnetic Hover States */}
-            <motion.div 
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
-              }}
-              className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4"
-            >
-              <motion.div
-                whileHover={{ scale: 1.03, y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className="w-full sm:w-auto"
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, y: 15 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } },
+                }}
+                className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/[0.03] border border-white/10 backdrop-blur-md text-zinc-400 text-xs font-semibold tracking-wide"
               >
+                <Sparkles className="h-3.5 w-3.5 text-zinc-400" />
+                SaaS V1.4 • Autonomous Multi-Tenant Architecture
+              </motion.div>
+
+              <motion.h1 
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+                }}
+                className="text-4xl sm:text-5xl lg:text-6xl font-black text-zinc-50 tracking-tighter leading-[1.06]"
+              >
+                Next-Gen Institutional ERP with <span className="text-transparent bg-clip-text bg-gradient-to-b from-zinc-50 via-zinc-200 to-zinc-400">Kernel-Level Exam Proctoring</span> & Cryptographic Isolation.
+              </motion.h1>
+
+              <motion.p 
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+                }}
+                className="text-sm sm:text-base text-zinc-400 leading-relaxed font-normal max-w-xl"
+              >
+                Empower universities, colleges, and schools with autonomous tenant self-provisioning, Safe Exam Browser (SEB) OS lockdown, Razorpay B2B subscription billing, and dynamic dedicated database routing.
+              </motion.p>
+
+              {/* Hero CTAs with Magnetic Hover States */}
+              <motion.div 
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] } },
+                }}
+                className="pt-2 flex flex-wrap items-center gap-3.5"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Button 
+                    size="lg" 
+                    onClick={() => navigate('/onboard')}
+                    className="bg-violet-200 hover:bg-white text-zinc-950 font-semibold px-7 h-11 text-xs rounded-xl transition shadow-sm"
+                  >
+                    <Zap className="h-4 w-4 mr-2 text-zinc-950" />
+                    Start 14-Day Free Trial
+                    <ArrowRight className="h-4 w-4 ml-2" />
+                  </Button>
+                </motion.div>
+
+                <motion.div
+                  whileHover={{ scale: 1.02, y: -1 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Button 
+                    size="lg" 
+                    variant="outline"
+                    onClick={() => {
+                      const el = document.getElementById('pricing');
+                      el?.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    className="border-white/10 bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md text-white font-semibold h-11 px-6 text-xs rounded-xl transition"
+                  >
+                    Explore Pricing & Tiers
+                  </Button>
+                </motion.div>
+
                 <Button 
                   size="lg" 
-                  onClick={() => navigate('/onboard')}
-                  className="w-full sm:w-auto bg-violet-200 hover:bg-white text-zinc-950 font-semibold px-8 h-12 text-xs rounded-xl transition shadow-sm"
+                  variant="ghost" 
+                  onClick={() => navigate('/login')}
+                  className="text-zinc-400 hover:text-white hover:bg-white/[0.06] font-medium h-11 px-4 text-xs"
                 >
-                  <Zap className="h-4 w-4 mr-2 text-zinc-950" />
-                  Start 14-Day Free Trial
-                  <ArrowRight className="h-4 w-4 ml-2" />
+                  Sign In to Existing Tenant
                 </Button>
               </motion.div>
 
+              {/* Micro-trust line */}
               <motion.div
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-                transition={{ type: "spring", stiffness: 400, damping: 17 }}
-                className="w-full sm:w-auto"
+                variants={{
+                  hidden: { opacity: 0 },
+                  visible: { opacity: 1, transition: { delay: 0.4 } },
+                }}
+                className="flex items-center gap-3 pt-1 text-[11px] text-zinc-500 font-medium flex-wrap"
               >
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  onClick={() => {
-                    const el = document.getElementById('pricing');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="w-full sm:w-auto border-white/10 bg-white/[0.03] hover:bg-white/[0.08] backdrop-blur-md text-white font-semibold h-12 px-7 text-xs rounded-xl transition"
-                >
-                  Explore Pricing & Tiers
-                </Button>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" />
+                  Zero Cross-Tenant Leakage
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1.5">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-zinc-400" />
+                  SEB Kiosk Lockdown
+                </span>
+                <span>•</span>
+                <span>Autonomous Setup &lt; 60s</span>
               </motion.div>
-
-              <Button 
-                size="lg" 
-                variant="ghost" 
-                onClick={() => navigate('/login')}
-                className="w-full sm:w-auto text-zinc-400 hover:text-white hover:bg-white/[0.06] font-medium h-12 px-5 text-xs"
-              >
-                Sign In to Existing Tenant
-              </Button>
             </motion.div>
-          </motion.div>
+
+            {/* Right Column: Clerk-Style Live Interactive Provisioning Terminal */}
+            <motion.div
+              initial={{ opacity: 0, y: 30, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              className="lg:col-span-6 relative w-full"
+            >
+              <div className="absolute -inset-4 bg-gradient-to-tr from-white/[0.02] to-white/[0.04] rounded-3xl blur-2xl pointer-events-none" />
+              <ProvisioningTerminal />
+            </motion.div>
+
+          </div>
 
           {/* Metrics Ribbon with Monochromatic Metallic Numbers */}
           <motion.div 

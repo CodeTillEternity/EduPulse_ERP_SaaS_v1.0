@@ -29,7 +29,7 @@ export const ExamSecurityExplanation: React.FC = () => {
       title: 'Browser Exam Key Verification',
       role: 'Backend Validation Handshake',
       description: 'When the student begins the test, the open-source SEB application transmits a SHA-256 BrowserExamKey in the HTTP header.',
-      technical: 'Backend security filter verifies the request hash against the exam configuration before serving assessment questions.'
+      technical: 'SEB client transmits BrowserExamKey in HTTP headers; automated filter enforcement is on the security roadmap.'
     },
     {
       num: 4,

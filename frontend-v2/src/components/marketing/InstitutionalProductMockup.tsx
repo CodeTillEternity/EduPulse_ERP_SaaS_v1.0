@@ -601,7 +601,7 @@ export const InstitutionalProductMockup: React.FC = () => {
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
           <span className="font-medium text-zinc-700">Enterprise Operating Console</span>
           <span className="text-zinc-400">•</span>
-          <span>FERPA &amp; ISO/IEC 27001 Compliant Architecture</span>
+          <span>Multi-Tenant Enterprise Isolation • RLS Bound</span>
         </div>
         <div className="font-medium text-zinc-600">
           EduPulse ERP Core v1.4

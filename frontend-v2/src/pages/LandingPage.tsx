@@ -5,6 +5,9 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
 import { InstitutionalProductMockup } from '../components/marketing/InstitutionalProductMockup';
+import { HeroProductComposition } from '../components/marketing/HeroProductComposition';
+import { RoleBasedProductTour } from '../components/marketing/RoleBasedProductTour';
+import { InteractiveWorkflows } from '../components/marketing/InteractiveWorkflows';
 import { ERPDomainsBlueprint } from '../components/marketing/ERPDomainsBlueprint';
 import { ArchitectureExplorer } from '../components/marketing/ArchitectureExplorer';
 import { ExamSecurityExplanation } from '../components/marketing/ExamSecurityExplanation';
@@ -75,6 +78,9 @@ export default function LandingPage() {
             <nav className="hidden md:flex items-center gap-5 text-xs font-semibold text-zinc-600">
               <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection('overview'); }} className="hover:text-zinc-900 transition-colors">
                 Overview
+              </a>
+              <a href="#tour" onClick={(e) => { e.preventDefault(); scrollToSection('tour'); }} className="hover:text-zinc-900 transition-colors text-indigo-700">
+                Product Tour
               </a>
               <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="hover:text-zinc-900 transition-colors">
                 System Core
@@ -155,6 +161,9 @@ export default function LandingPage() {
             <nav className="flex flex-col space-y-2 text-xs font-semibold text-zinc-600">
               <a href="#overview" onClick={() => { setMobileMenuOpen(false); scrollToSection('overview'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Overview
+              </a>
+              <a href="#tour" onClick={() => { setMobileMenuOpen(false); scrollToSection('tour'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50 text-indigo-700 font-bold">
+                Product Tour
               </a>
               <a href="#showcase" onClick={() => { setMobileMenuOpen(false); scrollToSection('showcase'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 System Core
@@ -252,17 +261,17 @@ export default function LandingPage() {
               onClick={() => navigate('/onboard')}
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-7 h-11 text-xs rounded-xl transition shadow-sm"
             >
-              Start free trial
+              Start free trial • Institutional evaluation
               <ArrowRight className="h-4 w-4 ml-2" />
             </Button>
 
             <Button 
               size="lg" 
               variant="outline"
-              onClick={() => scrollToSection('domains')}
+              onClick={() => scrollToSection('tour')}
               className="border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold h-11 px-6 text-xs rounded-xl transition shadow-sm"
             >
-              Explore 23-domain blueprint
+              Explore the product
               <ArrowDown className="h-3.5 w-3.5 ml-2 text-zinc-400" />
             </Button>
           </motion.div>
@@ -295,8 +304,21 @@ export default function LandingPage() {
             </span>
           </motion.div>
 
+          {/* Authentic First-Viewport Application Composition */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+            className="pt-8"
+          >
+            <HeroProductComposition />
+          </motion.div>
+
         </div>
       </section>
+
+      {/* Dedicated Interactive Role-Based Product Tour */}
+      <RoleBasedProductTour />
 
       {/* 3. Actual Product Showcase (Authentic System Architecture & Blueprint) */}
       <section id="showcase" className="py-12 md:py-16 bg-white border-y border-zinc-200/80">
@@ -486,110 +508,8 @@ export default function LandingPage() {
       {/* 5. Complete 23-Domain Functional Blueprint */}
       <ERPDomainsBlueprint />
 
-      {/* 6. Real Academic and Administrative Workflows */}
-      <section id="workflows" className="py-24 bg-white border-y border-zinc-200/80">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-3xl mx-auto mb-16 space-y-3">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700">
-              <Zap className="w-3.5 h-3.5" />
-              End-to-End Operational Flow
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-zinc-900">
-              How data connects across institutional departments.
-            </h2>
-            <p className="text-sm sm:text-base text-zinc-600 leading-relaxed font-normal">
-              From the moment an applicant submits credentials to graduation day, EduPulse synchronizes records across academic, operations, and finance teams.
-            </p>
-          </div>
-
-          {/* 5-Step Connected Pipeline */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
-            
-            {/* Step 1 */}
-            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
-              <div>
-                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
-                  01
-                </div>
-                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Admissions & Inquiry</h3>
-                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
-                  Prospective student applies via the public admission portal. Application is saved to the admission queue for committee evaluation.
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                Route: /admissions
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
-              <div>
-                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
-                  02
-                </div>
-                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Enrollment Registry</h3>
-                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
-                  Registrar approves application. Student profile is allocated a permanent Roll Number, batch assignment, and student portal credentials.
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                Route: /admissions/enroll
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
-              <div>
-                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
-                  03
-                </div>
-                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Course & Timetable</h3>
-                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
-                  Credits allocate to enrolled courses. Lecture timetables, room assignments, and faculty attendance registers populate automatically.
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                Route: /academic/courses
-              </div>
-            </div>
-
-            {/* Step 4 */}
-            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
-              <div>
-                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
-                  04
-                </div>
-                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Fee Voucher Issuance</h3>
-                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
-                  Tuition invoices generate based on enrolled credit hours and program fee structures. Students pay via the portal or Razorpay gateway.
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                Route: /finance/fees
-              </div>
-            </div>
-
-            {/* Step 5 */}
-            <div className="bg-zinc-50 rounded-2xl p-5 border border-zinc-200 flex flex-col justify-between">
-              <div>
-                <div className="w-7 h-7 rounded-lg bg-zinc-900 text-white font-bold text-xs flex items-center justify-center mb-3">
-                  05
-                </div>
-                <h3 className="font-bold text-zinc-900 text-xs sm:text-sm">Exams & Transcripts</h3>
-                <p className="text-[11px] text-zinc-600 mt-2 leading-relaxed">
-                  Final exam hall tickets issue upon fee clearance. Course marks compile into cumulative GPA/CGPA and verified digital transcripts.
-                </p>
-              </div>
-              <div className="mt-4 pt-3 border-t border-zinc-200/60 text-[10px] font-mono text-indigo-700">
-                Route: /academic/transcripts
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      {/* 6. Real Academic and Administrative Workflows (Interactive Multi-Stream Pipeline) */}
+      <InteractiveWorkflows />
 
       {/* 6. Institutional Operations & Departmental Coverage */}
       <section id="operations" className="py-24 bg-[#FBFBFA]">

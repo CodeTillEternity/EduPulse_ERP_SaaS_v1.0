@@ -41,7 +41,7 @@ export default function LandingPage() {
       </div>
 
       {/* 2. Header & Navigation (Glassmorphism & Tight Typography) */}
-      <header className="sticky top-0 z-50 bg-[#0A0A0A]/75 backdrop-blur-xl border-b border-white/[0.08] transition-all">
+      <header className="sticky top-0 z-50 bg-[#0A0A0A]/75 backdrop-blur-xl border-b border-white/5 transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
@@ -154,10 +154,10 @@ export default function LandingPage() {
       </header>
 
       {/* 3. Hero Section (Near-Black Background, Glowing Mesh Gradient) */}
-      <section id="hero" className="relative overflow-hidden bg-[#0A0A0A] py-24 lg:py-36 border-b border-white/[0.06]">
+      <section id="hero" className="relative overflow-hidden bg-[#0A0A0A] py-24 lg:py-36 border-b border-white/5">
         {/* Soft Ambient Mesh Background */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[550px] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05)_0%,rgba(10,10,10,0)_65%)] pointer-events-none" />
-        <div className="absolute top-1/3 left-1/4 -translate-x-1/2 w-[500px] h-[300px] bg-white/[0.02] blur-[140px] rounded-full pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.06)_0%,rgba(10,10,10,0)_70%)] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/3 -translate-x-1/2 w-[700px] h-[400px] bg-white/[0.02] blur-[160px] rounded-full pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <motion.div 
@@ -266,21 +266,21 @@ export default function LandingPage() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-white/[0.06]"
+            className="mt-20 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 pt-10 border-t border-white/5"
           >
-            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-white/10 transition">
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">99.99%</div>
               <div className="text-xs font-medium text-zinc-400 mt-1">SLA Reliability</div>
             </motion.div>
-            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-white/10 transition">
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">100%</div>
               <div className="text-xs font-medium text-zinc-400 mt-1">RLS Isolation</div>
             </motion.div>
-            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-white/10 transition">
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">Zero</div>
               <div className="text-xs font-medium text-zinc-400 mt-1">Cross-Tenant Leakage</div>
             </motion.div>
-            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-6 text-center shadow-glass hover:border-white/[0.16] transition">
+            <motion.div whileHover={{ y: -3 }} transition={{ duration: 0.2 }} className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-2xl p-6 text-center shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:border-white/10 transition">
               <div className="text-3xl sm:text-4xl font-black text-white tracking-tight">50K+</div>
               <div className="text-xs font-medium text-zinc-400 mt-1">Secure Exam Sessions</div>
             </motion.div>
@@ -289,9 +289,9 @@ export default function LandingPage() {
       </section>
 
       {/* 4. Apple-Style Bento Grid Architecture */}
-      <section id="features" className="py-28 bg-[#0A0A0A] border-b border-white/[0.08] relative overflow-hidden font-sans">
+      <section id="features" className="py-28 bg-[#0A0A0A] border-b border-white/5 relative overflow-hidden font-sans">
         {/* Soft Ambient Mesh Background */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.03)_0%,rgba(10,10,10,0)_70%)] pointer-events-none" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[700px] bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.04)_0%,rgba(10,10,10,0)_75%)] pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           {/* Section Header with Apple-Style Punchy Copy */}
@@ -327,7 +327,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-              className="lg:col-span-2 bg-[#111111]/80 border border-white/[0.08] rounded-3xl p-8 sm:p-10 relative overflow-hidden group hover:border-white/20 transition-all duration-500 shadow-glass"
+              className="lg:col-span-2 bg-[#111111]/80 border border-white/5 rounded-3xl p-8 sm:p-10 relative overflow-hidden group hover:border-white/10 transition-all duration-500 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               {/* Subtle background radial glow */}
               <div className="absolute -top-24 -left-24 w-96 h-96 bg-white/[0.02] rounded-full blur-3xl pointer-events-none transition-colors" />
@@ -339,7 +339,7 @@ export default function LandingPage() {
                       <Lock className="w-3.5 h-3.5 text-zinc-400" />
                       Anti-Cheat Technology
                     </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 border border-white/[0.08] px-2.5 py-1 rounded-full bg-white/[0.02]">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-400 border border-white/10 px-2.5 py-1 rounded-full bg-white/[0.02]">
                       Zero Trust Client
                     </span>
                   </div>
@@ -354,8 +354,8 @@ export default function LandingPage() {
                 </div>
 
                 {/* Simulated Kiosk HUD Mockup */}
-                <div className="bg-[#0A0A0A]/90 border border-white/[0.08] rounded-2xl p-5 font-mono text-xs space-y-4 shadow-inner">
-                  <div className="flex items-center justify-between border-b border-white/[0.06] pb-3">
+                <div className="bg-[#0A0A0A]/90 border border-white/5 rounded-2xl p-5 font-mono text-xs space-y-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-3">
                     <div className="flex items-center gap-2">
                       <span className="w-2.5 h-2.5 rounded-full bg-zinc-600 inline-block" />
                       <span className="w-2.5 h-2.5 rounded-full bg-zinc-500 inline-block" />
@@ -419,7 +419,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all duration-500 flex flex-col justify-between shadow-glass"
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-3xl p-8 relative overflow-hidden group hover:border-white/10 transition-all duration-500 flex flex-col justify-between shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-2xl pointer-events-none transition-colors" />
 
@@ -437,7 +437,7 @@ export default function LandingPage() {
               </div>
 
               {/* Terminal Snippet */}
-              <div className="mt-6 bg-[#0A0A0A] border border-white/[0.06] rounded-xl p-3.5 font-mono text-[11px] text-zinc-400 space-y-1">
+              <div className="mt-6 bg-[#0A0A0A] border border-white/5 rounded-xl p-3.5 font-mono text-[11px] text-zinc-400 space-y-1">
                 <div className="text-zinc-400">SET app.tenant_id = 'harvard';</div>
                 <div className="text-white">SELECT count(*) FROM users;</div>
                 <div className="text-zinc-300 text-[10px] mt-1">↳ Result: 3,420 rows (0 leak)</div>
@@ -450,7 +450,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all duration-500 flex flex-col justify-between shadow-glass"
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-3xl p-8 relative overflow-hidden group hover:border-white/10 transition-all duration-500 flex flex-col justify-between shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-2xl pointer-events-none transition-colors" />
 
@@ -484,7 +484,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all duration-500 flex flex-col justify-between shadow-glass"
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-3xl p-8 relative overflow-hidden group hover:border-white/10 transition-all duration-500 flex flex-col justify-between shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-2xl pointer-events-none transition-colors" />
 
@@ -501,7 +501,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-between text-[11px] font-mono text-zinc-400 bg-[#0A0A0A] p-3 rounded-xl border border-white/[0.06]">
+              <div className="mt-6 flex items-center justify-between text-[11px] font-mono text-zinc-400 bg-[#0A0A0A] p-3 rounded-xl border border-white/5">
                 <span className="text-zinc-400 flex items-center gap-1.5">
                   <CheckCircle2 className="w-3.5 h-3.5 text-zinc-500" />
                   RPO &lt; 5m • RTO &lt; 15m
@@ -516,7 +516,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.65, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-3xl p-8 relative overflow-hidden group hover:border-white/20 transition-all duration-500 flex flex-col justify-between shadow-glass"
+              className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-3xl p-8 relative overflow-hidden group hover:border-white/10 transition-all duration-500 flex flex-col justify-between shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.02] rounded-full blur-2xl pointer-events-none transition-colors" />
 
@@ -547,7 +547,7 @@ export default function LandingPage() {
       <Pricing />
 
       {/* 6. Institutional FAQ & Compliance Section */}
-      <section id="faq" className="py-24 bg-[#0A0A0A] border-t border-white/[0.08] relative font-sans">
+      <section id="faq" className="py-24 bg-[#0A0A0A] border-t border-white/5 relative font-sans">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -569,7 +569,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ duration: 0.45, delay: 0.05 }}
-              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <h4 className="font-bold text-white text-sm">How does the 14-day free trial work?</h4>
               <p className="text-zinc-400 leading-relaxed">
@@ -582,7 +582,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ duration: 0.45, delay: 0.1 }}
-              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <h4 className="font-bold text-white text-sm">How is billing handled after the trial?</h4>
               <p className="text-zinc-400 leading-relaxed">
@@ -595,7 +595,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ duration: 0.45, delay: 0.15 }}
-              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <h4 className="font-bold text-white text-sm">Can we migrate from Shared to Dedicated DB later?</h4>
               <p className="text-zinc-400 leading-relaxed">
@@ -608,7 +608,7 @@ export default function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-30px" }}
               transition={{ duration: 0.45, delay: 0.2 }}
-              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/[0.08] space-y-2 hover:border-white/[0.16] transition"
+              className="bg-[#111111]/80 backdrop-blur-md p-6 rounded-2xl border border-white/5 space-y-2 hover:border-white/10 transition shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
             >
               <h4 className="font-bold text-white text-sm">Are students required to install software for exams?</h4>
               <p className="text-zinc-400 leading-relaxed">
@@ -620,8 +620,8 @@ export default function LandingPage() {
       </section>
 
       {/* 7. Bottom CTA Banner with Magnetic Interaction */}
-      <section className="py-20 bg-gradient-to-b from-[#0A0A0A] via-[#111118] to-[#0A0A0A] text-white text-center border-t border-white/[0.08] relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/[0.02] blur-[120px] rounded-full pointer-events-none" />
+      <section className="py-20 bg-gradient-to-b from-[#0A0A0A] via-[#111118] to-[#0A0A0A] text-white text-center border-t border-white/5 relative overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[350px] bg-white/[0.02] blur-[140px] rounded-full pointer-events-none" />
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -655,7 +655,7 @@ export default function LandingPage() {
       </section>
 
       {/* 8. Footer */}
-      <footer className="bg-[#0A0A0A] border-t border-white/[0.08] py-8 text-center text-xs text-zinc-400">
+      <footer className="bg-[#0A0A0A] border-t border-white/5 py-8 text-center text-xs text-zinc-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <GraduationCap className="w-4 h-4 text-white" />

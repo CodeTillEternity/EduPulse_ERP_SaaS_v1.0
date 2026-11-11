@@ -51,10 +51,10 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
   };
 
   return (
-    <section id="pricing" className="py-28 bg-[#0A0A0A] text-white relative overflow-hidden font-sans">
+    <section id="pricing" className="py-28 bg-[#0A0A0A] text-white relative overflow-hidden font-sans border-b border-white/5">
       {/* Soft Ambient Mesh Background */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[450px] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.05)_0%,rgba(10,10,10,0)_70%)] pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-96 h-96 bg-[radial-gradient(circle,rgba(255,255,255,0.02)_0%,rgba(10,10,10,0)_60%)] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.04)_0%,rgba(10,10,10,0)_70%)] pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(255,255,255,0.02)_0%,rgba(10,10,10,0)_65%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <motion.div 
@@ -139,7 +139,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.55, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-glass"
+            className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-2xl p-8 flex flex-col justify-between hover:border-white/10 transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
           >
             <div>
               <div className="flex items-center justify-between">
@@ -211,7 +211,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.55, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-[#111111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-8 flex flex-col justify-between relative shadow-glass hover:border-white/20 transition-all duration-300"
+            className="bg-[#111111]/80 backdrop-blur-md border border-white/10 rounded-2xl p-8 flex flex-col justify-between relative hover:border-white/20 transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
           >
             <span className="absolute -top-3.5 right-6 px-3 py-1 rounded-full bg-violet-200/15 border border-violet-300/30 text-violet-200 text-[10px] font-bold uppercase tracking-wider shadow-sm">
               Most Popular
@@ -287,7 +287,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ duration: 0.55, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-[#111111]/80 backdrop-blur-md border border-white/[0.08] rounded-2xl p-8 flex flex-col justify-between hover:border-white/20 transition-all duration-300 shadow-glass"
+            className="bg-[#111111]/80 backdrop-blur-md border border-white/5 rounded-2xl p-8 flex flex-col justify-between hover:border-white/10 transition-all duration-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
           >
             <div>
               <div className="flex items-center justify-between">
@@ -356,7 +356,7 @@ export const Pricing: React.FC<PricingProps> = ({ onSelectTier }) => {
         </div>
 
         {/* Feature Entitlement Summary Table with Glassmorphism */}
-        <div className="mt-16 bg-white/[0.02] backdrop-blur-md border border-white/[0.06] rounded-2xl p-6 sm:p-8">
+        <div className="mt-16 bg-[#111111]/60 backdrop-blur-md border border-white/5 rounded-2xl p-6 sm:p-8 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
           <h4 className="text-base font-bold text-white mb-4 flex items-center gap-2 tracking-tight">
             <ShieldCheck className="w-4 h-4 text-zinc-400" />
             Security & Entitlement Matrix

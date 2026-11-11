@@ -8,6 +8,7 @@ import {
   Calendar,
   Award,
   CreditCard,
+  Video,
   LogOut,
   Menu,
   X,
@@ -42,6 +43,12 @@ export default function StudentPortalLayout() {
       path: '/portal/schedule',
       icon: Calendar,
       description: 'Weekly timetable & classes'
+    },
+    {
+      name: 'Virtual Classroom',
+      path: '/portal/classroom',
+      icon: Video,
+      description: 'Native in-app WebRTC lectures'
     },
     {
       name: 'Academics / Grades',

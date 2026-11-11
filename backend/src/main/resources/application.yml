@@ -51,6 +51,16 @@ razorpay:
   key-secret: ${RAZORPAY_KEY_SECRET:rzp_secret_placeholder}
   webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:rzp_webhook_secret_placeholder}
 
+# Native WebRTC Virtual Classroom Configuration (Daily.co)
+daily:
+  api-key: ${DAILY_API_KEY:}
+  domain: ${DAILY_DOMAIN:edupulse}
+
+# Native Notion Workspace Sync Configuration
+notion:
+  api-key: ${NOTION_API_KEY:}
+  version: ${NOTION_VERSION:2022-06-28}
+
 # Dedicated Database Routing Configuration (Hybrid Multi-Tenancy & HikariCP Pools)
 multitenancy:
   datasources:

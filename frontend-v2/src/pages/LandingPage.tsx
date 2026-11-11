@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { Button } from '../components/ui/button';
 import { Pricing } from '../components/marketing/Pricing';
 import { InstitutionalProductMockup } from '../components/marketing/InstitutionalProductMockup';
+import { ERPDomainsBlueprint } from '../components/marketing/ERPDomainsBlueprint';
 import { ArchitectureExplorer } from '../components/marketing/ArchitectureExplorer';
 import { ExamSecurityExplanation } from '../components/marketing/ExamSecurityExplanation';
 import { IntegrationShowcase } from '../components/marketing/IntegrationShowcase';
@@ -71,15 +72,18 @@ export default function LandingPage() {
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-zinc-600">
+            <nav className="hidden md:flex items-center gap-5 text-xs font-semibold text-zinc-600">
               <a href="#overview" onClick={(e) => { e.preventDefault(); scrollToSection('overview'); }} className="hover:text-zinc-900 transition-colors">
                 Overview
               </a>
               <a href="#showcase" onClick={(e) => { e.preventDefault(); scrollToSection('showcase'); }} className="hover:text-zinc-900 transition-colors">
-                Blueprint
+                System Core
               </a>
               <a href="#capabilities" onClick={(e) => { e.preventDefault(); scrollToSection('capabilities'); }} className="hover:text-zinc-900 transition-colors">
-                Capabilities
+                Pillars
+              </a>
+              <a href="#domains" onClick={(e) => { e.preventDefault(); scrollToSection('domains'); }} className="hover:text-zinc-900 transition-colors">
+                23 Domains
               </a>
               <a href="#workflows" onClick={(e) => { e.preventDefault(); scrollToSection('workflows'); }} className="hover:text-zinc-900 transition-colors">
                 Workflows
@@ -152,8 +156,14 @@ export default function LandingPage() {
               <a href="#overview" onClick={() => { setMobileMenuOpen(false); scrollToSection('overview'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Overview
               </a>
+              <a href="#showcase" onClick={() => { setMobileMenuOpen(false); scrollToSection('showcase'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+                System Core
+              </a>
               <a href="#capabilities" onClick={() => { setMobileMenuOpen(false); scrollToSection('capabilities'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
-                Capabilities & Modules
+                Core Pillars
+              </a>
+              <a href="#domains" onClick={() => { setMobileMenuOpen(false); scrollToSection('domains'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
+                23-Domain Blueprint
               </a>
               <a href="#workflows" onClick={() => { setMobileMenuOpen(false); scrollToSection('workflows'); }} className="px-3 py-2 rounded-lg hover:bg-zinc-50">
                 Workflows
@@ -249,10 +259,10 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               variant="outline"
-              onClick={() => scrollToSection('showcase')}
+              onClick={() => scrollToSection('domains')}
               className="border-zinc-200 bg-white hover:bg-zinc-50 text-zinc-700 font-semibold h-11 px-6 text-xs rounded-xl transition shadow-sm"
             >
-              Explore platform
+              Explore 23-domain blueprint
               <ArrowDown className="h-3.5 w-3.5 ml-2 text-zinc-400" />
             </Button>
           </motion.div>
@@ -473,7 +483,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 5. Real Academic and Administrative Workflows */}
+      {/* 5. Complete 23-Domain Functional Blueprint */}
+      <ERPDomainsBlueprint />
+
+      {/* 6. Real Academic and Administrative Workflows */}
       <section id="workflows" className="py-24 bg-white border-y border-zinc-200/80">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
@@ -765,6 +778,7 @@ export default function LandingPage() {
             <div className="space-y-3">
               <h4 className="font-semibold text-zinc-900 uppercase tracking-wider text-[11px]">Core Modules</h4>
               <ul className="space-y-2 text-zinc-500">
+                <li><a href="#domains" className="hover:text-zinc-900 transition font-semibold text-indigo-700">23-Domain Blueprint</a></li>
                 <li><a href="#capabilities" className="hover:text-zinc-900 transition">Academic Planning</a></li>
                 <li><a href="#capabilities" className="hover:text-zinc-900 transition">Student Lifecycle (SIS)</a></li>
                 <li><a href="#capabilities" className="hover:text-zinc-900 transition">Fee & Invoicing</a></li>

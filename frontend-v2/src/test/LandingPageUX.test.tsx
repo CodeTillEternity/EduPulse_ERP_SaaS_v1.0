@@ -64,9 +64,9 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
     expect((await screen.findAllByText(/table: fee_structure/i)).length).toBeGreaterThan(0);
 
     // Tab buttons: Campus Operations
-    const opsTab = screen.getByRole('button', { name: /Campus Operations/i });
-    expect(opsTab).toBeInTheDocument();
-    fireEvent.click(opsTab);
+    const opsTabs = screen.getAllByRole('button', { name: /Campus Operations/i });
+    expect(opsTabs.length).toBeGreaterThan(0);
+    fireEvent.click(opsTabs[0]);
     expect(await screen.findByText(/Lecture Timetables, Attendance & Campus Logistics/i)).toBeInTheDocument();
     expect((await screen.findAllByText(/table: timetable_slot/i)).length).toBeGreaterThan(0);
   });
@@ -84,6 +84,31 @@ describe('LandingPage Authentic Enterprise UX & Architecture', () => {
     expect(screen.getByText(/Biometric & Class Attendance/i)).toBeInTheDocument();
     expect(screen.getByText(/Examinations & Grade Books/i)).toBeInTheDocument();
     expect(screen.getByText(/Staff Payroll & HR Operations/i)).toBeInTheDocument();
+  });
+
+  it('renders the complete 23-domain functional blueprint with interactive status and search filters', async () => {
+    render(
+      <BrowserRouter>
+        <LandingPage />
+      </BrowserRouter>
+    );
+
+    expect(screen.getByText(/259-Module Functional Blueprint Across 23 Institutional Domains/i)).toBeInTheDocument();
+    expect(screen.getByText(/Complete Institutional ERP Breadth\./i)).toBeInTheDocument();
+    expect(screen.getAllByText(/V1.4 Operational/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Blueprint Roadmap/i).length).toBeGreaterThan(0);
+
+    // Filter by Roadmap Only
+    const roadmapFilterBtn = screen.getByRole('button', { name: /Roadmap Only/i });
+    expect(roadmapFilterBtn).toBeInTheDocument();
+    fireEvent.click(roadmapFilterBtn);
+    expect(await screen.findByText(/Alumni Network & Degree Conferral/i)).toBeInTheDocument();
+
+    // Filter by Active Only
+    const activeFilterBtn = screen.getByRole('button', { name: /Active Only/i });
+    expect(activeFilterBtn).toBeInTheDocument();
+    fireEvent.click(activeFilterBtn);
+    expect(await screen.findByText(/Degree Programs & Academic Departments/i)).toBeInTheDocument();
   });
 
   it('renders connected 5-step academic and administrative workflows', () => {

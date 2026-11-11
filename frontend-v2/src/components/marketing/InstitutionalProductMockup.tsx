@@ -85,7 +85,7 @@ export const InstitutionalProductMockup: React.FC = () => {
         {
           step: '01',
           action: 'Course Definition & Credit Weighting',
-          detail: 'Bursar and Academic Board define course codes (e.g., CS-201), lecture hours, lab hours, and credit units.'
+          detail: 'Academic Board defines course codes (e.g. CS-201), lecture hours, lab hours, and credit units.'
         },
         {
           step: '02',
@@ -351,7 +351,7 @@ export const InstitutionalProductMockup: React.FC = () => {
           </div>
           <div>
             <div className="text-xs font-bold text-zinc-900 flex items-center gap-2">
-              System Architecture & Data Entity Blueprint
+              System Architecture &amp; Data Entity Blueprint
               <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-semibold">
                 PostgreSQL RLS Active
               </span>
@@ -428,7 +428,7 @@ export const InstitutionalProductMockup: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-800 flex items-center gap-2">
                     <Table className="w-4 h-4 text-indigo-600" />
-                    Verified Relational Entities & Data Schema
+                    Verified Relational Entities &amp; Data Schema
                   </h4>
                   <span className="text-[10px] font-mono text-zinc-500">PostgreSQL Engine</span>
                 </div>
@@ -524,7 +524,7 @@ export const InstitutionalProductMockup: React.FC = () => {
       <div className="px-6 py-3 bg-zinc-50 border-t border-zinc-200/80 flex flex-wrap items-center justify-between text-[11px] text-zinc-500">
         <div className="flex items-center gap-2">
           <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-          <span>PostgreSQL 16 Multi-Tenant Isolation with Zero Leakage</span>
+          <span>PostgreSQL 15 Multi-Tenant Isolation with Zero Cross-Tenant Leakage</span>
         </div>
         <div className="font-mono text-zinc-600">
           Source: /src/pages/{activeDomain === 'academics' ? 'Academic/CourseManager.jsx' : activeDomain === 'students' ? 'StudentsList.tsx' : activeDomain === 'finance' ? 'Finance/FeeManager.jsx' : 'Operations/TimetableManager.jsx'}

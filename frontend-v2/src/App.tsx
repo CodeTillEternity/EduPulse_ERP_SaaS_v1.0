@@ -44,6 +44,7 @@ import StudentLedger from './pages/Finance/StudentLedger';
 import LeaveManager from './pages/HR/LeaveManager';
 import PayrollDashboard from './pages/HR/PayrollDashboard';
 import LandingPage from './pages/LandingPage';
+import OnboardingFlow from './pages/OnboardingFlow';
 import StudentPortalLayout from './layouts/StudentPortalLayout';
 import StudentDashboard from './pages/Portal/StudentDashboard';
 import FeeCenter from './pages/Portal/FeeCenter';
@@ -158,6 +159,7 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/register" element={<RegisterInstitution />} />
             <Route path="/register-success" element={<RegistrationSuccess />} />
+            <Route path="/onboard" element={<OnboardingFlow />} />
             <Route path="/subscription-lockout" element={<SubscriptionLockout />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/payment-cancelled" element={<PaymentCancelled />} />

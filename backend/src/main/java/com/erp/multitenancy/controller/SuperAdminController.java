@@ -65,7 +65,12 @@ public class SuperAdminController {
     @Operation(summary = "Provision a new institution", description = "Creates registry entry, 14-day trial, tenant namespace, and initial SUPERADMIN user")
     public ResponseEntity<ApiResponse<TenantRegistry>> provisionInstitution(
             @Valid @RequestBody ProvisionInstitutionRequestDTO request) {
-        TenantRegistry created = tenantProvisioningService.provisionNewInstitution(request.name(), request.email());
+        TenantRegistry created = tenantProvisioningService.provisionNewInstitution(
+                request.name(),
+                request.email(),
+                request.password(),
+                request.fullName()
+        );
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Institution provisioned successfully", created));
     }

@@ -29,13 +29,13 @@ public class SaaSOnboardingController {
     }
 
     /**
-     * Public self-service registration endpoint for new institutions.
+     * Public self-service registration and onboarding endpoint for new institutions.
      *
      * @param request the registration request payload
      * @return the created tenant metadata and trial status
      */
-    @PostMapping("/register")
-    @Operation(summary = "Register new tenant", description = "Public self-service endpoint to onboard a new institution with an active 14-day trial")
+    @PostMapping({"/register", "/public/onboard", "/onboard"})
+    @Operation(summary = "Register or onboard new tenant", description = "Public self-service endpoint to onboard a new institution with an active 14-day trial")
     public ResponseEntity<ApiResponse<TenantRegistrationResponse>> registerTenant(
             @Valid @RequestBody TenantRegistrationRequest request) {
         TenantRegistrationResponse response = tenantProvisioningService.provisionNewTenant(request);

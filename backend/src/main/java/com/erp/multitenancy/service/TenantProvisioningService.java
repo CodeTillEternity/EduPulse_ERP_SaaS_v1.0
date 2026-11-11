@@ -99,6 +99,14 @@ public class TenantProvisioningService {
      */
     @Transactional
     public TenantRegistry provisionNewInstitution(String name, String email) {
+        return provisionNewInstitution(name, email, null, null);
+    }
+
+    /**
+     * Overloaded method supporting custom administrator password and name during self-serve onboarding.
+     */
+    @Transactional
+    public TenantRegistry provisionNewInstitution(String name, String email, String password, String adminName) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Institution name is required");
         }
@@ -164,17 +172,19 @@ public class TenantProvisioningService {
         }
 
         // 3. Seed initial SUPERADMIN user for that specific school
-        String adminPassword = "Admin@" + UUID.randomUUID().toString().substring(0, 8);
+        String effectivePassword = (password != null && !password.isBlank())
+                ? password
+                : "Admin@" + UUID.randomUUID().toString().substring(0, 8);
         AppUser superAdmin = new AppUser();
         superAdmin.setUsername(normalizedEmail);
         superAdmin.setEmail(normalizedEmail);
-        superAdmin.setPassword(passwordEncoder.encode(adminPassword));
+        superAdmin.setPassword(passwordEncoder.encode(effectivePassword));
         superAdmin.setRole(Role.SUPER_ADMIN);
         superAdmin.setTenantId(tenantId);
         superAdmin.setEnabled(true);
 
         userRepository.save(superAdmin);
-        log.info("Seeded initial SUPERADMIN user '{}' for tenant [{}] (default credentials logged for sandbox)",
+        log.info("Seeded initial SUPERADMIN user '{}' for tenant [{}] with configured credentials",
                 normalizedEmail, tenantId);
 
         // 4. Provision default baseline subscription if available
@@ -220,7 +230,12 @@ public class TenantProvisioningService {
      */
     @Transactional
     public TenantRegistrationResponse provisionNewTenant(TenantRegistrationRequest request) {
-        TenantRegistry registry = provisionNewInstitution(request.getInstitutionName(), request.getAdminEmail());
+        TenantRegistry registry = provisionNewInstitution(
+                request.getInstitutionName(),
+                request.getAdminEmail(),
+                request.getAdminPassword(),
+                request.getAdminName()
+        );
         return new TenantRegistrationResponse(
                 registry.getTenantId(),
                 registry.getStatus(),

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { JitsiMeeting } from '@jitsi/react-sdk';
 import { PageFrame } from '../ui/PageFrame';
 import {
   Video,
   Copy,
   Plus,
-  Play
+  Play,
+  PhoneOff
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useVideoCall } from '../../context/VideoCallContext';
 
 interface LectureRoom {
   roomName: string;
@@ -44,9 +45,17 @@ const DEFAULT_ROOMS: LectureRoom[] = [
 export const VirtualClassroom: React.FC = () => {
   const [rooms, setRooms] = useState<LectureRoom[]>(DEFAULT_ROOMS);
   const [selectedRoom, setSelectedRoom] = useState<LectureRoom>(DEFAULT_ROOMS[0]);
-  const [isSessionActive, setIsSessionActive] = useState<boolean>(true);
   const [newRoomCourse, setNewRoomCourse] = useState<string>('');
   const [isCreating, setIsCreating] = useState<boolean>(false);
+
+  const {
+    activeRoomName,
+    startCall,
+    endCall,
+    isCallActive
+  } = useVideoCall();
+
+  const isCurrentRoomActive = activeRoomName === selectedRoom.roomName;
 
   // Fetch active lecture rooms from backend on mount
   useEffect(() => {
@@ -61,7 +70,12 @@ export const VirtualClassroom: React.FC = () => {
           const data = await response.json();
           if (Array.isArray(data) && data.length > 0) {
             setRooms(data);
-            setSelectedRoom(data[0]);
+            if (activeRoomName) {
+              const matching = data.find(r => r.roomName === activeRoomName);
+              if (matching) setSelectedRoom(matching);
+            } else {
+              setSelectedRoom(data[0]);
+            }
           }
         }
       } catch {
@@ -69,7 +83,7 @@ export const VirtualClassroom: React.FC = () => {
       }
     };
     fetchRooms();
-  }, []);
+  }, [activeRoomName]);
 
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,7 +121,7 @@ export const VirtualClassroom: React.FC = () => {
         };
         setRooms(prev => [...prev, created]);
         setSelectedRoom(created);
-        setIsSessionActive(true);
+        startCall(created.roomName, created.courseCode, created.courseName, created.instructorName);
         setNewRoomCourse('');
         toast.success(`Classroom provisioned: ${created.roomName}`);
       } else {
@@ -120,7 +134,7 @@ export const VirtualClassroom: React.FC = () => {
         };
         setRooms(prev => [...prev, fallback]);
         setSelectedRoom(fallback);
-        setIsSessionActive(true);
+        startCall(fallback.roomName, fallback.courseCode, fallback.courseName, fallback.instructorName);
         setNewRoomCourse('');
         toast.success(`Classroom session configured: ${roomName}`);
       }
@@ -134,7 +148,7 @@ export const VirtualClassroom: React.FC = () => {
       };
       setRooms(prev => [...prev, fallback]);
       setSelectedRoom(fallback);
-      setIsSessionActive(true);
+      startCall(fallback.roomName, fallback.courseCode, fallback.courseName, fallback.instructorName);
       setNewRoomCourse('');
       toast.success(`Classroom session configured: ${roomName}`);
     } finally {
@@ -147,13 +161,10 @@ export const VirtualClassroom: React.FC = () => {
     toast.success('Meeting link copied to clipboard');
   };
 
-  const isTestEnv = typeof (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV !== 'undefined'
-    && (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === 'test';
-
   return (
     <PageFrame
       title="Virtual Classroom"
-      description="White-labeled WebRTC video lecture hall powered by Jitsi Meet."
+      description="White-labeled WebRTC video lecture hall with persistent Picture-in-Picture navigation."
       breadcrumbs={[
         { label: 'Dashboard', href: '/dashboard' },
         { label: 'Academics', href: '/dashboard/academics' },
@@ -167,7 +178,6 @@ export const VirtualClassroom: React.FC = () => {
               const found = rooms.find(r => r.roomName === e.target.value);
               if (found) {
                 setSelectedRoom(found);
-                setIsSessionActive(true);
               }
             }}
             className="bg-white text-slate-800 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none"
@@ -195,129 +205,91 @@ export const VirtualClassroom: React.FC = () => {
         <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="space-y-0.5">
             <div className="flex items-center space-x-2">
-              <span className={`w-2 h-2 rounded-full ${isSessionActive ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+              <span className={`w-2 h-2 rounded-full ${isCurrentRoomActive ? 'bg-emerald-500 animate-pulse' : isCallActive ? 'bg-amber-500' : 'bg-slate-400'}`}></span>
               <span className="text-xs font-semibold text-slate-700 font-mono">{selectedRoom.roomName}</span>
               <span className="text-xs text-slate-400">•</span>
               <span className="text-xs text-slate-500">{selectedRoom.instructorName}</span>
+              {isCurrentRoomActive && (
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded">
+                  LIVE NOW
+                </span>
+              )}
             </div>
             <h2 className="text-base font-semibold text-slate-900">
               {selectedRoom.courseCode}: {selectedRoom.courseName}
             </h2>
           </div>
 
-          <form onSubmit={handleCreateRoom} className="flex items-center gap-2">
-            <input
-              type="text"
-              placeholder="Course code (e.g. CS-401)..."
-              value={newRoomCourse}
-              onChange={(e) => setNewRoomCourse(e.target.value)}
-              className="px-2.5 py-1 text-xs border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-            />
-            <button
-              type="submit"
-              disabled={isCreating}
-              className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-50"
-            >
-              <Plus className="w-3 h-3" />
-              <span>Create Room</span>
-            </button>
-          </form>
-        </div>
-
-        {/* Jitsi Meet Video Portal Container */}
-        <div
-          data-testid="jitsi-meeting-container"
-          className="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 h-[640px] relative shadow-lg"
-        >
-          {!isSessionActive ? (
-            // Clean Blank Classroom Dashboard View on Hangup (Intercepts 8x8 Promotional Page)
-            <div className="flex flex-col items-center justify-center h-full text-center text-slate-300 space-y-4 p-8">
-              <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-indigo-400 shadow-inner">
-                <Video className="w-8 h-8" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-lg font-bold text-white tracking-tight">Classroom Session Ended</h3>
-                <p className="text-xs text-slate-400 max-w-md mx-auto">
-                  You have disconnected from {selectedRoom.courseCode} ({selectedRoom.roomName}). 
-                  Ready to rejoin the lecture or select another academic module.
-                </p>
-              </div>
+          <div className="flex items-center gap-2 flex-wrap">
+            {isCurrentRoomActive ? (
               <button
                 onClick={() => {
-                  setIsSessionActive(true);
-                  toast.success(`Reconnecting to ${selectedRoom.roomName}...`);
+                  endCall();
+                  toast.info('Disconnected from lecture room');
                 }}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-rose-600 text-white hover:bg-rose-700 transition-colors shadow-xs"
+              >
+                <PhoneOff className="w-3.5 h-3.5" />
+                <span>End Session</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  startCall(selectedRoom.roomName, selectedRoom.courseCode, selectedRoom.courseName, selectedRoom.instructorName);
+                  toast.success(`Connected to ${selectedRoom.roomName}`);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-xs"
               >
                 <Play className="w-3.5 h-3.5 fill-current" />
-                <span>Rejoin Session</span>
+                <span>{isCallActive ? 'Switch to this Room' : 'Start Session'}</span>
               </button>
-            </div>
-          ) : isTestEnv ? (
-            // Test environment fallback placeholder
-            <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-2">
-              <Video className="w-10 h-10 text-slate-500" />
-              <p className="text-sm font-medium">Jitsi WebRTC Portal Mounted: {selectedRoom.roomName}</p>
+            )}
+
+            <form onSubmit={handleCreateRoom} className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Course code (e.g. CS-401)..."
+                value={newRoomCourse}
+                onChange={(e) => setNewRoomCourse(e.target.value)}
+                className="px-2.5 py-1 text-xs border border-slate-300 rounded-lg text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
               <button
-                onClick={() => setIsSessionActive(false)}
-                className="text-xs text-rose-400 hover:underline"
+                type="submit"
+                disabled={isCreating}
+                className="flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-lg bg-slate-800 text-white hover:bg-slate-900 disabled:opacity-50"
               >
-                Simulate Hangup
+                <Plus className="w-3 h-3" />
+                <span>Create Room</span>
               </button>
-            </div>
-          ) : (
-            // Native JitsiMeeting Component from @jitsi/react-sdk with onReadyToClose Interceptor
-            <JitsiMeeting
-              domain="meet.jit.si"
-              roomName={selectedRoom.roomName}
-              onReadyToClose={() => {
-                // Intercept Jitsi hangup and instantly unmount before promotional screen renders
-                setIsSessionActive(false);
-                toast.info('Left virtual classroom session');
-              }}
-              configOverwrite={{
-                prejoinPageEnabled: false,
-                startWithAudioMuted: false,
-                disableModeratorIndicator: true,
-                startScreenSharing: false,
-                enableEmailInStats: false,
-                toolbarButtons: [
-                  'camera',
-                  'microphone',
-                  'desktop',
-                  'chat',
-                  'raisehand',
-                  'participants-pane',
-                  'tileview',
-                  'fullscreen',
-                  'hangup'
-                ]
-              }}
-              interfaceConfigOverwrite={{
-                SHOW_JITSI_WATERMARK: false,
-                SHOW_WATERMARK_FOR_GUESTS: false,
-                SHOW_BRAND_WATERMARK: false,
-                DEFAULT_BACKGROUND: '#020617'
-              }}
-              userInfo={{
-                displayName: 'EduPulse Instructor',
-                email: 'instructor@edupulse.edu'
-              }}
-              getIFrameRef={(iframeRef) => {
-                if (iframeRef) {
-                  iframeRef.style.height = '100%';
-                  iframeRef.style.width = '100%';
-                  iframeRef.style.border = '0';
-                }
-              }}
-              spinner={() => (
-                <div className="flex items-center justify-center h-full text-slate-400 text-xs">
-                  Initializing White-Labeled WebRTC Session...
-                </div>
-              )}
-            />
-          )}
+            </form>
+          </div>
         </div>
+
+        {/* Blank Slate View when no call is active */}
+        {!isCallActive && (
+          <div className="bg-white border border-slate-200 rounded-xl p-12 text-center flex flex-col items-center justify-center space-y-4 shadow-xs">
+            <div className="w-16 h-16 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
+              <Video className="w-8 h-8" />
+            </div>
+            <div className="space-y-1 max-w-md">
+              <h3 className="text-lg font-bold text-slate-900">Virtual Classroom Ready</h3>
+              <p className="text-xs text-slate-500">
+                Launch a live WebRTC session for {selectedRoom.courseCode} ({selectedRoom.courseName}).
+                Your session stays active in Picture-in-Picture mode even when navigating between student profiles, Notion notes, and fee ledgers.
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                startCall(selectedRoom.roomName, selectedRoom.courseCode, selectedRoom.courseName, selectedRoom.instructorName);
+                toast.success(`Connected to ${selectedRoom.roomName}`);
+              }}
+              className="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
+            >
+              <Play className="w-3.5 h-3.5 fill-current" />
+              <span>Launch Lecture ({selectedRoom.courseCode})</span>
+            </button>
+          </div>
+        )}
       </div>
     </PageFrame>
   );

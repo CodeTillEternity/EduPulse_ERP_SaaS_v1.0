@@ -8,11 +8,14 @@ import {
   LayoutDashboard, Users, GraduationCap, CalendarCheck, Wallet, 
   Store, ShieldAlert, UserCheck, 
   Menu, X, LogOut, ChevronDown, UserCircle, Bell,
-  Check, KeyRound, CreditCard, Search, Video, BookOpen, Receipt
+  Check, KeyRound, CreditCard, Search, Video, BookOpen, Receipt,
+  Maximize2, PhoneOff
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { ChangePasswordModal } from './ChangePasswordModal';
 import ReadOnlyBanner from './ReadOnlyBanner';
+import { JitsiMeeting } from '@jitsi/react-sdk';
+import { useVideoCall } from '../context/VideoCallContext';
 
 export default function Layout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -25,6 +28,15 @@ export default function Layout() {
   const location = useLocation();
   const queryClient = useQueryClient();
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  const {
+    activeRoomName,
+    activeCourseCode,
+    endCall
+  } = useVideoCall();
+  const isClassroomRoute = location.pathname.includes('/classroom') || location.pathname.includes('/academic/classroom');
+  const isTestEnv = typeof (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV !== 'undefined'
+    && (globalThis as unknown as { process?: { env?: { NODE_ENV?: string } } }).process?.env?.NODE_ENV === 'test';
 
   useEffect(() => {
     const handleOnline = () => { setIsOnline(true); toast.success('Connection restored.'); };
@@ -511,8 +523,125 @@ export default function Layout() {
         )}
 
         {/* Main Outlet */}
-        <main className="flex-1 overflow-y-auto bg-slate-50 relative">
+        <main className="flex-1 overflow-y-auto bg-slate-50 relative flex flex-col">
           <Outlet />
+
+          {/* Persistent Jitsi Meeting WebRTC Portal: Full-Size on /classroom, Floating PiP on other routes */}
+          {activeRoomName && (
+            <div
+              data-testid="jitsi-persistent-container"
+              className={cn(
+                "transition-all duration-300 ease-in-out",
+                isClassroomRoute
+                  ? "w-full max-w-[1600px] mx-auto px-4 md:px-6 lg:px-8 pb-8 -mt-2 h-[640px]"
+                  : "fixed bottom-4 right-4 z-50 w-[400px] h-[300px] shadow-2xl rounded-xl overflow-hidden border border-slate-700 bg-slate-950 flex flex-col"
+              )}
+            >
+              {/* Floating Picture-in-Picture Top Header Bar */}
+              {!isClassroomRoute && (
+                <div className="bg-slate-900 border-b border-slate-800 px-3 py-1.5 flex items-center justify-between shrink-0 select-none">
+                  <div className="flex items-center space-x-2 truncate">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+                    <span className="text-xs font-semibold text-slate-200 truncate">
+                      {activeCourseCode || activeRoomName}
+                    </span>
+                    <span className="text-[10px] text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded">
+                      PiP
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-1 shrink-0">
+                    <button
+                      onClick={() => navigate('/dashboard/classroom')}
+                      title="Expand to Full Classroom View"
+                      className="p-1 text-slate-400 hover:text-white rounded hover:bg-slate-800 transition-colors"
+                    >
+                      <Maximize2 className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        endCall();
+                        toast.info('Left virtual classroom session');
+                      }}
+                      title="End Call"
+                      className="p-1 text-rose-400 hover:text-rose-300 rounded hover:bg-rose-950/50 transition-colors"
+                    >
+                      <PhoneOff className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Native WebRTC Frame */}
+              <div className={cn("w-full relative", !isClassroomRoute ? "flex-1" : "h-full rounded-xl overflow-hidden border border-slate-800 shadow-lg")}>
+                {isTestEnv ? (
+                  <div className="flex flex-col items-center justify-center h-full text-slate-400 text-xs space-y-2">
+                    <Video className="w-8 h-8 text-indigo-400" />
+                    <p className="font-medium">Active WebRTC Session: {activeRoomName}</p>
+                    <button
+                      onClick={() => endCall()}
+                      data-testid="jitsi-hangup-btn"
+                      className="text-rose-400 hover:underline text-xs"
+                    >
+                      Simulate Hangup
+                    </button>
+                  </div>
+                ) : (
+                  <JitsiMeeting
+                    domain="meet.jit.si"
+                    roomName={activeRoomName}
+                    onReadyToClose={() => {
+                      endCall();
+                      toast.info('Left virtual classroom session');
+                    }}
+                    configOverwrite={{
+                      prejoinPageEnabled: false,
+                      startWithAudioMuted: false,
+                      disableModeratorIndicator: true,
+                      startScreenSharing: false,
+                      enableEmailInStats: false,
+                      toolbarButtons: isClassroomRoute ? [
+                        'camera',
+                        'microphone',
+                        'desktop',
+                        'chat',
+                        'raisehand',
+                        'participants-pane',
+                        'tileview',
+                        'fullscreen',
+                        'hangup'
+                      ] : [
+                        'camera',
+                        'microphone',
+                        'hangup'
+                      ]
+                    }}
+                    interfaceConfigOverwrite={{
+                      SHOW_JITSI_WATERMARK: false,
+                      SHOW_WATERMARK_FOR_GUESTS: false,
+                      SHOW_BRAND_WATERMARK: false,
+                      DEFAULT_BACKGROUND: '#020617'
+                    }}
+                    userInfo={{
+                      displayName: user?.username || 'EduPulse User',
+                      email: user?.email || 'user@edupulse.edu'
+                    }}
+                    getIFrameRef={(iframeRef) => {
+                      if (iframeRef) {
+                        iframeRef.style.height = '100%';
+                        iframeRef.style.width = '100%';
+                        iframeRef.style.border = '0';
+                      }
+                    }}
+                    spinner={() => (
+                      <div className="flex items-center justify-center h-full text-slate-400 text-xs">
+                        Connecting to WebRTC lecture session...
+                      </div>
+                    )}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </main>
       </div>
       </div>

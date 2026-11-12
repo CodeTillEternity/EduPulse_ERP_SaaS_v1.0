@@ -13,24 +13,27 @@ vi.mock('@daily-co/daily-js', () => {
         destroy: vi.fn(),
         on: vi.fn(),
         setLocalAudio: vi.fn(),
-        setLocalVideo: vi.fn()
+        setLocalVideo: vi.fn(),
+        leave: vi.fn()
       }))
     }
   };
 });
 
-describe('VirtualClassroom Native In-App WebRTC Component', () => {
-  it('renders native classroom HUD, instructor details, and glassmorphic container', () => {
+describe('VirtualClassroom WebRTC Component', () => {
+  it('renders clean utilitarian classroom view and instructor details', () => {
     render(
       <MemoryRouter>
         <VirtualClassroom />
       </MemoryRouter>
     );
 
-    expect(screen.getByText(/LIVE WEBRTC CLASSROOM/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Virtual Classroom/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/CS-302: Advanced Distributed Systems/i).length).toBeGreaterThan(0);
     expect(screen.getAllByText(/Dr. Aris Thorne/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Bypassed External Iframe Restrictions/i).length).toBeGreaterThan(0);
+    // Verifies no fake marketing badges are present
+    expect(screen.queryByText(/Bypassed External Iframe Restrictions/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Node Alpha/i)).not.toBeInTheDocument();
   });
 
   it('renders video container ref mounted into DOM', () => {
@@ -69,7 +72,6 @@ describe('VirtualClassroom Native In-App WebRTC Component', () => {
     const chatBtn = screen.getByTitle(/Toggle Lecture Chat/i);
     fireEvent.click(chatBtn);
 
-    expect(screen.getAllByText(/Lecture Chat/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Raft log persistence/i)).toBeInTheDocument();
+    expect(screen.getByText(/Class session started/i)).toBeInTheDocument();
   });
 });

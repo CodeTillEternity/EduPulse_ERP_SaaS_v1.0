@@ -4,8 +4,8 @@ import React from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import VirtualClassroom from '../components/classroom/VirtualClassroom';
-import Layout from '../components/Layout';
-import { VideoCallProvider, useVideoCall } from '../context/VideoCallContext';
+import DashboardLayout from '../components/layout/DashboardLayout';
+import { VideoProvider, useVideo } from '../context/VideoContext';
 import { useAuthStore } from '../store/useAuthStore';
 
 // Mock sonner
@@ -32,14 +32,14 @@ vi.mock('@jitsi/react-sdk', () => {
   };
 });
 
-describe('VirtualClassroom Active Classes Dashboard', () => {
-  it('renders clean utilitarian classroom header, active sessions grid, and no marketing fluff', () => {
+describe('VirtualClassroom Stage 2: Strict Classroom View', () => {
+  it('renders clean utilitarian classroom header, active sessions grid, and no marketing fluff when activeSession is null', () => {
     render(
-      <VideoCallProvider>
+      <VideoProvider>
         <MemoryRouter>
           <VirtualClassroom />
         </MemoryRouter>
-      </VideoCallProvider>
+      </VideoProvider>
     );
 
     // Consolidated header
@@ -58,39 +58,41 @@ describe('VirtualClassroom Active Classes Dashboard', () => {
     expect(screen.queryByText(/Virtual Classroom Ready/i)).not.toBeInTheDocument();
   });
 
-  it('joins a session when Join Session is clicked and displays active call HUD', () => {
-    render(
-      <VideoCallProvider>
+  it('returns empty fragment when activeSession exists to prevent UI collisions', () => {
+    const ActiveSessionHarness = () => {
+      const { joinSession } = useVideo();
+      React.useEffect(() => {
+        joinSession({
+          courseCode: 'CS-302',
+          title: 'Advanced Distributed Systems',
+          roomName: 'EduPulse-CS302-Alpha',
+          instructor: 'Dr. Thorne'
+        });
+      }, [joinSession]);
+
+      return <VirtualClassroom />;
+    };
+
+    const { container } = render(
+      <VideoProvider>
         <MemoryRouter>
-          <VirtualClassroom />
+          <ActiveSessionHarness />
         </MemoryRouter>
-      </VideoCallProvider>
+      </VideoProvider>
     );
 
-    const joinBtns = screen.getAllByText(/Join Session/i);
-    expect(joinBtns.length).toBeGreaterThan(0);
-
-    // Join first session (CS-302)
-    fireEvent.click(joinBtns[0]);
-
-    // Active call HUD is displayed
-    expect(screen.getByText(/Active Classroom Call/i)).toBeInTheDocument();
-    const leaveBtns = screen.getAllByText(/Leave Session/i);
-    expect(leaveBtns.length).toBeGreaterThan(0);
-
-    // Disconnect
-    fireEvent.click(leaveBtns[0]);
-
-    expect(screen.queryByText(/Active Classroom Call/i)).not.toBeInTheDocument();
+    // Completely empty to prevent collisions with DashboardLayout video
+    expect(container.innerHTML).toBe('');
+    expect(screen.queryByTestId('active-sessions-grid')).not.toBeInTheDocument();
   });
 
   it('opens Start New Lecture dialog and provisions a new lecture session', async () => {
     render(
-      <VideoCallProvider>
+      <VideoProvider>
         <MemoryRouter>
           <VirtualClassroom />
         </MemoryRouter>
-      </VideoCallProvider>
+      </VideoProvider>
     );
 
     // Click top-right primary action button
@@ -106,18 +108,19 @@ describe('VirtualClassroom Active Classes Dashboard', () => {
     const launchBtn = screen.getByText(/Launch Lecture/i);
     fireEvent.click(launchBtn);
 
-    // Session added to grid and active call HUD is triggered
-    expect(await screen.findByText('High Availability Systems')).toBeInTheDocument();
-    expect(screen.getByText(/Active Classroom Call/i)).toBeInTheDocument();
+    // Upon launching, activeSession is created and page returns empty fragment
+    await vi.waitFor(() => {
+      expect(screen.queryByText(/Start New Lecture/i)).not.toBeInTheDocument();
+    });
   });
 
   it('shows minimal quiet empty state when filter matches no live lectures', () => {
     render(
-      <VideoCallProvider>
+      <VideoProvider>
         <MemoryRouter>
           <VirtualClassroom />
         </MemoryRouter>
-      </VideoCallProvider>
+      </VideoProvider>
     );
 
     // Select Physics filter with no matching sessions
@@ -131,7 +134,7 @@ describe('VirtualClassroom Active Classes Dashboard', () => {
   });
 });
 
-describe('Persistent PiP Video Layout (Commit 203)', () => {
+describe('DashboardLayout Stage 1: Unified WebRTC Video Architecture', () => {
   let queryClient: QueryClient;
 
   beforeEach(() => {
@@ -155,10 +158,17 @@ describe('Persistent PiP Video Layout (Commit 203)', () => {
   });
 
   const CallActivator = () => {
-    const { startCall } = useVideoCall();
+    const { joinSession } = useVideo();
     return (
       <button
-        onClick={() => startCall('EduPulse-CS302-Alpha', 'CS-302', 'Advanced Distributed Systems', 'Dr. Thorne')}
+        onClick={() =>
+          joinSession({
+            roomName: 'EduPulse-CS302-Alpha',
+            courseCode: 'CS-302',
+            title: 'Advanced Distributed Systems',
+            instructor: 'Dr. Thorne'
+          })
+        }
         data-testid="activate-call-btn"
       >
         Trigger Call
@@ -166,13 +176,13 @@ describe('Persistent PiP Video Layout (Commit 203)', () => {
     );
   };
 
-  it('renders persistent Jitsi container full-size inside /dashboard/classroom', () => {
+  it('renders Jitsi to fill main content area when activeSession exists on /dashboard/classroom', () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <VideoCallProvider>
+        <VideoProvider>
           <MemoryRouter initialEntries={['/dashboard/classroom']}>
             <Routes>
-              <Route path="/dashboard" element={<Layout />}>
+              <Route path="/dashboard" element={<DashboardLayout />}>
                 <Route
                   path="classroom"
                   element={
@@ -185,34 +195,43 @@ describe('Persistent PiP Video Layout (Commit 203)', () => {
               </Route>
             </Routes>
           </MemoryRouter>
-        </VideoCallProvider>
+        </VideoProvider>
       </QueryClientProvider>
     );
 
-    // Initially no call active
-    expect(screen.queryByTestId('jitsi-persistent-container')).not.toBeInTheDocument();
+    // Initially no call active, VirtualClassroom active sessions grid is shown
+    expect(screen.queryByTestId('jitsi-full-classroom')).not.toBeInTheDocument();
+    expect(screen.getByTestId('active-sessions-grid')).toBeInTheDocument();
 
-    // Activate call
+    // Trigger Join Session
     fireEvent.click(screen.getByTestId('activate-call-btn'));
 
-    // Persistent container is mounted
-    const container = screen.getByTestId('jitsi-persistent-container');
-    expect(container).toBeInTheDocument();
-    // Standard full-size layout on classroom route
-    expect(container.className).toContain('w-full max-w-[1600px]');
-    expect(container.className).not.toContain('fixed bottom-4 right-4');
+    // Full-screen Jitsi container fills the main content area
+    const fullClassroom = screen.getByTestId('jitsi-full-classroom');
+    expect(fullClassroom).toBeInTheDocument();
+    expect(fullClassroom.className).toContain('w-full h-full flex-1');
+    expect(screen.getByText(/Leave Classroom/i)).toBeInTheDocument();
+
+    // Disconnect
+    fireEvent.click(screen.getByText(/Leave Classroom/i));
+    expect(screen.queryByTestId('jitsi-full-classroom')).not.toBeInTheDocument();
   });
 
-  it('renders persistent Jitsi container in floating PiP mode on other routes like /dashboard/materials', () => {
+  it('renders Jitsi as floating Picture-in-Picture window on other routes like /dashboard/materials', () => {
     const Harness = () => {
-      const { startCall } = useVideoCall();
+      const { joinSession } = useVideo();
       React.useEffect(() => {
-        startCall('EduPulse-CS302-Alpha', 'CS-302', 'Advanced Distributed Systems', 'Dr. Thorne');
-      }, [startCall]);
+        joinSession({
+          roomName: 'EduPulse-CS302-Alpha',
+          courseCode: 'CS-302',
+          title: 'Advanced Distributed Systems',
+          instructor: 'Dr. Thorne'
+        });
+      }, [joinSession]);
 
       return (
         <Routes>
-          <Route path="/dashboard" element={<Layout />}>
+          <Route path="/dashboard" element={<DashboardLayout />}>
             <Route path="materials" element={<div>Faculty Materials View</div>} />
           </Route>
         </Routes>
@@ -221,20 +240,19 @@ describe('Persistent PiP Video Layout (Commit 203)', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <VideoCallProvider>
+        <VideoProvider>
           <MemoryRouter initialEntries={['/dashboard/materials']}>
             <Harness />
           </MemoryRouter>
-        </VideoCallProvider>
+        </VideoProvider>
       </QueryClientProvider>
     );
 
-    // Persistent container is mounted in PiP mode
-    const container = screen.getByTestId('jitsi-persistent-container');
-    expect(container).toBeInTheDocument();
-    expect(container.className).toContain('fixed bottom-4 right-4 z-50 w-[400px] h-[300px]');
-    // Displays PiP badge in header bar
+    // Floating Picture-in-Picture window renders with exact specified classes
+    const pipContainer = screen.getByTestId('jitsi-persistent-container');
+    expect(pipContainer).toBeInTheDocument();
+    expect(pipContainer.className).toContain('fixed bottom-6 right-6 w-[480px] h-[320px] rounded-xl shadow-2xl z-50 overflow-hidden border border-gray-800');
     expect(screen.getByText('PiP')).toBeInTheDocument();
-    expect(screen.getByText('CS-302')).toBeInTheDocument();
+    expect(screen.getByText(/CS-302/i)).toBeInTheDocument();
   });
 });

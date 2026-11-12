@@ -54,7 +54,7 @@ import AcademicMaterialView from './components/materials/AcademicMaterialView';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
 import { GlobalSearch } from './components/GlobalSearch';
-import { VideoCallProvider } from './context/VideoCallContext';
+import { VideoProvider } from './context/VideoContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/sonner';
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -152,7 +152,7 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <VideoCallProvider>
+          <VideoProvider>
             <GlobalSearch />
             <Routes>
             <Route path="/login" element={
@@ -224,6 +224,7 @@ function App() {
               <Route path="academic/materials" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><AcademicMaterialView /></RoleProtectedRoute>} />
               <Route path="materials" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><AcademicMaterialView /></RoleProtectedRoute>} />
               <Route path="tuition-collection" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
+              <Route path="tuition-ledger" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
               <Route path="finance/tuition" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
               <Route path="finance/tuition-collection" element={<RoleProtectedRoute allowedRoles={['SUPER_ADMIN', 'ADMIN', 'FACULTY', 'STUDENT', 'PARENT', 'FINANCE']}><StudentFeeLedger /></RoleProtectedRoute>} />
               <Route path="sections" element={<RoleProtectedRoute allowedRoles={['FACULTY']}><FacultySections /></RoleProtectedRoute>} />
@@ -292,7 +293,7 @@ function App() {
             <Route path="/www" element={<LandingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
-          </VideoCallProvider>
+          </VideoProvider>
         </Router>
         <Toaster position="top-right" richColors />
         <HotToaster

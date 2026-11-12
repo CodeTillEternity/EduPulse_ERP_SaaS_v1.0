@@ -2,7 +2,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../config/api';
 import { PageFrame } from '../components/ui/PageFrame';
-import { ShieldAlert, Users, Store, UserCheck, Loader2, Video, BookOpen, CreditCard, Sparkles, ArrowRight } from 'lucide-react';
+import { ShieldAlert, Users, Store, UserCheck, Loader2 } from 'lucide-react';
 import { StatusBadge } from '../components/ui/StatusBadge';
 import { Link } from 'react-router-dom';
 import type { Student, PaginatedResponse } from '../types/student';
@@ -122,81 +122,8 @@ export default function ManagementDashboard() {
         </div>
       )}
 
-      {/* Operational Ecosystem Quick Access (Video, Notion, Razorpay) */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 rounded-2xl p-6 text-white shadow-md">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800/80 mb-5">
-          <div className="flex items-center space-x-2.5">
-            <div className="p-2 bg-indigo-500/20 text-indigo-400 rounded-xl border border-indigo-500/30">
-              <Sparkles className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-sm font-bold tracking-tight text-white">Integrated Learning & Billing Hub</h3>
-              <p className="text-xs text-slate-400">Direct in-app access to virtual lectures, curriculum notes, and tuition collection.</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Link
-            to="/dashboard/classroom"
-            className="group p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/80 transition-all flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <Video className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-bold text-white group-hover:text-indigo-300 transition-colors">Virtual Classroom</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Native WebRTC video streams with isolated room generation and in-app chat.
-              </p>
-            </div>
-            <div className="mt-4 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-indigo-400 group-hover:translate-x-0.5 transition-transform">
-              <span>Launch Classroom</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </Link>
-
-          <Link
-            to="/dashboard/materials"
-            className="group p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/80 transition-all flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-bold text-white group-hover:text-emerald-300 transition-colors">Faculty Notes (Notion)</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Native Notion blocks, interactive code snippets, and checklists without redirects.
-              </p>
-            </div>
-            <div className="mt-4 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-emerald-400 group-hover:translate-x-0.5 transition-transform">
-              <span>Browse Notes</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </Link>
-
-          <Link
-            to="/dashboard/tuition-collection"
-            className="group p-4 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-indigo-500/50 hover:bg-slate-800/80 transition-all flex flex-col justify-between"
-          >
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                <CreditCard className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-bold text-white group-hover:text-amber-300 transition-colors">Tuition Ledger (B2C)</h4>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                In-app Razorpay modal overlay checkout with automatic webhook reconciliation.
-              </p>
-            </div>
-            <div className="mt-4 pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-amber-400 group-hover:translate-x-0.5 transition-transform">
-              <span>Open Ledger</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </div>
-          </Link>
-        </div>
-      </div>
-
-      <div className="grid gap-8 md:grid-cols-2">
+      {/* Elevated Data Tables: Side-by-Side 2-Column Grid */}
+      <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
         <div className="space-y-4">
           <div className="flex items-center justify-between border-b border-slate-200 pb-2">
             <h3 className="text-sm font-bold uppercase tracking-wider text-slate-900">Recent Enrollments</h3>

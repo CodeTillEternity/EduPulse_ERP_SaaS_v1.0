@@ -7,10 +7,13 @@ import VirtualClassroom from '../components/classroom/VirtualClassroom';
 // Mock @jitsi/react-sdk
 vi.mock('@jitsi/react-sdk', () => {
   return {
-    JitsiMeeting: vi.fn(({ domain, roomName }) => (
+    JitsiMeeting: vi.fn(({ domain, roomName, onReadyToClose }) => (
       <div data-testid="mocked-jitsi-meeting">
         <span>Domain: {domain}</span>
         <span>Room: {roomName}</span>
+        <button onClick={onReadyToClose} data-testid="jitsi-hangup-btn">
+          Hangup
+        </button>
       </div>
     ))
   };
@@ -57,5 +60,25 @@ describe('VirtualClassroom Jitsi Meet WebRTC Component', () => {
 
     const createdElements = await screen.findAllByText(/CS-401/i);
     expect(createdElements.length).toBeGreaterThan(0);
+  });
+
+  it('intercepts onReadyToClose hangup and instantly unmounts meeting to show session ended state', () => {
+    render(
+      <MemoryRouter>
+        <VirtualClassroom />
+      </MemoryRouter>
+    );
+
+    const hangupSimBtn = screen.getByText(/Simulate Hangup/i);
+    fireEvent.click(hangupSimBtn);
+
+    expect(screen.getByText(/Classroom Session Ended/i)).toBeInTheDocument();
+    expect(screen.getByText(/Rejoin Session/i)).toBeInTheDocument();
+
+    // Rejoining remounts the classroom session
+    const rejoinBtn = screen.getByText(/Rejoin Session/i);
+    fireEvent.click(rejoinBtn);
+
+    expect(screen.getByText(/Jitsi WebRTC Portal Mounted/i)).toBeInTheDocument();
   });
 });

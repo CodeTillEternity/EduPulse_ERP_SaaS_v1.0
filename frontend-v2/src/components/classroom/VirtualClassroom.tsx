@@ -4,7 +4,8 @@ import { PageFrame } from '../ui/PageFrame';
 import {
   Video,
   Copy,
-  Plus
+  Plus,
+  Play
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -43,6 +44,7 @@ const DEFAULT_ROOMS: LectureRoom[] = [
 export const VirtualClassroom: React.FC = () => {
   const [rooms, setRooms] = useState<LectureRoom[]>(DEFAULT_ROOMS);
   const [selectedRoom, setSelectedRoom] = useState<LectureRoom>(DEFAULT_ROOMS[0]);
+  const [isSessionActive, setIsSessionActive] = useState<boolean>(true);
   const [newRoomCourse, setNewRoomCourse] = useState<string>('');
   const [isCreating, setIsCreating] = useState<boolean>(false);
 
@@ -105,10 +107,10 @@ export const VirtualClassroom: React.FC = () => {
         };
         setRooms(prev => [...prev, created]);
         setSelectedRoom(created);
+        setIsSessionActive(true);
         setNewRoomCourse('');
         toast.success(`Classroom provisioned: ${created.roomName}`);
       } else {
-        // Standalone client fallback
         const fallback: LectureRoom = {
           roomName,
           roomUrl: `https://meet.jit.si/${roomName}`,
@@ -118,6 +120,7 @@ export const VirtualClassroom: React.FC = () => {
         };
         setRooms(prev => [...prev, fallback]);
         setSelectedRoom(fallback);
+        setIsSessionActive(true);
         setNewRoomCourse('');
         toast.success(`Classroom session configured: ${roomName}`);
       }
@@ -131,6 +134,7 @@ export const VirtualClassroom: React.FC = () => {
       };
       setRooms(prev => [...prev, fallback]);
       setSelectedRoom(fallback);
+      setIsSessionActive(true);
       setNewRoomCourse('');
       toast.success(`Classroom session configured: ${roomName}`);
     } finally {
@@ -149,7 +153,7 @@ export const VirtualClassroom: React.FC = () => {
   return (
     <PageFrame
       title="Virtual Classroom"
-      description="Account-less WebRTC video lecture hall powered by Jitsi Meet."
+      description="White-labeled WebRTC video lecture hall powered by Jitsi Meet."
       breadcrumbs={[
         { label: 'Dashboard', href: '/dashboard' },
         { label: 'Academics', href: '/dashboard/academics' },
@@ -161,7 +165,10 @@ export const VirtualClassroom: React.FC = () => {
             value={selectedRoom.roomName}
             onChange={(e) => {
               const found = rooms.find(r => r.roomName === e.target.value);
-              if (found) setSelectedRoom(found);
+              if (found) {
+                setSelectedRoom(found);
+                setIsSessionActive(true);
+              }
             }}
             className="bg-white text-slate-800 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-1 focus:ring-indigo-500 focus:outline-none"
           >
@@ -188,7 +195,7 @@ export const VirtualClassroom: React.FC = () => {
         <div className="bg-white border border-slate-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="space-y-0.5">
             <div className="flex items-center space-x-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span className={`w-2 h-2 rounded-full ${isSessionActive ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
               <span className="text-xs font-semibold text-slate-700 font-mono">{selectedRoom.roomName}</span>
               <span className="text-xs text-slate-400">•</span>
               <span className="text-xs text-slate-500">{selectedRoom.instructorName}</span>
@@ -222,23 +229,58 @@ export const VirtualClassroom: React.FC = () => {
           data-testid="jitsi-meeting-container"
           className="bg-slate-950 rounded-xl overflow-hidden border border-slate-800 h-[640px] relative shadow-lg"
         >
-          {isTestEnv ? (
+          {!isSessionActive ? (
+            // Clean Blank Classroom Dashboard View on Hangup (Intercepts 8x8 Promotional Page)
+            <div className="flex flex-col items-center justify-center h-full text-center text-slate-300 space-y-4 p-8">
+              <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-indigo-400 shadow-inner">
+                <Video className="w-8 h-8" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-lg font-bold text-white tracking-tight">Classroom Session Ended</h3>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  You have disconnected from {selectedRoom.courseCode} ({selectedRoom.roomName}). 
+                  Ready to rejoin the lecture or select another academic module.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  setIsSessionActive(true);
+                  toast.success(`Reconnecting to ${selectedRoom.roomName}...`);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-semibold shadow-xs transition-all hover:scale-[1.02]"
+              >
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>Rejoin Session</span>
+              </button>
+            </div>
+          ) : isTestEnv ? (
             // Test environment fallback placeholder
             <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-2">
               <Video className="w-10 h-10 text-slate-500" />
               <p className="text-sm font-medium">Jitsi WebRTC Portal Mounted: {selectedRoom.roomName}</p>
+              <button
+                onClick={() => setIsSessionActive(false)}
+                className="text-xs text-rose-400 hover:underline"
+              >
+                Simulate Hangup
+              </button>
             </div>
           ) : (
-            // Native JitsiMeeting Component from @jitsi/react-sdk
+            // Native JitsiMeeting Component from @jitsi/react-sdk with onReadyToClose Interceptor
             <JitsiMeeting
               domain="meet.jit.si"
               roomName={selectedRoom.roomName}
+              onReadyToClose={() => {
+                // Intercept Jitsi hangup and instantly unmount before promotional screen renders
+                setIsSessionActive(false);
+                toast.info('Left virtual classroom session');
+              }}
               configOverwrite={{
+                prejoinPageEnabled: false,
                 startWithAudioMuted: false,
                 disableModeratorIndicator: true,
                 startScreenSharing: false,
                 enableEmailInStats: false,
-                prejoinPageEnabled: false,
                 toolbarButtons: [
                   'camera',
                   'microphone',
@@ -270,7 +312,7 @@ export const VirtualClassroom: React.FC = () => {
               }}
               spinner={() => (
                 <div className="flex items-center justify-center h-full text-slate-400 text-xs">
-                  Initializing WebRTC Video Session...
+                  Initializing White-Labeled WebRTC Session...
                 </div>
               )}
             />

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -32,8 +32,8 @@ vi.mock('@jitsi/react-sdk', () => {
   };
 });
 
-describe('VirtualClassroom Jitsi Meet WebRTC Component', () => {
-  it('renders clean utilitarian classroom view and instructor details', () => {
+describe('VirtualClassroom Active Classes Dashboard', () => {
+  it('renders clean utilitarian classroom header, active sessions grid, and no marketing fluff', () => {
     render(
       <VideoCallProvider>
         <MemoryRouter>
@@ -42,16 +42,23 @@ describe('VirtualClassroom Jitsi Meet WebRTC Component', () => {
       </VideoCallProvider>
     );
 
+    // Consolidated header
     expect(screen.getAllByText(/Virtual Classroom/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/CS-302: Advanced Distributed Systems/i).length).toBeGreaterThan(0);
-    expect(screen.getAllByText(/Dr. Aris Thorne/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/Virtual Classroom Ready/i)).toBeInTheDocument();
-    // Verifies no fake marketing badges are present
-    expect(screen.queryByText(/Bypassed External Iframe Restrictions/i)).not.toBeInTheDocument();
-    expect(screen.queryByText(/Node Alpha/i)).not.toBeInTheDocument();
+    expect(screen.getByText(/Start New Lecture/i)).toBeInTheDocument();
+
+    // Active Sessions Grid
+    expect(screen.getByTestId('active-sessions-grid')).toBeInTheDocument();
+    expect(screen.getByText('Advanced Distributed Systems')).toBeInTheDocument();
+    expect(screen.getByText('Dr. Aris Thorne')).toBeInTheDocument();
+    expect(screen.getByText('28 participants')).toBeInTheDocument();
+    expect(screen.getAllByText(/Live/i).length).toBeGreaterThan(0);
+
+    // Fluff purge verification
+    expect(screen.queryByText(/White-labeled WebRTC video lecture hall/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Virtual Classroom Ready/i)).not.toBeInTheDocument();
   });
 
-  it('creates and starts a new unique Jitsi room on form submit', async () => {
+  it('joins a session when Join Session is clicked and displays active call HUD', () => {
     render(
       <VideoCallProvider>
         <MemoryRouter>
@@ -60,18 +67,24 @@ describe('VirtualClassroom Jitsi Meet WebRTC Component', () => {
       </VideoCallProvider>
     );
 
-    const input = screen.getByPlaceholderText(/Course code/i);
-    fireEvent.change(input, { target: { value: 'CS-401' } });
+    const joinBtns = screen.getAllByText(/Join Session/i);
+    expect(joinBtns.length).toBeGreaterThan(0);
 
-    const createBtn = screen.getByText(/Create Room/i);
-    fireEvent.click(createBtn);
+    // Join first session (CS-302)
+    fireEvent.click(joinBtns[0]);
 
-    const createdElements = await screen.findAllByText(/CS-401/i);
-    expect(createdElements.length).toBeGreaterThan(0);
-    expect(screen.getByText(/End Session/i)).toBeInTheDocument();
+    // Active call HUD is displayed
+    expect(screen.getByText(/Active Classroom Call/i)).toBeInTheDocument();
+    const leaveBtns = screen.getAllByText(/Leave Session/i);
+    expect(leaveBtns.length).toBeGreaterThan(0);
+
+    // Disconnect
+    fireEvent.click(leaveBtns[0]);
+
+    expect(screen.queryByText(/Active Classroom Call/i)).not.toBeInTheDocument();
   });
 
-  it('toggles call active state when user starts and ends session', () => {
+  it('opens Start New Lecture dialog and provisions a new lecture session', async () => {
     render(
       <VideoCallProvider>
         <MemoryRouter>
@@ -80,23 +93,41 @@ describe('VirtualClassroom Jitsi Meet WebRTC Component', () => {
       </VideoCallProvider>
     );
 
-    // Initial state: Start Session button is visible
-    const startBtn = screen.getByText(/Start Session/i);
-    expect(startBtn).toBeInTheDocument();
+    // Click top-right primary action button
+    const startNewBtn = screen.getByText(/Start New Lecture/i);
+    fireEvent.click(startNewBtn);
 
-    // Click Start Session
-    fireEvent.click(startBtn);
+    // Fill form in modal dialog
+    const codeInput = screen.getByPlaceholderText(/e\.g\. CS-401/i);
+    const titleInput = screen.getByPlaceholderText(/e\.g\. Distributed Consensus/i);
+    fireEvent.change(codeInput, { target: { value: 'CS-401' } });
+    fireEvent.change(titleInput, { target: { value: 'High Availability Systems' } });
 
-    // Call is now active: shows LIVE NOW and End Session
-    expect(screen.getByText(/LIVE NOW/i)).toBeInTheDocument();
-    expect(screen.getByText(/End Session/i)).toBeInTheDocument();
+    const launchBtn = screen.getByText(/Launch Lecture/i);
+    fireEvent.click(launchBtn);
 
-    // Click End Session
-    const endBtn = screen.getByText(/End Session/i);
-    fireEvent.click(endBtn);
+    // Session added to grid and active call HUD is triggered
+    expect(await screen.findByText('High Availability Systems')).toBeInTheDocument();
+    expect(screen.getByText(/Active Classroom Call/i)).toBeInTheDocument();
+  });
 
-    // Returns to ready state
-    expect(screen.getByText(/Start Session/i)).toBeInTheDocument();
+  it('shows minimal quiet empty state when filter matches no live lectures', () => {
+    render(
+      <VideoCallProvider>
+        <MemoryRouter>
+          <VirtualClassroom />
+        </MemoryRouter>
+      </VideoCallProvider>
+    );
+
+    // Select Physics filter with no matching sessions
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'PHY' } });
+
+    // Displays minimal quiet empty state
+    expect(screen.getByText(/No live lectures at the moment/i)).toBeInTheDocument();
+    expect(screen.getByText(/Check back during scheduled class hours/i)).toBeInTheDocument();
+    expect(screen.queryByTestId('active-sessions-grid')).not.toBeInTheDocument();
   });
 });
 

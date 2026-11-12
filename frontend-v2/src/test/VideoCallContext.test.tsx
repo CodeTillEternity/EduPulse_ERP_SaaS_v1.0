@@ -38,3 +38,4 @@ describe('VideoCallContext Global Call State Management', () => {
     expect(result.current.isCallActive).toBe(false);
   });
 });
+

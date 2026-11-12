@@ -21,14 +21,23 @@ public class NotionSyncService {
     private static final Logger log = LoggerFactory.getLogger(NotionSyncService.class);
     private static final String NOTION_API_BASE = "https://api.notion.com/v1";
 
-    @Value("${notion.api-key:}")
-    private String notionApiKey;
+    @Value("${edupulse.integrations.notion.api-secret:${NOTION_API_SECRET:${notion.api-key:}}}")
+    private String notionApiSecret;
 
-    @Value("${notion.version:2022-06-28}")
+    @Value("${edupulse.integrations.notion.version:2022-06-28}")
     private String notionVersion;
 
     private final RestTemplate restTemplate = new RestTemplate();
     private final Map<String, NotionPageDto> syncedPages = new ConcurrentHashMap<>();
+
+    private String resolveSecret() {
+        if (notionApiSecret != null && !notionApiSecret.isBlank() && !notionApiSecret.startsWith("placeholder")) {
+            return notionApiSecret;
+        }
+        String envSecret = System.getenv("NOTION_API_SECRET");
+        if (envSecret != null && !envSecret.isBlank()) return envSecret;
+        return System.getProperty("NOTION_API_SECRET", "");
+    }
 
     /**
      * Lists all synchronized Notion curriculum pages.
@@ -47,6 +56,7 @@ public class NotionSyncService {
 
     /**
      * Synchronizes live blocks directly from the official Notion API using a real Notion Page ID.
+     * Uses Authorization: Bearer <notionApiSecret> and Notion-Version: 2022-06-28.
      * If the Notion page is empty or has no blocks, the returned blocks list is empty.
      */
     public NotionPageDto syncPageFromNotion(String pageId) {
@@ -55,12 +65,12 @@ public class NotionSyncService {
         String pageIcon = "📄";
         List<NotionBlockDto> blocks = new ArrayList<>();
 
-        // If official Notion API Key is present, make real HTTP GET calls to Notion API
-        if (notionApiKey != null && !notionApiKey.isBlank() && !notionApiKey.startsWith("placeholder")) {
+        String activeSecret = resolveSecret();
+        if (activeSecret != null && !activeSecret.isBlank()) {
             try {
                 HttpHeaders headers = new HttpHeaders();
-                headers.setBearerAuth(notionApiKey);
-                headers.set("Notion-Version", notionVersion);
+                headers.setBearerAuth(activeSecret); // Authorization: Bearer <activeSecret>
+                headers.set("Notion-Version", notionVersion); // Notion-Version: 2022-06-28
                 headers.setContentType(MediaType.APPLICATION_JSON);
                 HttpEntity<Void> entity = new HttpEntity<>(headers);
 
@@ -82,7 +92,6 @@ public class NotionSyncService {
                         }
                         if (pageJson.has("properties")) {
                             JSONObject props = pageJson.getJSONObject("properties");
-                            // Search for title property
                             for (String key : props.keySet()) {
                                 JSONObject prop = props.getJSONObject(key);
                                 if ("title".equals(prop.optString("type")) && prop.has("title")) {
@@ -151,6 +160,7 @@ public class NotionSyncService {
                                     .icon(icon)
                                     .build());
                         }
+                        log.info("Notion synced {} blocks for page: {}", blocks.size(), cleanId);
                     }
                 }
             } catch (Exception e) {
@@ -167,7 +177,7 @@ public class NotionSyncService {
                 .lastSyncedAt(Instant.now())
                 .icon(pageIcon)
                 .coverUrl(null)
-                .blocks(blocks) // Real live JSON blocks, or empty list if empty
+                .blocks(blocks)
                 .build();
 
         syncedPages.put(cleanId, pageDto);
@@ -176,7 +186,20 @@ public class NotionSyncService {
 
     private String cleanPageId(String pageId) {
         if (pageId == null) return UUID.randomUUID().toString();
-        // Remove dashes if standard 32-character Notion UUID, or clean special chars
-        return pageId.trim().replace("-", "");
+        String trimmed = pageId.trim();
+        if (trimmed.contains("/")) {
+            trimmed = trimmed.substring(trimmed.lastIndexOf('/') + 1);
+        }
+        if (trimmed.contains("?")) {
+            trimmed = trimmed.substring(0, trimmed.indexOf('?'));
+        }
+        if (trimmed.contains("-") && trimmed.length() > 32) {
+            String[] parts = trimmed.split("-");
+            String lastPart = parts[parts.length - 1];
+            if (lastPart.length() == 32) {
+                return lastPart;
+            }
+        }
+        return trimmed.replace("-", "");
     }
 }

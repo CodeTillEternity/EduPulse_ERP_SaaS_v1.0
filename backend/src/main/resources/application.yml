@@ -51,15 +51,25 @@ razorpay:
   key-secret: ${RAZORPAY_KEY_SECRET:rzp_secret_placeholder}
   webhook-secret: ${RAZORPAY_WEBHOOK_SECRET:rzp_webhook_secret_placeholder}
 
+# EduPulse Enterprise Integrations (Daily.co & Notion)
+edupulse:
+  integrations:
+    daily:
+      api-key: ${DAILY_API_KEY:c1775e1bc9c8958f914755b14b008c03fdfaa5f2d73f21610f362c2a7c13fb15}
+      domain: ${DAILY_DOMAIN:edupulse}
+    notion:
+      api-secret: ${NOTION_API_SECRET:${NOTION_API_KEY:}}
+      version: ${NOTION_VERSION:2022-06-28}
+
 # Native WebRTC Virtual Classroom Configuration (Daily.co)
 daily:
-  api-key: ${DAILY_API_KEY:}
-  domain: ${DAILY_DOMAIN:edupulse}
+  api-key: ${edupulse.integrations.daily.api-key}
+  domain: ${edupulse.integrations.daily.domain}
 
 # Native Notion Workspace Sync Configuration
 notion:
-  api-key: ${NOTION_API_KEY:}
-  version: ${NOTION_VERSION:2022-06-28}
+  api-key: ${edupulse.integrations.notion.api-secret}
+  version: ${edupulse.integrations.notion.version}
 
 # Dedicated Database Routing Configuration (Hybrid Multi-Tenancy & HikariCP Pools)
 multitenancy:

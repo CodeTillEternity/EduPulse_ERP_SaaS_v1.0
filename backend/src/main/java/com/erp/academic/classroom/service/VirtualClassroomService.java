@@ -24,10 +24,10 @@ public class VirtualClassroomService {
     private static final Logger log = LoggerFactory.getLogger(VirtualClassroomService.class);
     private static final String DAILY_API_BASE = "https://api.daily.co/v1";
 
-    @Value("${daily.api-key:}")
+    @Value("${edupulse.integrations.daily.api-key}")
     private String dailyApiKey;
 
-    @Value("${daily.domain:edupulse}")
+    @Value("${edupulse.integrations.daily.domain:edupulse}")
     private String dailyDomain;
 
     private final RestTemplate restTemplate = new RestTemplate();
@@ -41,7 +41,7 @@ public class VirtualClassroomService {
     }
 
     private void seedInitialClassroom(String roomName, String courseCode, String courseName, String instructor, int durationMinutes) {
-        String roomUrl = "https://" + dailyDomain + ".daily.co/" + roomName;
+        String roomUrl = provisionDailyRoom(roomName);
         VirtualClassroomDto dto = VirtualClassroomDto.builder()
                 .roomId(UUID.randomUUID().toString())
                 .roomName(roomName)
@@ -63,39 +63,27 @@ public class VirtualClassroomService {
     }
 
     /**
-     * Creates or retrieves a Daily.co WebRTC room via HTTP POST to api.daily.co/v1/rooms.
+     * Provisions a room via HTTP POST to https://api.daily.co/v1/rooms with Authorization: Bearer <dailyApiKey>.
      */
-    public VirtualClassroomDto createOrGetClassroom(CreateClassroomRequest request) {
-        String rawName = (request.getRoomName() != null && !request.getRoomName().isBlank())
-                ? request.getRoomName()
-                : (request.getCourseCode() != null ? "edupulse-" + request.getCourseCode().toLowerCase().replace(" ", "-") : "room-" + System.currentTimeMillis());
+    public String provisionDailyRoom(String roomName) {
+        String roomUrl = "https://" + dailyDomain + ".daily.co/" + roomName;
 
-        String sanitizedRoomName = rawName.replaceAll("[^a-zA-Z0-9_-]", "-").toLowerCase();
-
-        // Check if room already cached
-        if (classroomRegistry.containsKey(sanitizedRoomName)) {
-            return classroomRegistry.get(sanitizedRoomName);
-        }
-
-        String roomUrl = "https://" + dailyDomain + ".daily.co/" + sanitizedRoomName;
-
-        // If Daily.co API key is configured, perform real HTTP POST to api.daily.co/v1/rooms
         if (dailyApiKey != null && !dailyApiKey.isBlank() && !dailyApiKey.startsWith("placeholder")) {
             try {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.setBearerAuth(dailyApiKey);
+                headers.setBearerAuth(dailyApiKey); // Authorization: Bearer <dailyApiKey>
 
                 JSONObject properties = new JSONObject();
                 properties.put("enable_screenshare", true);
                 properties.put("enable_chat", true);
                 properties.put("start_video_off", false);
                 properties.put("start_audio_off", false);
-                long exp = Instant.now().plus(4, ChronoUnit.HOURS).getEpochSecond();
+                long exp = Instant.now().plus(24, ChronoUnit.HOURS).getEpochSecond();
                 properties.put("exp", exp);
 
                 JSONObject body = new JSONObject();
-                body.put("name", sanitizedRoomName);
+                body.put("name", roomName);
                 body.put("privacy", "public");
                 body.put("properties", properties);
 
@@ -106,17 +94,17 @@ public class VirtualClassroomService {
                     JSONObject resJson = new JSONObject(response.getBody());
                     if (resJson.has("url")) {
                         roomUrl = resJson.getString("url");
-                        log.info("Daily.co room created successfully: {}", roomUrl);
+                        log.info("Daily.co room provisioned successfully: {}", roomUrl);
                     }
                 }
             } catch (HttpClientErrorException.Conflict conflictEx) {
-                // Room already exists in Daily.co account; query its details
+                // Room already exists on Daily.co account; query its details
                 try {
                     HttpHeaders headers = new HttpHeaders();
                     headers.setBearerAuth(dailyApiKey);
                     HttpEntity<Void> getEntity = new HttpEntity<>(headers);
                     ResponseEntity<String> getRes = restTemplate.exchange(
-                            DAILY_API_BASE + "/rooms/" + sanitizedRoomName,
+                            DAILY_API_BASE + "/rooms/" + roomName,
                             HttpMethod.GET,
                             getEntity,
                             String.class
@@ -125,15 +113,36 @@ public class VirtualClassroomService {
                         JSONObject getJson = new JSONObject(getRes.getBody());
                         if (getJson.has("url")) {
                             roomUrl = getJson.getString("url");
+                            log.info("Daily.co existing room resolved: {}", roomUrl);
                         }
                     }
                 } catch (Exception fetchEx) {
-                    log.warn("Failed to retrieve existing Daily.co room: {}", fetchEx.getMessage());
+                    log.warn("Daily.co existing room lookup notice: {}", fetchEx.getMessage());
                 }
             } catch (Exception e) {
-                log.warn("Daily.co API call failed: {}", e.getMessage());
+                log.warn("Daily.co room provisioning notice: {}", e.getMessage());
             }
         }
+
+        return roomUrl;
+    }
+
+    /**
+     * Creates or retrieves a Daily.co WebRTC room via HTTP POST to api.daily.co/v1/rooms.
+     */
+    public VirtualClassroomDto createOrGetClassroom(CreateClassroomRequest request) {
+        String rawName = (request.getRoomName() != null && !request.getRoomName().isBlank())
+                ? request.getRoomName()
+                : (request.getCourseCode() != null ? "edupulse-" + request.getCourseCode().toLowerCase().replace(" ", "-") : "room-" + System.currentTimeMillis());
+
+        String sanitizedRoomName = rawName.replaceAll("[^a-zA-Z0-9_-]", "-").toLowerCase();
+
+        // Check if room already cached in memory registry
+        if (classroomRegistry.containsKey(sanitizedRoomName)) {
+            return classroomRegistry.get(sanitizedRoomName);
+        }
+
+        String roomUrl = provisionDailyRoom(sanitizedRoomName);
 
         VirtualClassroomDto classroom = VirtualClassroomDto.builder()
                 .roomId(UUID.randomUUID().toString())
@@ -176,7 +185,7 @@ public class VirtualClassroomService {
             try {
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                headers.setBearerAuth(dailyApiKey);
+                headers.setBearerAuth(dailyApiKey); // Authorization: Bearer <dailyApiKey>
 
                 JSONObject properties = new JSONObject();
                 properties.put("room_name", roomName);
@@ -197,10 +206,17 @@ public class VirtualClassroomService {
                     }
                 }
             } catch (Exception e) {
-                log.warn("Daily.co meeting token generation failed: {}", e.getMessage());
+                log.warn("Daily.co meeting token generation notice: {}", e.getMessage());
             }
         }
 
-        return new ClassroomTokenResponse(token, roomName, userName, isOwner, expiresAt);
+        return ClassroomTokenResponse.builder()
+                .token(token)
+                .roomName(roomName)
+                .roomUrl("https://" + dailyDomain + ".daily.co/" + roomName)
+                .role(isOwner ? "OWNER" : "ATTENDEE")
+                .userName(userName)
+                .expiresAt(expiresAt.getEpochSecond())
+                .build();
     }
 }

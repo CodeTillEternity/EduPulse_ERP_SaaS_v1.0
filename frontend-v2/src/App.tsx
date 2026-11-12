@@ -54,6 +54,7 @@ import AcademicMaterialView from './components/materials/AcademicMaterialView';
 import { ProfileRedirect } from './components/ProfileRedirect';
 import Layout from './components/Layout';
 import { GlobalSearch } from './components/GlobalSearch';
+import { VideoCallProvider } from './context/VideoCallContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from './components/ui/sonner';
 import { Toaster as HotToaster } from 'react-hot-toast';
@@ -151,8 +152,9 @@ function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <Router>
-          <GlobalSearch />
-          <Routes>
+          <VideoCallProvider>
+            <GlobalSearch />
+            <Routes>
             <Route path="/login" element={
               <PublicOnlyRoute>
                 <Login />
@@ -290,6 +292,7 @@ function App() {
             <Route path="/www" element={<LandingPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
+          </VideoCallProvider>
         </Router>
         <Toaster position="top-right" richColors />
         <HotToaster
